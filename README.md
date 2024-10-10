@@ -28,4 +28,8 @@ Tower Defense is a strategy game where players must defend against waves of enem
    ```bash
    git clone https://github.com/mihaid11/TowerDefense.git
 
-2. Open the solution file in Visual Studio and build the project.
+2. Open the solution file in Visual Studio
+
+3. Change the platform from x64 to x86
+
+4. Build the project
