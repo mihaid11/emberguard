@@ -26,6 +26,6 @@ Tower Defense is a strategy game where players must defend against waves of enem
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/TowerDefense.git
+   git clone https://github.com/mihaid11/TowerDefense.git
 
 2. Open the solution file in Visual Studio and build the project.
