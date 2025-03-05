@@ -33,8 +33,8 @@
    ```
 
 6. Run the project
-   ```bash
    On Linux:
+   ```bash
    ./Emberguard
    ```
 
