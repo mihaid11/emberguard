@@ -23,34 +23,5 @@ Emberguard is a strategy game where players must defend against waves of enemies
   - The player can take damage from enemies within their attack range (viewable by pressing **Tab** and looking at the red circle).
   - The objective is to survive all enemy waves while ensuring both the player and towers have more than 0 health.
 
-## Installation
-
-### Requirements:
-- **CMake**: Version 3.10 or higher (to configure the project)
-- **Make**: (for Linux/macOS builds) or **Visual Studio** (for Windows builds)
-- **SFML**: Required for rendering and game mechanics
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/mihaid11/Emberguard.git
-
-2. Navigate to the project folder:
-   ```bash
-   cd Emberguard
-
-3. Create a build directory:
-   ```bash
-   mkdir build
-   cd build
-
-4. Run CMake to configure the project:
-   ```bash
-   cmake ..
-
-5. Build the project:
-   ```bash
-   cmake --build .
-
-6. Run the project
-   ```bash
-   ./Emberguard
+## Screenshots
+![Game Screenshot](assets/screenshots/screenshot.png)

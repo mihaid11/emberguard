@@ -258,7 +258,6 @@ void GameEngine::handleTowerClick(Tower& tower, const sf::Vector2f& mousePos) {
             mPlayerMenu.toggleSelect();
     }
     else {
-        std::cout << "Selected tower is out of range. Cannot open tower menu." << std::endl;
         mOutOfRangeSelection.setFillColor(sf::Color::White);
         mShowText2 = true;
         mClockText2.restart();
