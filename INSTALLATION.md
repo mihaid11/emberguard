@@ -34,4 +34,11 @@
 
 6. Run the project
    ```bash
+   On Linux:
    ./Emberguard
+   ```
+
+   On Windows:
+   ```bash
+   cd Debug
+   Emberguard.exe
