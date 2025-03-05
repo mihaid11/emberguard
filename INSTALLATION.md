@@ -32,8 +32,8 @@
    make
    ```
 
-6. Run the project
-   On Linux:
+6. Run the project:
+   On Linux
    ```bash
    ./Emberguard
    ```
