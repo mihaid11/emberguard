@@ -1,4 +1,5 @@
 #include "FlameProjectile.h"
+#include <cmath>
 
 FlameProjectile::FlameProjectile(const sf::Vector2f& position, Enemy* target, float speed, float damage)
     : Projectile(position, target, speed, damage), mBurnDuration(2.0f), mGroundBurned(false) {

@@ -1,6 +1,7 @@
 #include "LaserTower.h"
 #include "../projectiles/LaserProjectile.h"
 #include <iostream>
+#include <cmath>
 
 LaserTower::LaserTower(const sf::Vector2f& position, std::vector<Projectile>& projectiles)
     : Tower(position, projectiles), mFireCooldown(1.25f), mProjectileSpeed(200.0f), mPosition(position), mDamage(5),

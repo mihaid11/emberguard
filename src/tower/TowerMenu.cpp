@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 const float PI = 3.14159265358979323846f;
 

@@ -1,8 +1,9 @@
 #include "Player.h"
 #include <iostream>
+#include <cmath>
 
 static float distance(const sf::Vector2f& a, const sf::Vector2f& b) {
-    return std::sqrtf((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+    return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
 Player::Player(const sf::Vector2f& position, std::vector<Projectile>& projectiles)
