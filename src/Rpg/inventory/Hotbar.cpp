@@ -2,7 +2,7 @@
 #include <iostream>
 
 Hotbar::Hotbar(Inventory& inventory, const sf::Vector2f& position, int slotCount, const sf::Vector2f& slotSize)
-    : mInventory(inventory), mPosition(position), mSlotCount(slotCount), mHoveredSlot(-1) {
+    : mInventory(inventory), mPosition(position), mSlotCount(slotCount), mHoveredSlot(-1), mSlotSize(slotSize) {
     mSlots.resize(3);
     for (int i = 0; i < 3; ++i) {
         mSlots[i].setSize(sf::Vector2f(slotSize.x, slotSize.y));
@@ -69,4 +69,14 @@ void Hotbar::updateSlotColors() {
                 mHoveredSlot = -1;
         }
     }
+}
+
+int Hotbar::contains(const sf::Vector2f& mousePos) {
+    // TODO : Return the index of the slot
+    for(int i = 0; i < 3; ++i) {
+        if((mousePos.x > mSlots[i].getPosition().x && mousePos.x < (mSlots[i].getPosition().x + mSlotSize.x)) &&
+            (mousePos.y > mSlots[i].getPosition().y && mousePos.y < (mSlots[i].getPosition().y + mSlotSize.y)))
+            return i;
+    }
+    return -1;
 }

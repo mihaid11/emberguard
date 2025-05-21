@@ -378,6 +378,10 @@ void RPGEngine::processEvents() {
 				}
 				if (mShowAnalyzeMenu) {
 					mAnalyzeMenu.handleMouseClick(mousePos);
+        }
+        if(!mShowMenu && !mShowStartMenu && !mShowBankMenu && !mShowShopMenu && !mShowAnalyzeMenu && !mShowDialogue) {
+          int slot = mHotbar.contains(mousePos);
+					mHotbar.setHoveredSlot(slot);
 				}
 			}
 		}

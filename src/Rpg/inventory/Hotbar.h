@@ -11,10 +11,12 @@ public:
     void render(sf::RenderWindow& window);
     int getHoveredSlot() const;
     void setHoveredSlot(int slot);
+    int contains(const sf::Vector2f& mousePos);
 
 private:
     Inventory& mInventory;
     sf::Vector2f mPosition;
+    sf::Vector2f mSlotSize;
     int mSlotCount;
     std::vector<sf::RectangleShape> mSlots;
     int mHoveredSlot;
