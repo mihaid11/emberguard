@@ -107,10 +107,18 @@ void InventoryMenu::restart()
 void InventoryMenu::updateSlotColors() {
     for (int i = 0; i < mSlots.size(); ++i) {
         if (i == mHoveredSlot) {
-            mSlots[i].setFillColor(sf::Color(120, 120, 120, 210));
+            if(i == mDraggedSlot) {
+                mSlots[i].setFillColor(sf::Color(150, 150, 150, 210));
+            } else {
+                mSlots[i].setFillColor(sf::Color(120, 120, 120, 210));
+            }
         }
         else {
-            mSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+            if (i == mDraggedSlot) {
+                mSlots[i].setFillColor(sf::Color(70, 70, 70, 210));
+            } else {
+                mSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+            }
         }
     }
 }
