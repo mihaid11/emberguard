@@ -1,4 +1,4 @@
-name: Build on Linux and Windows
+name: Build emberguard
 
 on:
   push:
@@ -25,13 +25,31 @@ jobs:
           cmake ..
           cmake --build .
 
-  build-windows:
+build-windows:
     name: Build on Windows
     runs-on: windows-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Build project
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build .
+
+build-macos:
+    name: Build on macOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3
+
+      - name: Install dependencies
+        run: brew install cmake
 
       - name: Build project
         run: |
