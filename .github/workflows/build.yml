@@ -6,17 +6,15 @@ on:
 
 jobs:
   build-linux:
-    name: Build on Linux
+    name: Build on Ubuntu
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies (build-essential, cmake)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
 
       - name: Build project
         run: |
@@ -25,7 +23,7 @@ jobs:
           cmake ..
           cmake --build .
 
-build-windows:
+  build-windows:
     name: Build on Windows
     runs-on: windows-latest
 
@@ -40,13 +38,13 @@ build-windows:
           cmake ..
           cmake --build .
 
-build-macos:
+  build-macos:
     name: Build on macOS
     runs-on: macos-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@3
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: brew install cmake
