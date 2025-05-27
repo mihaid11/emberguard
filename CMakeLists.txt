@@ -16,6 +16,8 @@ if(WIN32)
     else()
         message(FATAL_ERROR "Unsupported Windows compiler! Use MSVC or MinGW.")
     endif()
+elseif(APPLE)
+    set(SFML_DIR "${CMAKE_SOURCE_DIR}/External/macOS")
 elseif(UNIX)
     set(SFML_DIR "${CMAKE_SOURCE_DIR}/External/Linux")
 endif()
@@ -36,6 +38,13 @@ if(CMAKE_CONFIGURATION_TYPES)  # Multi-config generator (like Visual Studio)
             debug ${SFML_LIBRARY_DIR}/sfml-graphics-d.lib
             debug ${SFML_LIBRARY_DIR}/sfml-window-d.lib
             debug ${SFML_LIBRARY_DIR}/sfml-system-d.lib)
+    elseif(APPLE)
+        set(SFML_LIBS
+            ${SFML_LIBRARY_DIR}/libsfml-graphics.2.6.dylib
+            ${SFML_LIBRARY_DIR}/libsfml-window.2.6.dylib
+            ${SFML_LIBRARY_DIR}/libsfml-system.2.6.dylib
+            ${SFML_LIBRARY_DIR}/libsfml-audio.2.6.dylib
+            ${SFML_LIBRARY_DIR}/libsfml-network.2.6.dylib)
     elseif(UNIX)
         set(SFML_LIBS 
             optimized ${SFML_LIBRARY_DIR}/libsfml-graphics.so.2.6.2
@@ -52,6 +61,11 @@ else()  # Single-config generator (Make, Ninja)
                 ${SFML_LIBRARY_DIR}/sfml-graphics-d.lib
                 ${SFML_LIBRARY_DIR}/sfml-window-d.lib
                 ${SFML_LIBRARY_DIR}/sfml-system-d.lib)
+        elseif(APPLE)
+            set(SFML_LIBS
+                ${SFML_LIBRARY_DIR}/libsfml-graphics.2.6.dylib
+                ${SFML_LIBRARY_DIR}/libsfml-window.2.6.dylib
+                ${SFML_LIBRARY_DIR}/libsfml-system.2.6.dylib)
         elseif(UNIX)
             set(SFML_LIBS 
                 ${SFML_LIBRARY_DIR}/libsfml-graphics-d.so.2.6.2
@@ -64,6 +78,11 @@ else()  # Single-config generator (Make, Ninja)
                 ${SFML_LIBRARY_DIR}/sfml-graphics.lib
                 ${SFML_LIBRARY_DIR}/sfml-window.lib
                 ${SFML_LIBRARY_DIR}/sfml-system.lib)
+        elseif(APPLE)
+            set(SFML_LIBS
+                ${SFML_LIBRARY_DIR}/libsfml-graphics.2.6.dylib
+                ${SFML_LIBRARY_DIR}/libsfml-window.2.6.dylib
+                ${SFML_LIBRARY_DIR}/libsfml-system.2.6.dylib)
         elseif(UNIX)
             set(SFML_LIBS 
                 ${SFML_LIBRARY_DIR}/libsfml-graphics.so.2.6.2
