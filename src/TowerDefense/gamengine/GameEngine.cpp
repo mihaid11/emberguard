@@ -241,6 +241,9 @@ void GameEngine::processEvents() {
         case sf::Event::KeyPressed:
             handleKeyPress(event.key.code);
             break;
+
+        default:
+            break;
         }
     }
 }

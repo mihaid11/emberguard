@@ -51,11 +51,13 @@ int Hotbar::getHoveredSlot() const
 
 void Hotbar::setHoveredSlot(int slot)
 {
-    if(mInventory.getItemAt(slot))
-        if (mHoveredSlot == slot)
+    if(mInventory.getItemAt(slot)) {
+        if (mHoveredSlot == slot) {
             mHoveredSlot = -1;
-        else
+        } else {
             mHoveredSlot = slot;
+        }
+    }
 }
 
 void Hotbar::updateSlotColors() {

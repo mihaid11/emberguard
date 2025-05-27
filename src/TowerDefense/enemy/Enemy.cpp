@@ -148,13 +148,8 @@ sf::FloatRect Enemy::getBounds() const
 
 void Enemy::render(sf::RenderWindow& window)
 {
-	if (&mShape && &mHealthBar) {
-		window.draw(mShape);
-		window.draw(mHealthBar);
-	}
-	else {
-		std::cerr << "Error: mShape or mHealthBar is null" << std::endl;
-	}
+	window.draw(mShape);
+	window.draw(mHealthBar);
 }
 
 void Enemy::followPath(float dt)
