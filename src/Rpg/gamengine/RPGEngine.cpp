@@ -79,7 +79,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
 	//mZoneManager(),
 	mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
 	mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
-	mShopMenu(window, mInventory, mCrystals),
+	mShopMenu(window, mInventory, 5, mCrystals),
 	mAnalyzeMenu(window, mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals)
 	{
 
@@ -157,7 +157,10 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
 	
 	std::unique_ptr<TowerBlueprint> towerB = std::make_unique<TowerBlueprint>();
 	mInventory.addItem(std::move(towerB), 5);
-    loadGame();
+
+    std::unique_ptr<TowerBlueprintEpic> towerBE = std::make_unique<TowerBlueprintEpic>();
+    mInventory.addItem(std::move(towerBE), 2);
+	loadGame();
 }
 
 void RPGEngine::processEvents() {
@@ -830,6 +833,12 @@ void RPGEngine::loadGame() {
 				item = new Wood();
 			else if (droppedItemId[i] == 2)
 				item = new TowerBlueprint();
+            else if (droppedItemId[i] == 3)
+                item = new TowerBlueprintRare();
+            else if (droppedItemId[i] == 4)
+                item = new TowerBlueprintEpic();
+            else if (droppedItemId[i] == 5)
+                item = new TowerBlueprintMythic();
 			
 			if (item != nullptr) {
 				DroppedItem droppedItem(item, sf::Vector2f(droppedItemXPos[i], droppedItemYPos[i]), droppedItemQuantity[i]);
@@ -846,6 +855,15 @@ void RPGEngine::loadGame() {
 			} else if (inventoryItemId[i] == 2) {
 				std::unique_ptr<TowerBlueprint> towerBlueprint = std::make_unique<TowerBlueprint>();
 				mInventory.addItem(std::move(towerBlueprint), inventoryItemQuantity[i]);
+			} else if (inventoryItemId[i] == 3) {
+				std::unique_ptr<TowerBlueprintRare> towerBlueprintRare = std::make_unique<TowerBlueprintRare>();
+				mInventory.addItem(std::move(towerBlueprintRare), inventoryItemQuantity[i]);
+			} else if (inventoryItemId[i] == 4) {
+				std::unique_ptr<TowerBlueprintEpic> towerBlueprintEpic = std::make_unique<TowerBlueprintEpic>();
+				mInventory.addItem(std::move(towerBlueprintEpic), inventoryItemQuantity[i]);
+			} else if (inventoryItemId[i] == 5) {
+				std::unique_ptr<TowerBlueprintMythic> towerBlueprintMythic = std::make_unique<TowerBlueprintMythic>();
+				mInventory.addItem(std::move(towerBlueprintMythic), inventoryItemQuantity[i]);
 			}
 		}
 		
@@ -892,6 +910,7 @@ void RPGEngine::resetSaveGame() {
 		if (mInventory.getItemAt(i))
 			mInventory.removeItemAt(i);
 	}
+    mAnalyzeMenu.reset();
     mShopMenu.regenerateIds();
 	mIsInsideAStructure = false;
 }
