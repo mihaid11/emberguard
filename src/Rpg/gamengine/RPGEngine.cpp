@@ -44,7 +44,6 @@ static bool intersects(const sf::FloatRect& rect1, const sf::FloatRect& rect2)
 	return rect1.intersects(rect2);
 }
 
-
 RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
 	: mWindow(window),
 	mMap(),
@@ -158,7 +157,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
 	
 	std::unique_ptr<TowerBlueprint> towerB = std::make_unique<TowerBlueprint>();
 	mInventory.addItem(std::move(towerB), 5);
-	loadGame();
+    loadGame();
 }
 
 void RPGEngine::processEvents() {
@@ -744,6 +743,7 @@ void RPGEngine::saveGame() {
 	int penalty = mBankMenu.getPenalty();
 	int interest = mBankMenu.getInterest();
 	int amountToRepay = mBankMenu.getAmounToRepay();
+    int daysToRepayment = mBankMenu.getDaysToRepayment();
 	int startYear = mBankMenu.getStartYear();
 	int startDay = mBankMenu.getStartDay();
 	int startHour = mBankMenu.getStartHour();
@@ -754,17 +754,14 @@ void RPGEngine::saveGame() {
 	
 	mNPCManager.saveNPCStates(npcPositions, npcWaypoints);
 
-	for (int ind = 0; ind < mInventory.getSlotCount(); ++ind)
-	{
-		if (mInventory.getItemAt(ind))
-		{
+	for (int ind = 0; ind < mInventory.getSlotCount(); ++ind) {
+		if (mInventory.getItemAt(ind)) {
 			inventoryItemId.push_back(mInventory.getItemAt(ind)->getId());
 			inventoryItemQuantity.push_back(mInventory.getItemQuantityAt(ind));
 		}
 	}
 	
-	for (auto& droppedItem : mDroppedItems)
-	{
+	for (auto& droppedItem : mDroppedItems) {
 		droppedItemId.push_back(droppedItem.getItem()->getId());
 		droppedItemXPos.push_back(droppedItem.getPosition().x);
 		droppedItemYPos.push_back(droppedItem.getPosition().y);
@@ -779,7 +776,7 @@ void RPGEngine::saveGame() {
 		std::cout << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;*/
 
 	mSaveSystem.save(mCharacter.getPosition(), npcPositions, npcWaypoints, mCrystals,
-		year, day, hour, minute, bankBalance, hasBorrowActive, penalty, interest, amountToRepay,
+		year, day, hour, minute, bankBalance, hasBorrowActive, penalty, interest, amountToRepay, daysToRepayment,
 		startYear, startDay, startHour, startMinute, inventoryItemId, inventoryItemQuantity, droppedItemId, droppedItemXPos, droppedItemYPos,
 		droppedItemQuantity, extracting, inSlot, completed, timerActive, startYear1, startDay1, startHour1, startMinute1, slotItemId,
 		mIsInsideAStructure, mCameraFixedPosition);
@@ -789,7 +786,7 @@ void RPGEngine::loadGame() {
 	sf::Vector2f playerPosition;
 	std::vector<sf::Vector2f> npcPositions;
 	std::vector<int> npcWaypoints;
-	int crystals, year, day, hour, minute, bankBalance, penalty, interest, amountToRepay,
+	int crystals, year, day, hour, minute, bankBalance, penalty, interest, amountToRepay, daysToRepayment,
 		startYear, startDay, startHour, startMinute, hasBorrowActive, extracting, inSlot, completed, timerActive,
 		startYear1, startDay1, startHour1, startMinute1, slotItemId, insideStructure;
 	std::vector<int> droppedItemId;
@@ -800,10 +797,11 @@ void RPGEngine::loadGame() {
 	std::vector<int> inventoryItemQuantity;
 
 	if (mSaveSystem.load(playerPosition, npcPositions, npcWaypoints, crystals,
-		year, day, hour, minute, bankBalance, hasBorrowActive, penalty, interest, 
-		amountToRepay, startYear, startDay, startHour, startMinute, inventoryItemId, inventoryItemQuantity, droppedItemId, 
+		year, day, hour, minute, bankBalance, hasBorrowActive, penalty, interest, amountToRepay, daysToRepayment,
+        startYear, startDay, startHour, startMinute, inventoryItemId, inventoryItemQuantity, droppedItemId, 
 		droppedItemXPos, droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed, timerActive, startYear1,
 		startDay1, startHour1, startMinute1, slotItemId, insideStructure, mCameraFixedPosition)) {
+
 		mCharacter.setPosition(playerPosition);
 		mIsInsideAStructure = insideStructure;
 		mNPCManager.loadNPCStates(npcPositions, npcWaypoints);
@@ -820,13 +818,12 @@ void RPGEngine::loadGame() {
 			borrowActive = true;
 		else
 			borrowActive = false;
-			
+	    
 		mBankMenu.setBankBalance(bankBalance);
-		mBankMenu.setBorrowStats(borrowActive, penalty, interest, amountToRepay, startYear, startDay, startHour, startMinute);
+		mBankMenu.setBorrowStats(borrowActive, penalty, interest, amountToRepay, daysToRepayment, startYear, startDay, startHour, startMinute);
 		mAnalyzeMenu.setInfo(extracting, inSlot, completed, timerActive, startYear1, startDay1, startHour1, startMinute1, slotItemId);
 
-		for (size_t i = 0; i < droppedItemId.size(); ++i)
-		{
+		for (size_t i = 0; i < droppedItemId.size(); ++i) {
 			const Item* item = nullptr;
 
 			if (droppedItemId[i] == 1)
@@ -834,8 +831,7 @@ void RPGEngine::loadGame() {
 			else if (droppedItemId[i] == 2)
 				item = new TowerBlueprint();
 			
-			if (item != nullptr)
-			{
+			if (item != nullptr) {
 				DroppedItem droppedItem(item, sf::Vector2f(droppedItemXPos[i], droppedItemYPos[i]), droppedItemQuantity[i]);
 				mDroppedItems.push_back(droppedItem);
 			}
@@ -843,35 +839,26 @@ void RPGEngine::loadGame() {
 				std::cout << "Error : unknown drop item!" << std::endl;
 		}
 
-		for (size_t i = 0; i < inventoryItemId.size(); ++i)
-		{
-			if (inventoryItemId[i] == 1)
-			{
+		for (size_t i = 0; i < inventoryItemId.size(); ++i) {
+			if (inventoryItemId[i] == 1) {
 				std::unique_ptr<Wood> woodItem = std::make_unique<Wood>();
 				mInventory.addItem(std::move(woodItem), inventoryItemQuantity[i]);
-			}
-			else if (inventoryItemId[i] == 2)
-			{
+			} else if (inventoryItemId[i] == 2) {
 				std::unique_ptr<TowerBlueprint> towerBlueprint = std::make_unique<TowerBlueprint>();
 				mInventory.addItem(std::move(towerBlueprint), inventoryItemQuantity[i]);
 			}
 		}
 		
-		for (int i = 0; i < mInventory.getSlotCount(); ++i)
-		{
+		for (int i = 0; i < mInventory.getSlotCount(); ++i) {
 			if (mInventory.getItemAt(i))
-			{
 				std::cout << mInventory.getItemAt(i)->getType() << " " << mInventory.getItemQuantityAt(i) << std::endl;
-			}
 		}
 
-		for (auto& droppedItem : mDroppedItems)
-		{
+		for (auto& droppedItem : mDroppedItems) {
 			std::cout << droppedItem.getItem()->getType() << " " << droppedItem.getPosition().x << " "
 				<< droppedItem.getPosition().y << " " << droppedItem.getQuantity() << std::endl;
 		}
-	}
-	else {
+	} else {
 		std::cerr << "Failed to load game data." << std::endl;
 	}
 }
@@ -879,12 +866,10 @@ void RPGEngine::loadGame() {
 void RPGEngine::resetSaveGame() {
 	std::ofstream saveFile("savegame.txt", std::ofstream::trunc);
 
-	if (saveFile.is_open()) {
+	if (saveFile.is_open())
 		std::cout << "Save file cleared. Game will start from initial positions." << std::endl;
-	}
-	else {
+	else
 		std::cerr << "Failed to clear save file." << std::endl;
-	}
 
 	saveFile.close();
 
@@ -903,10 +888,10 @@ void RPGEngine::resetSaveGame() {
 
 	mDroppedItems.erase(mDroppedItems.begin(), mDroppedItems.end());
 
-	for (int i = 0; i < mInventory.getSlotCount(); ++i)
-	{
+	for (int i = 0; i < mInventory.getSlotCount(); ++i) {
 		if (mInventory.getItemAt(i))
 			mInventory.removeItemAt(i);
 	}
+    mShopMenu.regenerateIds();
 	mIsInsideAStructure = false;
 }

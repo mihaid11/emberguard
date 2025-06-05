@@ -27,8 +27,8 @@ public:
 
 	void restart();
 	void reset();
-	void setStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int startYear, int startDay,
-		int startHour, int startMinute);
+	void setStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int daysToRepayment, 
+                  int startYear, int startDay, int startHour, int startMinute);
 
 private:
 	sf::RectangleShape mMenuShape;
