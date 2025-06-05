@@ -178,10 +178,10 @@ void BankMenu::resetBorrowStats()
     mBorrowMenu->reset();
 }
 
-void BankMenu::setBorrowStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int startYear, int startDay,
-    int startHour, int startMinute)
+void BankMenu::setBorrowStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int daysToRepayment,
+                              int startYear, int startDay, int startHour, int startMinute)
 {
-    mBorrowMenu->setStats(hasBorrowActive, penalty, interest, amountToRepay, startYear, startDay, startHour, startMinute);
+    mBorrowMenu->setStats(hasBorrowActive, penalty, interest, amountToRepay, daysToRepayment, startYear, startDay, startHour, startMinute);
 }
 
 int BankMenu::getPenalty()

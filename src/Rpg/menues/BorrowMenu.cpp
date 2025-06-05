@@ -347,13 +347,14 @@ void BorrowMenu::reset()
 	mHasBorrowActive = false;
 }
 
-void BorrowMenu::setStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int startYear, int startDay,
-	int startHour, int startMinute)
+void BorrowMenu::setStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int daysToRepayment,
+                          int startYear, int startDay, int startHour, int startMinute)
 {
 	mHasBorrowActive = hasBorrowActive;
 	mPenalty = penalty;
 	mInterest = interest;
 	mAmountToRepay = amountToRepay;
+    mDaysToRepayment = daysToRepayment;
 	mRepaymentDay = startDay + mDaysToRepayment;
 	mStartYear = startYear;
 	mStartDay = startDay;

@@ -25,8 +25,8 @@ public:
 
     int getLoanAmount();
     void resetBorrowStats();
-    void setBorrowStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int startYear, int startDay,
-        int startHour, int startMinute);
+    void setBorrowStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int daysToRepayment,
+                        int startYear, int startDay, int startHour, int startMinute);
 
     int getPenalty();
     int getDaysToRepayment();
