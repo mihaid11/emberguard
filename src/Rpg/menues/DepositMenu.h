@@ -14,6 +14,8 @@ public:
 	void restart();
 
 private:
+	void depositAmount(int amount, int& bankBalance, int& crystals, int& storageCapacity); // called when click desposit buttons
+	sf::Text createMessageText(std::string string, float height);
 	sf::RectangleShape mMenuShape;
 	Button m100Button;
 	Button m250Button;
@@ -36,5 +38,8 @@ private:
 
 	bool mStorageAlreadyFull;
 	sf::Text mStorageFullText;
+
+	bool mInsufficientFunds;
+	sf::Text mInsufficientFundsText;
 };
 

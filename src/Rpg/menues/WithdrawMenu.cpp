@@ -19,23 +19,10 @@ WithdrawMenu::WithdrawMenu(sf::RenderWindow& window, const sf::Vector2f position
 	mMenuShape.setPosition(position);
 	mMenuShape.setFillColor(sf::Color(70, 70, 70, 200));
 
-	mCrystalBalance.setFont(mFont);
-	mCrystalBalance.setCharacterSize(16);
-	mCrystalBalance.setFillColor(sf::Color::White);
-	mCrystalBalance.setString("Crystals: " + std::to_string(crystals));
-	mCrystalBalance.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 175.f));
-
-	mBalance.setFont(mFont);
-	mBalance.setCharacterSize(16);
-	mBalance.setFillColor(sf::Color::White);
-	mBalance.setString("Bank Balance: "  + std::to_string(bankBalance));
-	mBalance.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 100.f));
-
-	mAmount.setFont(mFont);
-	mAmount.setCharacterSize(16);
-	mAmount.setFillColor(sf::Color::White);
-	mAmount.setString("Withdraw Amount: ");
-	mAmount.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 25.f));
+	mCrystalBalance = createMessageText("Crystals: " + std::to_string(crystals), 175.f);
+	mBalance = createMessageText("Bank Balance: "  + std::to_string(bankBalance), 100.f);
+	mAmount = createMessageText("Withdraw Amount: ", 25.f);
+	mInsufficientFundsText = createMessageText("Insufficient funds in bank", 310.f);
 
 	m100Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 300.f, 
 		mMenuShape.getPosition().y + 25.f - 8.75f));
@@ -43,40 +30,19 @@ WithdrawMenu::WithdrawMenu(sf::RenderWindow& window, const sf::Vector2f position
 		mMenuShape.getPosition().y + 25.f - 8.75f));
 	m500Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 300.f + 220.f, 
 		mMenuShape.getPosition().y + 25.f - 8.75f));
-	mConfirmButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 100.f, mMenuShape.getPosition().y + 310.f));
-	mBackButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 400.f, mMenuShape.getPosition().y + 310.f));
+	mConfirmButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 75.f, mMenuShape.getPosition().y + 310.f));
+	mBackButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 450.f, mMenuShape.getPosition().y + 310.f));
 
 	m100Button.setCallback([&]() {
-		if (bankBalance >= 100) {
-			mAmountToWithdraw = 100;
-			mConfirmShowing = true;
-		}
-		else {
-			mAmountToWithdraw = 0;
-			mConfirmShowing = false;
-		}
+		withdrawAmount(100, bankBalance);
 		});
 
 	m250Button.setCallback([&]() {
-		if (bankBalance >= 250) {
-			mAmountToWithdraw = 250;
-			mConfirmShowing = true;
-		}
-		else {
-			mAmountToWithdraw = 0;
-			mConfirmShowing = false;
-		}
+		withdrawAmount(250, bankBalance);
 		});
 
 	m500Button.setCallback([&]() {
-		if (bankBalance >= 500) {
-			mAmountToWithdraw = 500;
-			mConfirmShowing = true;
-		}
-		else {
-			mAmountToWithdraw = 0;
-			mConfirmShowing = false;
-		}
+		withdrawAmount(500, bankBalance);
 		});
 
 	mConfirmButton.setCallback([&]() {
@@ -85,10 +51,11 @@ WithdrawMenu::WithdrawMenu(sf::RenderWindow& window, const sf::Vector2f position
 		mAmountToWithdraw = 0;
 		mConfirmShowing = false;
 		});
-
+	
 	mBackButton.setCallback([&]() {
 		mAmountToWithdraw = 0;
 		mConfirmShowing = false;
+		mInsufficientFunds = false;
 		});	
 }
 
@@ -107,6 +74,8 @@ void WithdrawMenu::render(sf::RenderWindow& window)
 		mConfirmButton.render(window);
 		mBackButton.render(window);
 	}
+	if (mInsufficientFunds)
+		window.draw(mInsufficientFundsText);
 }
 
 void WithdrawMenu::handleClicks(const sf::Vector2f& mousePos)
@@ -158,4 +127,30 @@ void WithdrawMenu::update()
 void WithdrawMenu::restart()
 {
 	mConfirmShowing = false;
+	mInsufficientFunds = false;
+}
+
+void WithdrawMenu::withdrawAmount(int amount, int& bankBalance)
+{
+	if (bankBalance >= amount) {
+			mAmountToWithdraw = amount;
+			mConfirmShowing = true; // show button to confirm amount to be withdrawn
+			mInsufficientFunds = false;
+		}
+		else {
+			mAmountToWithdraw = 0;
+			mConfirmShowing = false;
+			mInsufficientFunds = true; // show low funds error message
+		}
+}
+
+sf::Text WithdrawMenu::createMessageText(std::string string, float height) // DUPLICATE FUNCTION IN DEPOSITMENU.CPP
+{
+	sf::Text output;
+	output.setFont(mFont);
+	output.setCharacterSize(16);
+	output.setFillColor(sf::Color::White);
+	output.setString(string);
+	output.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + height));	
+	return output;
 }
