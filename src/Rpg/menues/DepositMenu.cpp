@@ -1,8 +1,7 @@
 #include "DepositMenu.h"
 #include <iostream>
 
-DepositMenu::DepositMenu(sf::RenderWindow& window, const sf::Vector2f position,
-	const sf::Vector2f size, int& crystals, int& bankBalance, int& storageCapacity)
+DepositMenu::DepositMenu(sf::RenderWindow& window, const sf::Vector2f position, const sf::Vector2f size, int& crystals, int& bankBalance, int& storageCapacity)
 	:m100Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "100"),
 	m250Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "250"),
 	m500Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "500"),
