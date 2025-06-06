@@ -14,7 +14,7 @@ public:
 	void restart();
 
 private:
-	void depositAmount(int amount, int& bankBalance, int& crystals, int& storageCapacity); // called when click desposit buttons
+	void depositAmount(int amount, int& bankBalance, int& crystals, int& storageCapacity); // called when deposit buttons are clicked
 	sf::Text createMessageText(std::string string, float height);
 	sf::RectangleShape mMenuShape;
 	Button m100Button;
