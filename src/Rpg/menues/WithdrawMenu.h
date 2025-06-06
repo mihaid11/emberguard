@@ -14,7 +14,7 @@ public:
 	void restart();
 
 private:
-	void withdrawAmount(int amount, int& bankBalance); // called when click withdraw buttons
+	void withdrawAmount(int amount, int& bankBalance); // called when withdraw buttons are clicked
 	sf::Text createMessageText(std::string string, float height);
 	sf::RectangleShape mMenuShape;
 	Button m100Button;
