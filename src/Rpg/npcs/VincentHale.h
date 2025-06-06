@@ -5,9 +5,9 @@
 class VincentHale : public NPC
 {
 public:
-	VincentHale(const sf::Vector2f& position);
+    VincentHale(const sf::Vector2f& position);
 
 private:
-	Dialogue mGreetingDialogue;
+    Dialogue mGreetingDialogue;
 };
 

@@ -12,38 +12,38 @@
 class ShopMenu
 {
 public:
-	ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems, int& crystals);
-	
-	void render(sf::RenderWindow& window);
-	void handleMouseClick(const sf::Vector2f& mousePos);
-	void updateHover(const sf::Vector2f& mousePos);
-	void regenerateIds();
+    ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems, int& crystals);
+
+    void render(sf::RenderWindow& window);
+    void handleMouseClick(const sf::Vector2f& mousePos);
+    void updateHover(const sf::Vector2f& mousePos);
+    void regenerateIds();
 
 private:
-	Inventory& mInventory;
-	sf::RectangleShape mMenuShape;
-	sf::RectangleShape mHoveredZoneShape;
+    Inventory& mInventory;
+    sf::RectangleShape mMenuShape;
+    sf::RectangleShape mHoveredZoneShape;
 
-	std::vector<int> mItemsId;
-	std::vector<Button> mButtons;
-	Button mItem1Button;
-	Button mItem2Button;
-	Button mItem3Button;
+    std::vector<int> mItemsId;
+    std::vector<Button> mButtons;
+    Button mItem1Button;
+    Button mItem2Button;
+    Button mItem3Button;
     int mNumItems;
 
-	// Rendering of the error message variables
-	bool mShowText;
-	sf::Text mErrorText;
-	sf::Clock mClock;
+    // Rendering of the error message variables
+    bool mShowText;
+    sf::Text mErrorText;
+    sf::Clock mClock;
 
-	//Tooltip elements
-	sf::Font mFont;
-	sf::Text mShopText;
-	sf::Text mTooltipText;
-	sf::RectangleShape mTooltipBackground;
+    //Tooltip elements
+    sf::Font mFont;
+    sf::Text mShopText;
+    sf::Text mTooltipText;
+    sf::RectangleShape mTooltipBackground;
 
-	void updateTooltip(int slot, int id);
-	int& mCrystals;
-	sf::Text mCrystalsText;
+    void updateTooltip(int slot, int id);
+    int& mCrystals;
+    sf::Text mCrystalsText;
 };
 

@@ -36,7 +36,7 @@ void InventoryMenu::render(sf::RenderWindow& window) {
         window.draw(mSlots[i]);
 
         const Item* item = mInventory.getItemAt(i);
-        if (item) { 
+        if (item) {
             sf::RectangleShape icon = item->getIcon();
             icon.setPosition(mSlots[i].getPosition());
             window.draw(icon);

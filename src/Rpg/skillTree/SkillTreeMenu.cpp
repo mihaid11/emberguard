@@ -60,8 +60,8 @@ void SkillTreeMenu::initializeSkillButtons() {
     }
 }
 
-void SkillTreeMenu::updateSkillButtons() 
-{   
+void SkillTreeMenu::updateSkillButtons()
+{
     for (size_t i = 0; i < mSkillButtons.size(); ++i) {
         auto& skillNode = mSkillTree.getSkillNodes()[i];
 
@@ -71,7 +71,7 @@ void SkillTreeMenu::updateSkillButtons()
         }
         else {
             // Set the button color to indicate it's locked
-            mSkillButtons[i].setBackgroundColor(sf::Color(255, 0, 0)); 
+            mSkillButtons[i].setBackgroundColor(sf::Color(255, 0, 0));
         }
 
         if (!skillNode->isUnlocked()) {

@@ -7,21 +7,21 @@
 class GameMap
 {
 public:
-	GameMap();
+    GameMap();
 
-	template <typename T, typename... Args>
-	void addEntity(Args&&... args) {
-		mEntities.push_back(std::make_unique<T>(std::forward<Args>(args)...));
-	}
+    template <typename T, typename... Args>
+    void addEntity(Args&&... args) {
+        mEntities.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+    }
 
-	void render(sf::RenderWindow& window);
-	bool checkCollision(const sf::FloatRect& objectBounds);
-	void update();
-	std::vector<std::unique_ptr<Entity>>& getEntities();
-	const sf::Vector2f& getSize();
+    void render(sf::RenderWindow& window);
+    bool checkCollision(const sf::FloatRect& objectBounds);
+    void update();
+    std::vector<std::unique_ptr<Entity>>& getEntities();
+    const sf::Vector2f& getSize();
 private:
-	sf::Vector2f mSize;
-	std::vector<std::unique_ptr<Entity>> mEntities;
+    sf::Vector2f mSize;
+    std::vector<std::unique_ptr<Entity>> mEntities;
 
 };
 

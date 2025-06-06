@@ -4,11 +4,11 @@
 class DialogueSegment
 {
 public:
-	DialogueSegment(const std::string& text);
+    DialogueSegment(const std::string& text);
 
-	std::string getText() const;
+    std::string getText() const;
 
 private:
-	std::string mText;
+    std::string mText;
 };
 

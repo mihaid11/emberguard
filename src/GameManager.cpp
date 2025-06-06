@@ -7,7 +7,7 @@ GameManager::GameManager() : mCurrentState(GameState::RPG), mWindow(sf::VideoMod
 }
 
 void GameManager::run() {
-    // Restart option 
+    // Restart option
     // mRpgEngine.resetSaveGame();
 
     while (mWindow.isOpen()) {

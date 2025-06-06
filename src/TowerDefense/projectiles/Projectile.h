@@ -5,24 +5,24 @@
 class Projectile
 {
 public:
-	Projectile(const sf::Vector2f& position, Enemy* target, float speed, float damage);
+    Projectile(const sf::Vector2f& position, Enemy* target, float speed, float damage);
 
-	virtual void update(float dt);
-	virtual void render(sf::RenderWindow& window);
+    virtual void update(float dt);
+    virtual void render(sf::RenderWindow& window);
 
-	bool hasHitTarget() const;
-	sf::Vector2f getPosition() const;
-	float getDamage() const;
-	Enemy* getTarget() const;
+    bool hasHitTarget() const;
+    sf::Vector2f getPosition() const;
+    float getDamage() const;
+    Enemy* getTarget() const;
 
 protected:
-	sf::RectangleShape mShape;
-	Enemy* mTarget;
-	float mSpeed;
-	float mDamage;
-	bool mHitTarget;
-	bool mAlive;
+    sf::RectangleShape mShape;
+    Enemy* mTarget;
+    float mSpeed;
+    float mDamage;
+    bool mHitTarget;
+    bool mAlive;
 
-	bool checkCollision(const Enemy* target) const;
+    bool checkCollision(const Enemy* target) const;
 };
 

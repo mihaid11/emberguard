@@ -2,7 +2,7 @@
 #include <exception>
 
 Zone::Zone(sf::Vector2i coords, const sf::Texture& tileset, const std::string& csvPath)
-    : mZoneCoords(coords), mTilesetTexture(&tileset), 
+    : mZoneCoords(coords), mTilesetTexture(&tileset),
     mTileSize(32), mZoneWidth(16), mZoneHeight(16)
 {
     loadFromCSV(csvPath);

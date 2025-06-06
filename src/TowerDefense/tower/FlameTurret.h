@@ -7,11 +7,11 @@
 class FlameTurret : public Tower
 {
 public:
-	FlameTurret(const sf::Vector2f& position, std::vector<Projectile>& projectiles);
+    FlameTurret(const sf::Vector2f& position, std::vector<Projectile>& projectiles);
 
-	void update(float dt, std::vector<Enemy>& enemies) override;
+    void update(float dt, std::vector<Enemy>& enemies) override;
 
 private:
-	void fireFlame();
+    void fireFlame();
 };
 

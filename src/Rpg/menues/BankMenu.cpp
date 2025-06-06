@@ -55,7 +55,7 @@ BankMenu::BankMenu(sf::RenderWindow& window, int& crystals, int& storageCapacity
     mButtons.push_back(mDepositButton);
     mButtons.push_back(mBorrowButton);
 
-    mWithdrawMenu = std::make_unique<WithdrawMenu>(window, sf::Vector2f(mMenuShape.getPosition().x 
+    mWithdrawMenu = std::make_unique<WithdrawMenu>(window, sf::Vector2f(mMenuShape.getPosition().x
         + buttonSize.x + 125, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
            mMenuShape.getSize().y - 150), crystals, mBankBalance, storageCapacity);
 
@@ -68,7 +68,7 @@ BankMenu::BankMenu(sf::RenderWindow& window, int& crystals, int& storageCapacity
             mMenuShape.getSize().y - 150), crystals, mHasBorrowActive, timeSystem);
 }
 
-void BankMenu::render(sf::RenderWindow& window) 
+void BankMenu::render(sf::RenderWindow& window)
 {
     window.draw(mMenuShape);
     window.draw(mHoveredZoneShape);

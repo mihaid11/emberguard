@@ -1,7 +1,7 @@
 #include "GarrickStone.h"
 #include "../../GameManager.h"
 
-GarrickStone::GarrickStone(const sf::Vector2f& position, GameManager* gameManager) 
+GarrickStone::GarrickStone(const sf::Vector2f& position, GameManager* gameManager)
     : NPC(position), mGameManager(gameManager)
 {
     mShape.setFillColor(sf::Color(180, 0, 60, 255));

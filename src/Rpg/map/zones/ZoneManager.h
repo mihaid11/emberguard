@@ -4,7 +4,7 @@
 #include <map>
 #include <memory>
 
-class ZoneManager 
+class ZoneManager
 {
 public:
     ZoneManager(int viewRange = 3);

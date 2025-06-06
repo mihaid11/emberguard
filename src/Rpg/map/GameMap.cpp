@@ -2,7 +2,7 @@
 
 GameMap::GameMap() : mSize(sf::Vector2f(10000.0f, 10000.0f))
 {
-    
+
 }
 
 void GameMap::render(sf::RenderWindow& window)
@@ -10,7 +10,7 @@ void GameMap::render(sf::RenderWindow& window)
     for (auto& entity : mEntities) {
         entity->render(window);
     }
-}   
+}
 
 bool GameMap::checkCollision(const sf::FloatRect& objectBounds) {
     for (const auto& entity : mEntities) {

@@ -5,7 +5,7 @@
 
 const float PI = 3.14159265358979323846f;
 
-TowerSelectionMenu::TowerSelectionMenu(std::vector<int>& availableTowers) 
+TowerSelectionMenu::TowerSelectionMenu(std::vector<int>& availableTowers)
     : mVisible(false), mNumberOfTowers(6), mMenuRadius(70.0f), mAvailableTowers(availableTowers) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))

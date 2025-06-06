@@ -52,7 +52,7 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vect
     mTitle.setString("Tower Defense");
     mTitle.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mTitle.getScale().x) / 2.2f
         , mMenuShape.getPosition().y + 15.f));
-    
+
     mErrorText.setFillColor(sf::Color::White);
     mErrorText.setFont(mFont);
     mErrorText.setCharacterSize(18);

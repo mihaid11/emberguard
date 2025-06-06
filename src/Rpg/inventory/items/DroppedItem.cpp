@@ -11,7 +11,7 @@ DroppedItem::DroppedItem(const Item* item, const sf::Vector2f& position, int qua
 
 void DroppedItem::render(sf::RenderWindow& window) {
     window.draw(mItemShape);
-    
+
     //Draw the icon
     // TODO : Implement item icon drawing
     //sf::RectangleShape icon = mItem->getIcon();

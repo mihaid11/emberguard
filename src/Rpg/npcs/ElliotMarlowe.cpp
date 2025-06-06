@@ -1,7 +1,7 @@
 #include "ElliotMarlowe.h"
 #include <iostream>
 
-ElliotMarlowe::ElliotMarlowe(const sf::Vector2f& position) 
+ElliotMarlowe::ElliotMarlowe(const sf::Vector2f& position)
     : NPC(position), mQuestCompleted(false)
 {
     mShape.setFillColor(sf::Color::Yellow);

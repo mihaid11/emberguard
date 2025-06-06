@@ -1,6 +1,6 @@
 #include "SeraphinaLumeris.h"
 
-SeraphinaLumeris::SeraphinaLumeris(const sf::Vector2f& position) 
+SeraphinaLumeris::SeraphinaLumeris(const sf::Vector2f& position)
     : NPC(position)
 {
     mShape.setFillColor(sf::Color(100, 150, 10, 255));

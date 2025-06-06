@@ -121,7 +121,7 @@ void NPC::update(float dt) {
     sf::Vector2f direction = target - mSprite.getPosition();
     float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
-      
+
     if (std::abs(direction.x) > std::abs(direction.y)) {
         if (direction.x > 0.f) {
             mCurrentAnimation = AnimationIndex::WalkingRight;

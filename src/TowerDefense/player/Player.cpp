@@ -180,7 +180,7 @@ bool Player::isInRange(const Enemy& enemy) const
     float range = mRange;
     float distance = std::sqrt(std::pow(mCollisionZone.getPosition().x +
         mCollisionZone.getSize().x / 2.f - enemy.getPosition().x, 2.f) +
-        std::pow(mCollisionZone.getPosition().y + mCollisionZone.getSize().y / 2.f - 
+        std::pow(mCollisionZone.getPosition().y + mCollisionZone.getSize().y / 2.f -
         enemy.getPosition().y, 2.f));
     return distance <= range;
 }

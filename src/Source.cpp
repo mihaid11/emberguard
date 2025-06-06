@@ -2,8 +2,8 @@
 
 int main()
 {
-	GameManager gameManager;
-	gameManager.run();
+    GameManager gameManager;
+    gameManager.run();
 
-	return 0;
+    return 0;
 }
