@@ -1,8 +1,7 @@
 #include "DepositMenu.h"
 #include <iostream>
 
-DepositMenu::DepositMenu(sf::RenderWindow& window, const sf::Vector2f position,
-	const sf::Vector2f size, int& crystals, int& bankBalance, int& storageCapacity)
+DepositMenu::DepositMenu(sf::RenderWindow& window, const sf::Vector2f position, const sf::Vector2f size, int& crystals, int& bankBalance, int& storageCapacity)
 	:m100Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "100"),
 	m250Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "250"),
 	m500Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "500"),
@@ -20,36 +19,12 @@ DepositMenu::DepositMenu(sf::RenderWindow& window, const sf::Vector2f position,
 	mMenuShape.setPosition(position);
 	mMenuShape.setFillColor(sf::Color(70, 70, 70, 200));
 
-	mCrystalBalance.setFont(mFont);
-	mCrystalBalance.setCharacterSize(16);
-	mCrystalBalance.setFillColor(sf::Color::White);
-	mCrystalBalance.setString("Crystals: " + std::to_string(crystals));
-	mCrystalBalance.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 175.f));
-
-	mBalance.setFont(mFont);
-	mBalance.setCharacterSize(16);
-	mBalance.setFillColor(sf::Color::White);
-	mBalance.setString("Bank Balance: " + std::to_string(bankBalance));
-	mBalance.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 100.f));
-
-	mAmount.setFont(mFont);
-	mAmount.setCharacterSize(16);
-	mAmount.setFillColor(sf::Color::White);
-	mAmount.setString("Deposit Amount: ");
-	mAmount.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 25.f));
-
-	mStorageFullText.setFont(mFont);
-	mStorageFullText.setCharacterSize(16);
-	mStorageFullText.setFillColor(sf::Color::White);
-	mStorageFullText.setString("You can't deposit anymore. Storage Capacity is full!");
-	mStorageFullText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 310.f));
-
-	mCanDepositOnlyText.setFont(mFont);
-	mCanDepositOnlyText.setCharacterSize(16);
-	mCanDepositOnlyText.setFillColor(sf::Color::White);
-	mCanDepositOnlyText.setString("Storage capacity is limited!");
-	mCanDepositOnlyText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 250.f));
-
+	mCrystalBalance = createMessageText(("Crystals: " + std::to_string(crystals)), 175.f);
+	mBalance = createMessageText(("Bank Balance: " + std::to_string(bankBalance)), 100.f);
+	mAmount = createMessageText(("Deposit Amount: "), 25.f);
+	mStorageFullText = createMessageText("You can't deposit anymore. Storage Capacity is full!", 310.f);
+	mCanDepositOnlyText = createMessageText("Storage capacity is limited!", 250.f);
+	mInsufficientFundsText = createMessageText("Insufficient funds to fill bank as requested", 310.f);
 
 	m100Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 300.f,
 		mMenuShape.getPosition().y + 25.f - 8.75f));
@@ -58,66 +33,19 @@ DepositMenu::DepositMenu(sf::RenderWindow& window, const sf::Vector2f position,
 	m500Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 300.f + 220.f,
 		mMenuShape.getPosition().y + 25.f - 8.75f));
 	mConfirmButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 100.f, mMenuShape.getPosition().y + 310.f));
-	mBackButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 400.f, mMenuShape.getPosition().y + 310.f));
+	mConfirmButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 75.f, mMenuShape.getPosition().y + 310.f));
+	mBackButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 450.f, mMenuShape.getPosition().y + 310.f));
 
 	m100Button.setCallback([&]() {
-		if (crystals >= 100) {
-			if (bankBalance == storageCapacity)
-				mStorageAlreadyFull = true;
-			else if (bankBalance + 100 > storageCapacity)
-				mStorageWillBeFull = true;
-			else
-			{
-				mAmountToDeposit = 100;
-				mConfirmShowing = true;
-				mStorageAlreadyFull = false;
-				mStorageWillBeFull = false;
-			}
-		}
-		else {
-			mAmountToDeposit = 0;
-			mConfirmShowing = false;
-		}
+		depositAmount(100, bankBalance, crystals, storageCapacity);
 		});
 
 	m250Button.setCallback([&]() {
-		if (crystals >= 250) {
-			if (bankBalance == storageCapacity)
-				mStorageAlreadyFull = true;
-			else if (bankBalance + 250 > storageCapacity)
-				mStorageWillBeFull = true;
-			else
-			{
-				mAmountToDeposit = 250;
-				mConfirmShowing = true;
-				mStorageAlreadyFull = false;
-				mStorageWillBeFull = false;
-			}
-		}
-		else {
-			mAmountToDeposit = 0;
-			mConfirmShowing = false;
-		}
+		depositAmount(250, bankBalance, crystals, storageCapacity);
 		});
 
 	m500Button.setCallback([&]() {
-		if (crystals >= 500) {
-			if (bankBalance == storageCapacity)
-				mStorageAlreadyFull = true;
-			else if (bankBalance + 500 > storageCapacity)
-				mStorageWillBeFull = true;
-			else
-			{
-				mAmountToDeposit = 500;
-				mConfirmShowing = true;
-				mStorageAlreadyFull = false;
-				mStorageWillBeFull = false;
-			}
-		}
-		else {
-			mAmountToDeposit = 0;
-			mConfirmShowing = false;
-		}
+		depositAmount(500, bankBalance, crystals, storageCapacity);
 		});
 
 	mConfirmButton.setCallback([&]() {
@@ -138,6 +66,7 @@ DepositMenu::DepositMenu(sf::RenderWindow& window, const sf::Vector2f position,
 	mBackButton.setCallback([&]() {
 		mAmountToDeposit = 0;
 		mConfirmShowing = false;
+		mInsufficientFunds = false;
 		});
 }
 
@@ -161,6 +90,12 @@ void DepositMenu::render(sf::RenderWindow& window)
 	
 	if (mStorageAlreadyFull)
 		window.draw(mStorageFullText);
+	
+	if (mStorageWillBeFull)
+		window.draw(mCanDepositOnlyText);
+
+	if (mInsufficientFunds)
+		window.draw(mInsufficientFundsText);
 }
 
 void DepositMenu::handleClicks(const sf::Vector2f& mousePos)
@@ -224,4 +159,45 @@ void DepositMenu::update()
 void DepositMenu::restart()
 {
 	mConfirmShowing = false;
+	mInsufficientFunds = false;
+}
+
+void DepositMenu::depositAmount(int amount, int& bankBalance, int& crystals, int& storageCapacity)
+{
+	if (crystals >= amount) {
+		if (bankBalance == storageCapacity)
+		{
+			mStorageAlreadyFull = true;
+			mInsufficientFunds = false;
+		}
+		else if (bankBalance + amount > storageCapacity)
+		{
+			mStorageWillBeFull = true;
+			mInsufficientFunds = false;
+		}
+		else
+		{
+			mAmountToDeposit = amount;
+			mConfirmShowing = true;
+			mInsufficientFunds = false;
+			mStorageAlreadyFull = false;
+			mStorageWillBeFull = false;
+		}
+	}
+	else {
+		mAmountToDeposit = 0;
+		mConfirmShowing = false;
+		mInsufficientFunds = true;
+	}
+}
+
+sf::Text DepositMenu::createMessageText(std::string string, float height) // DUPLICATE FUNCTION IN WITHDRAW.CPP
+{
+	sf::Text output;
+	output.setFont(mFont);
+	output.setCharacterSize(16);
+	output.setFillColor(sf::Color::White);
+	output.setString(string);
+	output.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + height));	
+	return output;
 }
