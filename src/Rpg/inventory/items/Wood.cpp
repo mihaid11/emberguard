@@ -7,7 +7,7 @@ Wood::Wood()
     const_cast<sf::RectangleShape&>(getIcon()) = icon;
 }
 
-std::string Wood::getType() const
-{
+std::string Wood::getType() const {
     return "Wood";
 }
+

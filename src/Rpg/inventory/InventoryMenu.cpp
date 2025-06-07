@@ -17,9 +17,9 @@ InventoryMenu::InventoryMenu(Inventory& inventory, const sf::Vector2f& position,
         mSlots[i].setPosition(mPosition.x + col * slotSize.x, mPosition.y + row * slotSize.y);
     }
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf")) {
+    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Failed to load font in the inventory menu!";
-    }
+
     mTooltipText.setFont(mFont);
     mTooltipText.setCharacterSize(14);
     mTooltipText.setFillColor(sf::Color::White);
@@ -36,7 +36,7 @@ void InventoryMenu::render(sf::RenderWindow& window) {
         window.draw(mSlots[i]);
 
         const Item* item = mInventory.getItemAt(i);
-        if (item) { 
+        if (item) {
             sf::RectangleShape icon = item->getIcon();
             icon.setPosition(mSlots[i].getPosition());
             window.draw(icon);
@@ -65,8 +65,7 @@ void InventoryMenu::handleMouseClick(const sf::Vector2f& mousePos) {
     if (mHoveredSlot != -1) {
         if (mDraggedSlot == -1) {
             mDraggedSlot = mHoveredSlot;
-        }
-        else {
+        } else {
             if(mInventory.getItemAt(mDraggedSlot) && mInventory.getItemAt(mHoveredSlot))
                 mInventory.swapItems(mDraggedSlot, mHoveredSlot);
             mDraggedSlot = -1;
@@ -93,13 +92,11 @@ void InventoryMenu::update(const Inventory& inventory) {
     }
 }
 
-int InventoryMenu::getHoveredSlot() const
-{
+int InventoryMenu::getHoveredSlot() const {
     return mHoveredSlot;
 }
 
-void InventoryMenu::restart()
-{
+void InventoryMenu::restart() {
     mHoveredSlot = -1;
     mDraggedSlot = -1;
 }
@@ -107,27 +104,23 @@ void InventoryMenu::restart()
 void InventoryMenu::updateSlotColors() {
     for (int i = 0; i < mSlots.size(); ++i) {
         if (i == mHoveredSlot) {
-            if(i == mDraggedSlot) {
+            if(i == mDraggedSlot)
                 mSlots[i].setFillColor(sf::Color(150, 150, 150, 210));
-            } else {
+            else
                 mSlots[i].setFillColor(sf::Color(120, 120, 120, 210));
-            }
-        }
-        else {
-            if (i == mDraggedSlot) {
+        } else {
+            if (i == mDraggedSlot)
                 mSlots[i].setFillColor(sf::Color(70, 70, 70, 210));
-            } else {
+            else
                 mSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
-            }
         }
     }
 }
 
 int InventoryMenu::getSlotIndexAtPosition(const sf::Vector2f& pos) const {
     for (int i = 0; i < mSlots.size(); ++i) {
-        if (mSlots[i].getGlobalBounds().contains(pos)) {
+        if (mSlots[i].getGlobalBounds().contains(pos))
             return i;
-        }
     }
     return -1;
 }
@@ -148,3 +141,4 @@ void InventoryMenu::updateTooltip() {
         }
     }
 }
+

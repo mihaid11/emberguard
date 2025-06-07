@@ -6,3 +6,4 @@ public:
     Wood();
     std::string getType() const override;
 };
+

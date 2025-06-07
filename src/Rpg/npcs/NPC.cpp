@@ -5,8 +5,8 @@
 
 NPC::NPC(const sf::Vector2f& position)
     : mInteractionRadius(60.0f), mPaused(false), mSpeed(35.0f),
-    mCurrentWaypoint(0), mIsPaused(false), mPauseDuration(3.0f), mPauseTimer(0.0f), mPriority(0),
-    mShowInteract(false) {
+    mCurrentWaypoint(0), mIsPaused(false), mPauseDuration(3.0f),
+    mPauseTimer(0.0f), mPriority(0), mShowInteract(false) {
 
     mSprite.setTextureRect({ 0, 0, 64, 64 });
     mAnimations[int(AnimationIndex::IdleUp)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/idleUp.png", 4, 2.5f);
@@ -28,9 +28,8 @@ NPC::NPC(const sf::Vector2f& position)
     mInteractCircle.setOutlineColor(sf::Color::White);
     mInteractCircle.setOutlineThickness(0.7f);
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf")) {
+    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for NPC!" << std::endl;
-    }
 
     mInteractText.setFont(mFont);
     mInteractText.setCharacterSize(7);
@@ -38,8 +37,7 @@ NPC::NPC(const sf::Vector2f& position)
     mInteractText.setString("E");
 }
 
-void NPC::setDialogue(const std::string& key, const Dialogue& dialogue)
-{
+void NPC::setDialogue(const std::string& key, const Dialogue& dialogue) {
     mDialogues[key] = dialogue;
 }
 
@@ -48,34 +46,28 @@ void NPC::setActiveDialogue(const std::string& key) {
     if (it != mDialogues.end()) {
         mActiveDialogueKey = key;
         mDialogueManager.startDialogue(it->second);
-    }
-    else {
+    } else {
         std::cerr << "Dialogue key not found: " << key << std::endl;
     }
 }
 
-Dialogue NPC::getActiveDialogue()
-{
+Dialogue NPC::getActiveDialogue() {
     return mDialogues[mActiveDialogueKey];
 }
 
-std::string NPC::getCurrentDialogue()
-{
+std::string NPC::getCurrentDialogue() {
     return mDialogueManager.getCurrentDialogueText();
 }
 
-bool NPC::hasMoreDialogue() const
-{
+bool NPC::hasMoreDialogue() const {
     return mDialogueManager.isDialogueInProgress();
 }
 
-void NPC::resetDialogue()
-{
+void NPC::resetDialogue() {
     mDialogueManager.resetDialogue();
 }
 
-void NPC::render(sf::RenderWindow& window)
-{
+void NPC::render(sf::RenderWindow& window) {
     window.draw(mSprite);
     if (mShowInteract) {
         window.draw(mInteractCircle);
@@ -89,11 +81,9 @@ bool NPC::isPlayerClose(const sf::Vector2f& playerPosition) const {
     return distance <= mInteractionRadius;
 }
 
-void NPC::advanceDialogue()
-{
+void NPC::advanceDialogue() {
     if (mDialogueManager.isDialogueInProgress()) {
         mDialogueManager.getCurrentDialogue().indexIncrement();
-        std::cout << "Dialogue index incremented: " << mDialogueManager.getCurrentDialogue().getCurrentIndex() << std::endl;
     }
 }
 
@@ -121,23 +111,20 @@ void NPC::update(float dt) {
     sf::Vector2f direction = target - mSprite.getPosition();
     float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
-      
+
     if (std::abs(direction.x) > std::abs(direction.y)) {
         if (direction.x > 0.f) {
             mCurrentAnimation = AnimationIndex::WalkingRight;
             mPriority = 2;
-        }
-        else {
+        } else {
             mCurrentAnimation = AnimationIndex::WalkingLeft;
             mPriority = 1;
         }
-    }
-    else {
+    } else {
         if (direction.y > 0.f) {
             mCurrentAnimation = AnimationIndex::WalkingDown;
             mPriority = 4;
-        }
-        else {
+        } else {
             mCurrentAnimation = AnimationIndex::WalkingUp;
             mPriority = 3;
         }
@@ -156,99 +143,81 @@ void NPC::update(float dt) {
 
         if (rand() % 10 < 4)
             startPause(3.0f);
-    }
-    else {
+    } else {
         // Normalize direction and move
         direction /= distance;
         mSprite.move(direction * mSpeed * dt);
     }
 }
 
-void NPC::resumeMovement()
-{
+void NPC::resumeMovement() {
     mPaused = false;
 }
 
-void NPC::pauseMovement()
-{
+void NPC::pauseMovement() {
     mPaused = true;
 }
 
-sf::Vector2f NPC::getPosition() const
-{
+sf::Vector2f NPC::getPosition() const {
     return mSprite.getPosition();
 }
 
-float NPC::getHeight() const
-{
+float NPC::getHeight() const {
     return mSprite.getGlobalBounds().height;
 }
 
-sf::FloatRect NPC::getBounds() const
-{
+sf::FloatRect NPC::getBounds() const {
     return mSprite.getGlobalBounds();
 }
 
-std::string NPC::getActiveDialogueKey() const
-{
+std::string NPC::getActiveDialogueKey() const {
     return mActiveDialogueKey;
 }
 
-void NPC::setPosition(const sf::Vector2f& position)
-{
+void NPC::setPosition(const sf::Vector2f& position) {
     mSprite.setPosition(position);
 }
 
-int NPC::getCurrentWaypoint() const
-{
+int NPC::getCurrentWaypoint() const {
     return (int)mCurrentWaypoint;
 }
 
-void NPC::setCurrentWaypoint(int waypoint)
-{
+void NPC::setCurrentWaypoint(int waypoint) {
     mCurrentWaypoint = waypoint;
 }
 
-sf::Color NPC::getColor() const
-{
+sf::Color NPC::getColor() const {
     return  mShape.getFillColor();
 }
 
-void NPC::setInteractPosition(const sf::Vector2f& position)
-{
+void NPC::setInteractPosition(const sf::Vector2f& position) {
     mInteractCircle.setPosition(position);
     mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
-                                    mInteractCircle.getPosition().y + 2.8f });
+                                mInteractCircle.getPosition().y + 2.8f });
 }
 
-void NPC::setAnimationOpposing(int animationIndex)
-{
+void NPC::setAnimationOpposing(int animationIndex) {
     if (animationIndex == 1) {
         mPriority = 2;
         mCurrentAnimation = AnimationIndex::IdleRight;
-    }
-    else if (animationIndex == 2) {
+    } else if (animationIndex == 2) {
         mPriority = 1;
         mCurrentAnimation = AnimationIndex::IdleLeft;
-    }
-    else if (animationIndex == 3) {
+    } else if (animationIndex == 3) {
         mPriority = 4;
         mCurrentAnimation = AnimationIndex::IdleDown;
-    }
-    else if (animationIndex == 4) {
+    } else if (animationIndex == 4) {
         mPriority = 3;
         mCurrentAnimation = AnimationIndex::IdleUp;
     }
     mAnimations[int(mCurrentAnimation)].applyToSprite(mSprite);
 }
 
-void NPC::setInteract(bool showInteract)
-{
+void NPC::setInteract(bool showInteract) {
     mShowInteract = showInteract;
 }
 
-sf::Sprite& NPC::getSprite()
-{
+sf::Sprite& NPC::getSprite() {
     return mIconSprite;
 }
 
@@ -262,9 +231,8 @@ void NPC::updatePause(float dt) {
     if (mIsPaused) {
         auto now = std::chrono::steady_clock::now();
         std::chrono::duration<float> elapsed = now - mPauseStartTime;
-        if (elapsed.count() >= mPauseDuration) {
+        if (elapsed.count() >= mPauseDuration)
             mIsPaused = false;
-        }
     }
 }
 

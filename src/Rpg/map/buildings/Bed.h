@@ -5,18 +5,17 @@
 
 class GameManager;
 
-class Bed :	public Entity
-{
+class Bed : public Entity {
 public:
-	Bed(const sf::Vector2f& position, float sizeIncrement, const std::string filename,
-		const sf::Vector2f& collPosition, const sf::Vector2f& collSize, 
-		const sf::Vector2f& interactPosition, const sf::Vector2f& interactSize, TimeSystem& timeSystem,
-		GameManager* gameManager);
+    Bed(const sf::Vector2f& position, float sizeIncrement, const std::string filename,
+        const sf::Vector2f& collPosition, const sf::Vector2f& collSize,
+        const sf::Vector2f& interactPosition, const sf::Vector2f& interactSize, TimeSystem& timeSystem,
+        GameManager* gameManager);
 
-	void interact() override;
+    void interact() override;
 
 private:
-	TimeSystem& mTimeSystem;
-	GameManager* mGameManager;
+    TimeSystem& mTimeSystem;
+    GameManager* mGameManager;
 };
 

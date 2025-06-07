@@ -6,28 +6,24 @@
 
 
 Wave::Wave(int level, int waveNumber, const std::vector<int>& pathIndices)
-    : mTotalEnemies(0),
-    mEnemiesSpawned(0),
-    mSpawnTimer(0.0f),
-    mCurrentEnemyType(0)
-{
+    : mTotalEnemies(0), mEnemiesSpawned(0), mSpawnTimer(0.0f), mCurrentEnemyType(0) {
+
     if (level > 0 && level <= getPaths().size()) {
         const auto& levelPaths = getPaths()[level - 1];
         for (int index : pathIndices) {
-            if (index >= 0 && index < levelPaths.size()) {
+            if (index >= 0 && index < levelPaths.size())
                 mPaths.push_back(levelPaths[index]);
-            }
         }
     }
 
     setupWave(level, waveNumber);
 
-    for (const auto& enemyInfo : mEnemyTypes) {
+    for (const auto& enemyInfo : mEnemyTypes)
         mTotalEnemies += enemyInfo.count;
-    }
 }
 
 void Wave::setupWave(int level, int waveNumber) {
+    // TODO : setup waves for new levels
     if (level == 1) {
         if (waveNumber == 1)
             mEnemyTypes.push_back({ 15, [](const Path& path) { return WastelandMarauder(path); } });
@@ -38,34 +34,29 @@ void Wave::setupWave(int level, int waveNumber) {
     }
 }
 
-void Wave::update(float dt, std::vector<Enemy>& enemies)
-{
+void Wave::update(float dt, std::vector<Enemy>& enemies) {
     mSpawnTimer += dt;
 
     while (mCurrentEnemyType < mEnemyTypes.size() &&
-        mSpawnTimer >= mEnemyTypes[mCurrentEnemyType].createEnemy(mPaths[0]).getSpawnTime() &&
-        mEnemiesSpawned < mTotalEnemies)
-    {
+           mSpawnTimer >= mEnemyTypes[mCurrentEnemyType].createEnemy(mPaths[0]).getSpawnTime() &&
+           mEnemiesSpawned < mTotalEnemies) {
+
         mSpawnTimer = 0.0f;
-        if (mEnemiesSpawned < mEnemyTypes[mCurrentEnemyType].count)
-        {
+        if (mEnemiesSpawned < mEnemyTypes[mCurrentEnemyType].count) {
             const Path& path = mPaths[rand() % mPaths.size()];
             enemies.push_back(mEnemyTypes[mCurrentEnemyType].createEnemy(path));
             mEnemiesSpawned++;
-        }
-        else
-        {
+        } else {
             mCurrentEnemyType++;
         }
     }
 }
 
-bool Wave::isComplete() const
-{
+bool Wave::isComplete() const {
     return mEnemiesSpawned >= mTotalEnemies;
 }
 
-int Wave::getEnemyCount() const
-{
+int Wave::getEnemyCount() const {
     return mTotalEnemies;
 }
+

@@ -2,12 +2,11 @@
 #include "NPC.h"
 #include "../dialogueSystem/Dialogue.h"
 
-class VincentHale : public NPC
-{
+class VincentHale : public NPC {
 public:
-	VincentHale(const sf::Vector2f& position);
+    VincentHale(const sf::Vector2f& position);
 
 private:
-	Dialogue mGreetingDialogue;
+    Dialogue mGreetingDialogue;
 };
 

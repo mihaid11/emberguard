@@ -10,8 +10,7 @@
 
 using Path = std::vector<sf::Vector2f>;
 
-class Wave
-{
+class Wave {
 public:
     Wave(int level, int waveNumber, const std::vector<int>& pathIndices);
 
@@ -35,3 +34,4 @@ private:
 
     void setupWave(int level, int waveNumber);
 };
+

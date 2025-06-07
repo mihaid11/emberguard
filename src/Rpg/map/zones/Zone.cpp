@@ -2,15 +2,13 @@
 #include <exception>
 
 Zone::Zone(sf::Vector2i coords, const sf::Texture& tileset, const std::string& csvPath)
-    : mZoneCoords(coords), mTilesetTexture(&tileset), 
-    mTileSize(32), mZoneWidth(16), mZoneHeight(16)
-{
+    : mZoneCoords(coords), mTilesetTexture(&tileset),
+    mTileSize(32), mZoneWidth(16), mZoneHeight(16) {
     loadFromCSV(csvPath);
     buildLayer();
 }
 
-void Zone::loadFromCSV(const std::string& csvPath)
-{
+void Zone::loadFromCSV(const std::string& csvPath) {
     std::ifstream file(csvPath);
     if (!file.is_open()) {
         std::cerr << "Failed to open CSV file: " << csvPath << std::endl;
@@ -41,8 +39,7 @@ void Zone::loadFromCSV(const std::string& csvPath)
     file.close();
 }
 
-void Zone::buildLayer()
-{
+void Zone::buildLayer() {
     mLayers.clear();
 
     sf::VertexArray layer(sf::Quads, mZoneWidth * mZoneHeight * 4);
@@ -79,9 +76,9 @@ void Zone::buildLayer()
     mLayers.push_back(layer);
 }
 
-void Zone::draw(sf::RenderTarget& target)
-{
+void Zone::draw(sf::RenderTarget& target) {
     for (auto& layer : mLayers) {
         target.draw(layer, mTilesetTexture);
     }
 }
+

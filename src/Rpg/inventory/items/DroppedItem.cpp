@@ -11,7 +11,7 @@ DroppedItem::DroppedItem(const Item* item, const sf::Vector2f& position, int qua
 
 void DroppedItem::render(sf::RenderWindow& window) {
     window.draw(mItemShape);
-    
+
     //Draw the icon
     // TODO : Implement item icon drawing
     //sf::RectangleShape icon = mItem->getIcon();
@@ -24,32 +24,27 @@ bool DroppedItem::isPickedUp(const sf::FloatRect& playerBounds) const {
     return mItemShape.getGlobalBounds().intersects(playerBounds);
 }
 
-int DroppedItem::getQuantity() const
-{
+int DroppedItem::getQuantity() const {
     return mQuantity;
 }
 
-const Item* DroppedItem::getItem()
-{
+const Item* DroppedItem::getItem() {
     return mItem;
 }
 
-sf::Vector2f DroppedItem::getPosition() const
-{
+sf::Vector2f DroppedItem::getPosition() const {
     return mPosition;
 }
 
-float DroppedItem::getHeight() const
-{
+float DroppedItem::getHeight() const {
     return mItemShape.getGlobalBounds().height;
 }
 
-bool DroppedItem::getPickUpCap()
-{
+bool DroppedItem::getPickUpCap() {
     return mCanPickUp;
 }
 
-void DroppedItem::setPickUpCap(bool can)
-{
+void DroppedItem::setPickUpCap(bool can) {
     mCanPickUp = can;
 }
+

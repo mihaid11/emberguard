@@ -6,7 +6,7 @@
 #include "../npcs/NPCManager.h"
 #include "../dialogueSystem/DialogueManager.h"
 #include "../menues/Menu.h"
-#include "../saveSystem/SaveSystem.h"		
+#include "../saveSystem/SaveSystem.h"
 #include "../menues/StartTowerDefenseMenu.h"
 #include "../npcs/MiraStanton.h"
 #include "../npcs/ElliotMarlowe.h"
@@ -33,86 +33,85 @@
 
 class GameManager;
 
-class RPGEngine
-{
+class RPGEngine {
 public:
-	RPGEngine(sf::RenderWindow& window, GameManager* gameManager);
+    RPGEngine(sf::RenderWindow& window, GameManager* gameManager);
 
-	void processEvents();
-	void update();
-	void render();
-	void renderDateTime(sf::RenderWindow& window, sf::Font& font, const std::string& date, const std::string& time);
-	void resume(int crystals);
+    void processEvents();
+    void update();
+    void render();
+    void renderDateTime(sf::RenderWindow& window, sf::Font& font, const std::string& date, const std::string& time);
+    void resume(int crystals);
 
-	void saveGame();
-	void loadGame();
-	void resetSaveGame();
+    void saveGame();
+    void loadGame();
+    void resetSaveGame();
 
 private:
-	sf::RenderWindow& mWindow;
-	MainCharacter mCharacter;
-	GameMap mMap;
+    sf::RenderWindow& mWindow;
+    MainCharacter mCharacter;
+    GameMap mMap;
 
-	//NPCs
-	VincentHale mVincentHale;
-	GarrickStone mGarrickStone;
-	MiraStanton mMiraStanton;
-	ElliotMarlowe mElliotMarlowe;
-	SeraphinaLumeris mSeraphinaLumeris;
+    //NPCs
+    VincentHale mVincentHale;
+    GarrickStone mGarrickStone;
+    MiraStanton mMiraStanton;
+    ElliotMarlowe mElliotMarlowe;
+    SeraphinaLumeris mSeraphinaLumeris;
 
-	sf::Clock mClock;
-	sf::View mView;
+    sf::Clock mClock;
+    sf::View mView;
 
-	bool mShowMenu;
-	bool mShowDialogue;
-	bool mShowStartMenu;
-	bool mShowShopMenu;
-	bool mShowBankMenu;
-	bool mShowAnalyzeMenu;
-	sf::Text mDialogueText;
-	sf::Font mFont;
+    bool mShowMenu;
+    bool mShowDialogue;
+    bool mShowStartMenu;
+    bool mShowShopMenu;
+    bool mShowBankMenu;
+    bool mShowAnalyzeMenu;
+    sf::Text mDialogueText;
+    sf::Font mFont;
 
-	GameManager* mGameManager;
-	int mCrystals;
-	int mCurrentLevel;
-	std::vector<int> mAvailableTowers;
+    GameManager* mGameManager;
+    int mCrystals;
+    int mCurrentLevel;
+    std::vector<int> mAvailableTowers;
 
-	SaveSystem mSaveSystem;
-	NPCManager mNPCManager;
-	//DialogueManager mDialogueManager;
-	SkillTree mSkillTree;
-	Inventory mInventory;
-	Hotbar mHotbar;
-	Menu mMenu;
-	ShopMenu mShopMenu;
-	StartTowerDefenseMenu mStartTowerDefenseMenu;
-	BankMenu mBankMenu;
-	AnalyzeMenu mAnalyzeMenu;
+    SaveSystem mSaveSystem;
+    NPCManager mNPCManager;
+    //DialogueManager mDialogueManager;
+    SkillTree mSkillTree;
+    Inventory mInventory;
+    Hotbar mHotbar;
+    Menu mMenu;
+    ShopMenu mShopMenu;
+    StartTowerDefenseMenu mStartTowerDefenseMenu;
+    BankMenu mBankMenu;
+    AnalyzeMenu mAnalyzeMenu;
 
-	NPC* mCurrentInteractingNPC;
-	TimeSystem mTimeSystem;
+    NPC* mCurrentInteractingNPC;
+    TimeSystem mTimeSystem;
 
-	int mStorageCapacity;
-	std::vector<DroppedItem> mDroppedItems;
+    int mStorageCapacity;
+    std::vector<DroppedItem> mDroppedItems;
 
-	sf::RectangleShape mBorderUp;
-	sf::RectangleShape mBorderDown;
-	sf::RectangleShape mBorderLeft;
-	sf::RectangleShape mBorderRight;
+    sf::RectangleShape mBorderUp;
+    sf::RectangleShape mBorderDown;
+    sf::RectangleShape mBorderLeft;
+    sf::RectangleShape mBorderRight;
 
-	sf::CircleShape mInteractCircle;
-	sf::Text mInteractText;
-	bool mShowInteract;
-	sf::Vector2f mInteractPos;
+    sf::CircleShape mInteractCircle;
+    sf::Text mInteractText;
+    bool mShowInteract;
+    sf::Vector2f mInteractPos;
 
-	sf::CircleShape mDialogueInteractCircle;
-	sf::Text mDialogueInteractText;
+    sf::CircleShape mDialogueInteractCircle;
+    sf::Text mDialogueInteractText;
 
-	bool mIsInsideAStructure;
-	sf::Vector2f mCameraFixedPosition;
-	sf::View mFixedCamera;
-	
-	// TODO : Implement method for efficient tile rendering
-	//ZoneManager mZoneManager;
+    bool mIsInsideAStructure;
+    sf::Vector2f mCameraFixedPosition;
+    sf::View mFixedCamera;
+
+    // TODO : Implement method for efficient tile rendering
+    //ZoneManager mZoneManager;
 };
 

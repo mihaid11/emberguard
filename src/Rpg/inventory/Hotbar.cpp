@@ -12,9 +12,8 @@ Hotbar::Hotbar(Inventory& inventory, const sf::Vector2f& position, int slotCount
         mSlots[i].setPosition(mPosition.x + i * slotSize.x, mPosition.y);
     }
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf")) {
+    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Failed to load font in the hotbar menu!";
-    }
 
     mQuantityText.setFont(mFont);
     mQuantityText.setCharacterSize(10);
@@ -28,13 +27,11 @@ void Hotbar::update() {
 void Hotbar::render(sf::RenderWindow& window) {
     for (int i = 0; i < 3; ++i) {
         window.draw(mSlots[i]);
-        //const Item* item = mInventory.getItemAt(i);
         int quantity = mInventory.getItemQuantityAt(i);
         mQuantityText.setString(std::to_string(quantity));
         mQuantityText.setPosition(sf::Vector2f(mSlots[i].getPosition().x + mSlots[i].getSize().x - mQuantityText.getGlobalBounds().width - 5.f,
             mSlots[i].getPosition().y + mSlots[i].getSize().y - mQuantityText.getGlobalBounds().height - 2.f));
         if (mInventory.getItemAt(i)) {
-            //sf::RectangleShape icon = item->getIcon();
             sf::RectangleShape icon = mInventory.getItemAt(i)->getIcon();
             icon.setPosition(mSlots[i].getPosition());
             icon.setScale(sf::Vector2f(0.5f, 0.5f));
@@ -44,28 +41,24 @@ void Hotbar::render(sf::RenderWindow& window) {
     }
 }
 
-int Hotbar::getHoveredSlot() const
-{
+int Hotbar::getHoveredSlot() const {
     return mHoveredSlot;
 }
 
-void Hotbar::setHoveredSlot(int slot)
-{
+void Hotbar::setHoveredSlot(int slot) {
     if(mInventory.getItemAt(slot)) {
-        if (mHoveredSlot == slot) {
+        if (mHoveredSlot == slot)
             mHoveredSlot = -1;
-        } else {
+        else
             mHoveredSlot = slot;
-        }
     }
 }
 
 void Hotbar::updateSlotColors() {
     for (int i = 0; i < 3; ++i) {
-        if (mInventory.getItemAt(i))
+        if (mInventory.getItemAt(i)) {
             mSlots[i].setFillColor(i == mHoveredSlot ? sf::Color(120, 120, 120, 210) : sf::Color(0, 0, 0, 220));
-        else
-        {
+        } else {
             mSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
             if (mHoveredSlot == i)
                 mHoveredSlot = -1;
@@ -74,7 +67,6 @@ void Hotbar::updateSlotColors() {
 }
 
 int Hotbar::contains(const sf::Vector2f& mousePos) {
-    // TODO : Return the index of the slot
     for(int i = 0; i < 3; ++i) {
         if((mousePos.x > mSlots[i].getPosition().x && mousePos.x < (mSlots[i].getPosition().x + mSlotSize.x)) &&
             (mousePos.y > mSlots[i].getPosition().y && mousePos.y < (mSlots[i].getPosition().y + mSlotSize.y)))
@@ -82,3 +74,4 @@ int Hotbar::contains(const sf::Vector2f& mousePos) {
     }
     return -1;
 }
+

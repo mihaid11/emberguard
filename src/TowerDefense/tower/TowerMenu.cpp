@@ -14,9 +14,8 @@ TowerMenu::TowerMenu() : mVisible(false), mCurrentTower(nullptr), mNumberOfUpgra
     mTowerIcon.setRadius(15);
     mTowerIcon.setFillColor(sf::Color::Green);
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf")) {
+    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font" << std::endl;
-    }
 
     mStatsPosition = sf::Vector2f(700, 10);
 }
@@ -42,8 +41,7 @@ void TowerMenu::hide() {
     mCurrentTower = nullptr;
 }
 
-bool TowerMenu::isVisible() const
-{
+bool TowerMenu::isVisible() const {
     return  mVisible;
 }
 
@@ -76,19 +74,16 @@ void TowerMenu::initializeZones() {
         zone.setPoint(1, corner1);
         zone.setPoint(2, corner2);
 
-        if (i != 1) {
+        if (i != 1)
             zone.setFillColor(sf::Color(169, 169, 169, 150));
-        }
-        else {
+        else
             zone.setFillColor(sf::Color(255, 69, 0, 150));
-        }
 
         mZones.push_back(zone);
     }
 }
 
-void TowerMenu::initializeLabels()
-{
+void TowerMenu::initializeLabels() {
     mUpgradeLabels.clear();
     for (int i = 0; i < mNumberOfUpgrades; ++i) {
         sf::Text label;
@@ -105,15 +100,12 @@ void TowerMenu::initializeLabels()
 
         float angle = i * 2.0f * PI / mNumberOfUpgrades + PI / mNumberOfUpgrades;
         sf::Vector2f offset(std::cos(angle) * (80.0f * 0.5f), std::sin(angle) * (80.0f * 0.5f));
-        if (i == 2) {
+        if (i == 2)
             label.setPosition(mHeptagon.getPosition() + offset - sf::Vector2f(41, 13));
-        }
-        else if(i == 1){
+        else if(i == 1)
             label.setPosition(mHeptagon.getPosition() + offset - sf::Vector2f(20, 0));
-        }
-        else {
+         else
             label.setPosition(mHeptagon.getPosition() + offset - sf::Vector2f(17, 0));
-        }
 
         mUpgradeLabels.push_back(label);
     }
@@ -184,9 +176,8 @@ void TowerMenu::render(sf::RenderWindow& window) {
 
     window.draw(mRangeCircle);
     window.draw(mHeptagon);
-    for (const auto& zone : mZones) {
+    for (const auto& zone : mZones)
         window.draw(zone);
-    }
     for (const auto& label : mUpgradeLabels)
         window.draw(label);
     drawLines(window);
@@ -204,8 +195,7 @@ void TowerMenu::render(sf::RenderWindow& window) {
     }
 }
 
-bool TowerMenu::containsUpgradeZone(const sf::Vector2f& point) const
-{
+bool TowerMenu::containsUpgradeZone(const sf::Vector2f& point) const {
     return findUpgradeZone(point) != -1;
 }
 
@@ -220,9 +210,8 @@ void TowerMenu::handleUpgradeClick(const sf::Vector2f& mousePos, Tower& tower, i
 
 int TowerMenu::findUpgradeZone(const sf::Vector2f& point) const {
     for (unsigned int i = 0; i < mZones.size(); ++i) {
-        if (pointInZone(point, mZones[i])) {
+        if (pointInZone(point, mZones[i]))
             return i;
-        }
     }
     return -1;
 }
@@ -290,8 +279,7 @@ void TowerMenu::updateHoverEffect(const sf::Vector2f& mousePos, int& crystals, c
                         damageStream.precision(2);
                         damageStream << std::fixed << increment;
                         mIncrementString = "+" + damageStream.str();
-                    }
-                    else if (i == 2) {
+                    } else if (i == 2) {
                         mIncrementPosition = mFireRateText.getPosition() + sf::Vector2f(mFireRateText.getLocalBounds().width + 9, 0);
                         std::ostringstream fireRateStream;
                         fireRateStream.precision(2);
@@ -300,29 +288,23 @@ void TowerMenu::updateHoverEffect(const sf::Vector2f& mousePos, int& crystals, c
                     }
                     mDecrementPosition = position + sf::Vector2f(size.width + 9, 0);
                     mDecrementString = "-" + std::to_string(decrement);
-                }
-                else {
+                } else {
                     mZones[i].setFillColor(sf::Color(192, 192, 192, 200));
                 }
-            }
-            else {
+            } else {
                 mZones[i].setFillColor(sf::Color(255, 165, 0, 200));
                 int sellValue = mCurrentTower->getSellPrice();
                 mDecrementString = "+" + std::to_string(sellValue);
                 mIncrementVisible = true;
                 mDecrementPosition = position + sf::Vector2f(size.width + 9, 0);
             }
-        }
-        else {
+        } else {
             if (i != 1) {
-                if (mCurrentTower && mCurrentTower->canUpgrade(i) && mCurrentTower->getUpgrade(i).getCost() <= crystals) {
+                if (mCurrentTower && mCurrentTower->canUpgrade(i) && mCurrentTower->getUpgrade(i).getCost() <= crystals)
                     mZones[i].setFillColor(sf::Color(0, 255, 0, 150));
-                }
-                else {
+                else
                     mZones[i].setFillColor(sf::Color(169, 169, 169, 150));
-                }
-            }
-            else {
+            } else {
                 mZones[i].setFillColor(sf::Color(255, 69, 0, 150));
             }
         }
@@ -354,3 +336,4 @@ void TowerMenu::showStats(const Tower& tower) {
     mSellPriceText.setPosition(mStatsRectangle.getPosition() + sf::Vector2f(270, 35));
     mTowerIcon.setPosition(mStatsRectangle.getPosition() + sf::Vector2f(25, 20));
 }
+

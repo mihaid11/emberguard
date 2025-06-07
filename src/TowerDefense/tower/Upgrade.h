@@ -2,8 +2,7 @@
 #include <string>
 #include <functional>
 
-class Upgrade
-{
+class Upgrade {
 public:
     Upgrade() = default;
     Upgrade(const std::string& name, int cost, float increment, const std::function<void()>& action);
@@ -19,3 +18,4 @@ private:
     float mIncrement;
     std::function<void()> mAction;
 };
+

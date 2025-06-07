@@ -3,8 +3,7 @@
 #include "Item.h"
 #include "../../entities/DrawableEntity.h"
 
-class DroppedItem : public DrawableEntity
-{
+class DroppedItem : public DrawableEntity {
 public:
     DroppedItem(const Item* item, const sf::Vector2f& position, int quantity);
 
@@ -26,3 +25,4 @@ private:
     int mQuantity;
     bool mCanPickUp;
 };
+

@@ -1,12 +1,11 @@
 #pragma once
 #include "NPC.h"
 
-class SeraphinaLumeris : public NPC
-{
+class SeraphinaLumeris : public NPC {
 public:
-	SeraphinaLumeris(const sf::Vector2f& position);
+    SeraphinaLumeris(const sf::Vector2f& position);
 
 private:
-	Dialogue mGreetingDialogue;
+    Dialogue mGreetingDialogue;
 };
 

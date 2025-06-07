@@ -3,7 +3,7 @@
 
 class TowerBlueprintEpic : public Item {
 public:
-	TowerBlueprintEpic();
-	std::string getType() const override;
+    TowerBlueprintEpic();
+    std::string getType() const override;
 };
 

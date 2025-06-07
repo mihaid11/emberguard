@@ -5,7 +5,7 @@
 
 const float PI = 3.14159265358979323846f;
 
-TowerSelectionMenu::TowerSelectionMenu(std::vector<int>& availableTowers) 
+TowerSelectionMenu::TowerSelectionMenu(std::vector<int>& availableTowers)
     : mVisible(false), mNumberOfTowers(6), mMenuRadius(70.0f), mAvailableTowers(availableTowers) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
@@ -15,7 +15,6 @@ TowerSelectionMenu::TowerSelectionMenu(std::vector<int>& availableTowers)
     initializeStats();
     mTowerIcon.setRadius(15);
     mTowerIcon.setFillColor(sf::Color::Green);
-
 }
 
 void TowerSelectionMenu::initializeHexagon() {
@@ -36,15 +35,16 @@ void TowerSelectionMenu::initializeLabels() {
 
         sf::Text label;
         label.setFont(mFont);
-        if (i < mAvailableTowers.size())
+        if (i < mAvailableTowers.size()) {
             if (mAvailableTowers[i] == 1)
                 label.setString("Laser");
             else if (mAvailableTowers[i] == 2)
                 label.setString("Flame");
             else
                 label.setString("");
-        else
+        } else {
             label.setString("");
+        }
         label.setCharacterSize(11);
         label.setFillColor(sf::Color::White);
 
@@ -87,8 +87,7 @@ void TowerSelectionMenu::initializeZones() {
     }
 }
 
-void TowerSelectionMenu::initializeStats()
-{
+void TowerSelectionMenu::initializeStats() {
     mStatsRectangle.setSize(sf::Vector2f(430, 70));
     mStatsRectangle.setFillColor(sf::Color(50, 50, 50, 200));
     mStatsRectangle.setOutlineThickness(2);
@@ -123,8 +122,7 @@ void TowerSelectionMenu::initializeStats()
 }
 
 
-void TowerSelectionMenu::show(const sf::Vector2f& position)
-{
+void TowerSelectionMenu::show(const sf::Vector2f& position) {
     mPosition = position;
     mHexagon.setPosition(mPosition);
     initializeLabels();
@@ -133,26 +131,22 @@ void TowerSelectionMenu::show(const sf::Vector2f& position)
     mVisible = true;
 }
 
-void TowerSelectionMenu::hide()
-{
+void TowerSelectionMenu::hide() {
     mVisible = false;
 }
 
-bool TowerSelectionMenu::isVisible() const
-{
+bool TowerSelectionMenu::isVisible() const {
     return mVisible;
 }
 
-void TowerSelectionMenu::render(sf::RenderWindow& window)
-{
+void TowerSelectionMenu::render(sf::RenderWindow& window) {
     if (!mVisible) return;
     for (auto& zone : mZoneShapes)
         window.draw(zone);
     window.draw(mHexagon);
     drawLines(window);
-    for (const auto& label : mTowerLabels) {
+    for (const auto& label : mTowerLabels)
         window.draw(label);
-    }
 
     if (mHoveredZone < mAvailableTowers.size()) {
         window.draw(mStatsRectangle);
@@ -174,43 +168,34 @@ int TowerSelectionMenu::getSelectedTowerType(const sf::Vector2f& point) const {
     return index;
 }
 
-bool TowerSelectionMenu::isInsideMenu(const sf::Vector2f& point) const
-{
+bool TowerSelectionMenu::isInsideMenu(const sf::Vector2f& point) const {
     float dx = point.x - mPosition.x;
     float dy = point.y - mPosition.y;
     return (dx * dx + dy * dy) <= (mMenuRadius * mMenuRadius);
 }
 
-void TowerSelectionMenu::updateHover(const sf::Vector2f& mousePosition, int crystals)
-{
+void TowerSelectionMenu::updateHover(const sf::Vector2f& mousePosition, int crystals) {
     mHoveredZone = -1;
 
-    for (int i = 0; i < mNumberOfTowers; ++i)
-    {
+    for (int i = 0; i < mNumberOfTowers; ++i) {
         sf::ConvexShape& zone = mZoneShapes[i];
 
-        if (i < mAvailableTowers.size())
-        {
+        if (i < mAvailableTowers.size()) {
             int towerCost = 0;
-            if (mAvailableTowers[i] == 1) {
+            if (mAvailableTowers[i] == 1)
                 towerCost = 100;
-            }
-            else if (mAvailableTowers[i] == 2) {
+            else if (mAvailableTowers[i] == 2)
                 towerCost = 150;
-            }
 
             sf::Color normalColor;
 
-            if (crystals < towerCost) {
+            if (crystals < towerCost)
                 normalColor = sf::Color(130, 130, 139, 255);
-            }
-            else {
+            else
                 normalColor = sf::Color(0, 255, 0, 255);
-            }
 
             // If the mouse is hovering over this zone, lighten the color
-            if (zone.getPointCount() > 0 && isPointInConvexShape(zone, mousePosition))
-            {
+            if (zone.getPointCount() > 0 && isPointInConvexShape(zone, mousePosition)) {
                 formatStats(i);
                 mHoveredZone = i;
                 sf::Color hoverColor = normalColor;
@@ -219,24 +204,20 @@ void TowerSelectionMenu::updateHover(const sf::Vector2f& mousePosition, int crys
                 hoverColor.b = std::min(hoverColor.b + 50, 255);
 
                 zone.setFillColor(hoverColor);
-            }
-            else {
+            } else {
                 zone.setFillColor(normalColor);
             }
-        }
-        else {
+        } else {
             sf::Color normalColor = sf::Color(0, 0, 0, 255);
             zone.setFillColor(normalColor);
         }
     }
 }
 
-void TowerSelectionMenu::drawLines(sf::RenderWindow& window) const
-{
+void TowerSelectionMenu::drawLines(sf::RenderWindow& window) const {
     sf::VertexArray lines(sf::Lines, 12);
 
-    for (int i = 0; i < 6; ++i)
-    {
+    for (int i = 0; i < 6; ++i) {
         lines[i * 2].position = mPosition;
         lines[i * 2].color = sf::Color::White;
 
@@ -248,41 +229,40 @@ void TowerSelectionMenu::drawLines(sf::RenderWindow& window) const
     window.draw(lines);
 }
 
-void TowerSelectionMenu::formatStats(int i)
-{
+void TowerSelectionMenu::formatStats(int i) {
     std::ostringstream damageStream;
     damageStream.precision(2);
     switch (mAvailableTowers[i]) {
-    case 1: damageStream << std::fixed << 5.00; break;
-    case 2: damageStream << std::fixed << 10.00; break;
-    default: damageStream << std::fixed << 0; break;
+        case 1: damageStream << std::fixed << 5.00; break;
+        case 2: damageStream << std::fixed << 10.00; break;
+        default: damageStream << std::fixed << 0; break;
     }
     mDamageText.setString("Damage " + damageStream.str());
 
     std::ostringstream fireRateStream;
     fireRateStream.precision(2);
     switch (mAvailableTowers[i]) {
-    case 1: fireRateStream << std::fixed << 1.25; break;
-    case 2: fireRateStream << std::fixed << 2.00; break;
-    default: fireRateStream << std::fixed << 1.0; break;
+        case 1: fireRateStream << std::fixed << 1.25; break;
+        case 2: fireRateStream << std::fixed << 2.00; break;
+        default: fireRateStream << std::fixed << 1.0; break;
     }
     mFireRateText.setString("Fire Rate " + fireRateStream.str());
 
     std::ostringstream rangeStream;
     rangeStream.precision(2);
     switch (mAvailableTowers[i]) {
-    case 1: rangeStream << std::fixed << 120.00; break;
-    case 2: rangeStream << std::fixed << 100.00; break;
-    default: rangeStream << std::fixed << 15; break;
+        case 1: rangeStream << std::fixed << 120.00; break;
+        case 2: rangeStream << std::fixed << 100.00; break;
+        default: rangeStream << std::fixed << 15; break;
     }
     mRangeText.setString("Range " + rangeStream.str());
 
     std::ostringstream sellPriceStream;
     sellPriceStream.precision(2);
     switch (mAvailableTowers[i]) {
-    case 1: sellPriceStream << std::fixed << 40; break;
-    case 2: sellPriceStream << std::fixed << 60; break;
-    default: sellPriceStream << std::fixed << 0; break;
+        case 1: sellPriceStream << std::fixed << 40; break;
+        case 2: sellPriceStream << std::fixed << 60; break;
+        default: sellPriceStream << std::fixed << 0; break;
     }
     mSellPriceText.setString("Sell Price " + sellPriceStream.str());
 
@@ -292,15 +272,13 @@ void TowerSelectionMenu::formatStats(int i)
         mTowerIcon.setFillColor(sf::Color::Green);
 }
 
-bool TowerSelectionMenu::isPointInConvexShape(const sf::ConvexShape& shape, const sf::Vector2f& point) const
-{
+bool TowerSelectionMenu::isPointInConvexShape(const sf::ConvexShape& shape, const sf::Vector2f& point) const {
     std::size_t pointCount = shape.getPointCount();
 
     if (pointCount < 3)
         return false;
 
-    for (std::size_t i = 0; i < pointCount; ++i)
-    {
+    for (std::size_t i = 0; i < pointCount; ++i) {
         sf::Vector2f p1 = shape.getPoint(i);
         sf::Vector2f p2 = shape.getPoint((i + 1) % pointCount);
 

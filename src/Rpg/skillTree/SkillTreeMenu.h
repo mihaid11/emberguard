@@ -3,23 +3,22 @@
 #include "SkillTree.h"
 #include "../../TowerDefense/menues/Button.h"
 
-class SkillTreeMenu
-{
+class SkillTreeMenu {
 public:
-	SkillTreeMenu(const sf::Vector2f& position, const sf::Vector2f& size, SkillTree& skillTree);
+    SkillTreeMenu(const sf::Vector2f& position, const sf::Vector2f& size, SkillTree& skillTree);
 
-	void render(sf::RenderWindow& window);
-	void handleMouseClick(const sf::Vector2f& mousePos);
-	void updateHover(const sf::Vector2f& mousePos);
+    void render(sf::RenderWindow& window);
+    void handleMouseClick(const sf::Vector2f& mousePos);
+    void updateHover(const sf::Vector2f& mousePos);
 
-	void update(const SkillTree& skillTree);
+    void update(const SkillTree& skillTree);
 
 private:
-	sf::RectangleShape mMenuShape;
-	SkillTree& mSkillTree;
-	std::vector<Button> mSkillButtons;
+    sf::RectangleShape mMenuShape;
+    SkillTree& mSkillTree;
+    std::vector<Button> mSkillButtons;
 
-	void initializeSkillButtons();
-	void updateSkillButtons();
+    void initializeSkillButtons();
+    void updateSkillButtons();
 };
 

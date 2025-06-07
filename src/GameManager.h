@@ -10,8 +10,7 @@ enum class GameState {
     Transition
 };
 
-class GameManager
-{
+class GameManager {
 public:
     GameManager();
     void run();
@@ -51,6 +50,4 @@ private:
     float mWaitDuration = 1.0f;
     bool mTransitioningToRPG = true;
 };
-
-
 

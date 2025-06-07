@@ -4,8 +4,7 @@
 #include <map>
 #include <memory>
 
-class ZoneManager 
-{
+class ZoneManager {
 public:
     ZoneManager(int viewRange = 3);
 
@@ -20,3 +19,4 @@ private:
     sf::Vector2i mCurrentZoneCoords;
     int mViewRange;
 };
+

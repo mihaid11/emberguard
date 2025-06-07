@@ -21,3 +21,4 @@ private:
     int mPrice;
     sf::RectangleShape mIcon;
 };
+

@@ -33,13 +33,11 @@ void FlameTurret::update(float dt, std::vector<Enemy>& enemies) {
                 break;
             }
         }
-
         mTarget = selectedEnemy;
     }
 
-    if (!mTarget || mTarget->isDead() || distance(mShape.getPosition(), mTarget->getPosition()) > mRange) {
+    if (!mTarget || mTarget->isDead() || distance(mShape.getPosition(), mTarget->getPosition()) > mRange)
         mTarget = nullptr;
-    }
 }
 
 void FlameTurret::fireFlame() {
@@ -49,3 +47,4 @@ void FlameTurret::fireFlame() {
     sf::Vector2f projectilePos = mShape.getPosition();
     mProjectiles.emplace_back(FlameProjectile(projectilePos, mTarget, 100.0f, mDamage));
 }
+

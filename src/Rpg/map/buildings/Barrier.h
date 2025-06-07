@@ -2,12 +2,12 @@
 #include "Entity.h"
 #include <SFML/Graphics.hpp>
 
-class Barrier : public Entity 
-{
+class Barrier : public Entity {
 public:
-	Barrier(const sf::Vector2f& position, const sf::Vector2f& size);
+    Barrier(const sf::Vector2f& position, const sf::Vector2f& size);
 
-	void render(sf::RenderWindow& window) override;
+    void render(sf::RenderWindow& window) override;
 private:
-	sf::RectangleShape mShape;
+    sf::RectangleShape mShape;
 };
+
