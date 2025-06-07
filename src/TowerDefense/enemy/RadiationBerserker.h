@@ -2,10 +2,9 @@
 #include "Enemy.h"
 #include <vector>
 
-class RadiationBerserker : public Enemy
-{
+class RadiationBerserker : public Enemy {
 public:
-	RadiationBerserker(const std::vector<sf::Vector2f>& path);
+    RadiationBerserker(const std::vector<sf::Vector2f>& path);
 
 private:
 

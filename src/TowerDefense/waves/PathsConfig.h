@@ -25,3 +25,4 @@ inline const std::vector<std::vector<Path>>& getPaths() {
 
     return Paths;
 }
+

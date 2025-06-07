@@ -1,9 +1,9 @@
 #include "GameManager.h"
 
-int main()
-{
-	GameManager gameManager;
-	gameManager.run();
+int main() {
+    GameManager gameManager;
+    gameManager.run();
 
-	return 0;
+    return 0;
 }
+

@@ -29,3 +29,4 @@ private:
     int getFirstEmptySlot() const;
     int findSlotWithItem(int id) const;
 };
+

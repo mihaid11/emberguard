@@ -10,6 +10,7 @@ static float distance(const sf::Vector2f& a, const sf::Vector2f& b) {
 Tower::Tower(const sf::Vector2f& position, std::vector<Projectile>& projectiles)
     : mRange(120.0f), mFireRate(1.25f), mTimeSinceLastShot(0.0f), mTarget(nullptr),
     mSelected(false), mProjectiles(projectiles), mCost(100), mDamage(5) {
+
     mShape.setRadius(15);
     mShape.setFillColor(sf::Color::Green);
     mShape.setPosition(position);
@@ -29,9 +30,8 @@ void Tower::update(float dt, std::vector<Enemy>& enemies) {
 
         for (auto& enemy : enemies) {
             float dist = distance(mShape.getPosition(), enemy.getPosition());
-            if (dist <= mRange && (selectedEnemy == nullptr || enemy.getSpawnTime() < selectedEnemy->getSpawnTime())) {
+            if (dist <= mRange && (selectedEnemy == nullptr || enemy.getSpawnTime() < selectedEnemy->getSpawnTime()))
                 selectedEnemy = &enemy;
-            }
         }
 
         mTarget = selectedEnemy;
@@ -42,21 +42,17 @@ void Tower::update(float dt, std::vector<Enemy>& enemies) {
         }
     }
 
-    if (!mTarget || mTarget->isDead() || distance(mShape.getPosition(), mTarget->getPosition()) > mRange) {
+    if (!mTarget || mTarget->isDead() || distance(mShape.getPosition(), mTarget->getPosition()) > mRange)
         mTarget = nullptr;
-    }
 }
 
-void Tower::render(sf::RenderWindow& window)
-{
+void Tower::render(sf::RenderWindow& window) {
     window.draw(mShape);
-    for (auto& projectile : mProjectiles) {
+    for (auto& projectile : mProjectiles)
         projectile.render(window);
-    }
 }
 
-sf::Vector2f Tower::getPosition() const
-{
+sf::Vector2f Tower::getPosition() const {
     return mShape.getPosition();
 }
 
@@ -64,23 +60,19 @@ int Tower::getCost() const {
     return mCost;
 }
 
-sf::Vector2f Tower::getSize() const
-{
+sf::Vector2f Tower::getSize() const {
     return sf::Vector2f(mShape.getRadius(), mShape.getRadius());
 }
 
-float Tower::getDamage() const
-{
+float Tower::getDamage() const {
     return mDamage;
 }
 
-float Tower::getFireRate() const
-{
+float Tower::getFireRate() const {
     return mFireRate;
 }
 
-int Tower::getSellPrice() const
-{
+int Tower::getSellPrice() const {
     return (int)(mCost * 0.4f);
 }
 
@@ -89,18 +81,15 @@ void Tower::setPosition(const sf::Vector2f& position) {
     mShape.setPosition(position);
 }
 
-Enemy* Tower::getTarget() const
-{
+Enemy* Tower::getTarget() const {
     return mTarget;
 }
 
-bool Tower::containsPoint(const sf::Vector2f& point) const
-{
+bool Tower::containsPoint(const sf::Vector2f& point) const {
     return mShape.getGlobalBounds().contains(point);
 }
 
-void Tower::setSelected(bool selected)
-{
+void Tower::setSelected(bool selected) {
     mSelected = selected;
 }
 
@@ -113,16 +102,15 @@ void Tower::upgrade(size_t index, int& crystals) {
         if (crystals >= mUpgrades[index].getCost()) {
             mUpgrades[index].apply();
             crystals -= mUpgrades[index].getCost();
-        }
-        else
+        } else {
             std::cout << "Not enought crystals for upgrade" << std::endl;
-    }
-    else
+        }
+    } else {
         std::cout << "No upgrade available" << std::endl;
+    }
 }
 
-void Tower::fireProjectile()
-{
+void Tower::fireProjectile() {
     if (!mTarget) return;
 
     sf::Vector2f targetPos = mTarget->getPosition();
@@ -149,15 +137,14 @@ void Tower::addUpgrade(const Upgrade& upgrade) {
 }
 
 const Upgrade& Tower::getUpgrade(size_t index) const {
-    if (index < mUpgrades.size()) {
+    if (index < mUpgrades.size())
         return mUpgrades[index];
-    }
     throw std::out_of_range("Upgrade index out of range");
 }
 
-int Tower::sell()
-{
+int Tower::sell() {
     int sellValue = static_cast<int>(mCost * 0.4f);
     std::cout << "Tower sold for " << sellValue << " crystals." << std::endl;
     return sellValue;
 }
+

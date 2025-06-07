@@ -3,19 +3,18 @@
 #include <memory>
 #include <vector>
 
-class SkillNode
-{
+class SkillNode {
 public:
-	SkillNode(const std::string& name, int cost);
+    SkillNode(const std::string& name, int cost);
 
-	void unlock();
-	bool isUnlocked();
-	const std::string& getName() const;
-	int getCost();
+    void unlock();
+    bool isUnlocked();
+    const std::string& getName() const;
+    int getCost();
 
 private:
-	std::string mName;
-	int mCost;
-	bool mUnlocked;
+    std::string mName;
+    int mCost;
+    bool mUnlocked;
 };
 

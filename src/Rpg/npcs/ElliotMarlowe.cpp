@@ -1,13 +1,13 @@
 #include "ElliotMarlowe.h"
 #include <iostream>
 
-ElliotMarlowe::ElliotMarlowe(const sf::Vector2f& position) 
-    : NPC(position), mQuestCompleted(false)
-{
+ElliotMarlowe::ElliotMarlowe(const sf::Vector2f& position)
+    : NPC(position), mQuestCompleted(false) {
     mShape.setFillColor(sf::Color::Yellow);
 
     mGreeting1Dialogue.addSegment(DialogueSegment("Alden, welcome. I trust you've settled in well this morning."));
-    mGreeting1Dialogue.addSegment(DialogueSegment("The village thrives because each of us contributes to the whole. I see potential in you, potential that could help us navigate the challenges ahead."));
+    mGreeting1Dialogue.addSegment(DialogueSegment("The village thrives because each of us contributes to the whole."));
+    mGreeting1Dialogue.addSegment(DialogueSegment("I see potential in you, potential that could help us navigate the challenges ahead."));
     mGreeting1Dialogue.addSegment(DialogueSegment("If you're ready, I have something in mind that could use your talents."));
 
     mQuest1Dialogue.addSegment(DialogueSegment("Arlon, I want you to do something!"));
@@ -30,6 +30,7 @@ ElliotMarlowe::ElliotMarlowe(const sf::Vector2f& position)
     mPath.push_back(sf::Vector2f(700.0f, 500.0f));
     mPath.push_back(sf::Vector2f(700.0f, 0.0f));
 }
+
 /*
 void ElliotMarlowe::interact(GameManager* gameManager) {
     if (gameManager->getQuestManager().isQuestActive("The First Trial")) {
@@ -61,3 +62,4 @@ void ElliotMarlowe::setQuestCompleted(bool completed) {
 bool ElliotMarlowe::isQuestCompleted() const {
     return mQuestCompleted;
 }
+

@@ -2,8 +2,8 @@
 #include <iostream>
 
 Button::Button(const sf::Vector2f& position, const sf::Vector2f& size, const std::string& text)
-    : mSize(size), mIsHovered(0), mPosition(position)
-{
+    : mSize(size), mIsHovered(0), mPosition(position) {
+
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font" << std::endl;
 
@@ -37,8 +37,7 @@ void Button::updateHover(const sf::Vector2f& mousePos) {
     if (isMouseOver(mousePos)) {
         mButtonShape.setFillColor(sf::Color(120, 120, 120, 210));
         mIsHovered = 1;
-    }
-    else {
+    } else {
         mButtonShape.setFillColor(sf::Color(0, 0, 0, 200));
         mIsHovered = 0;
     }
@@ -49,38 +48,32 @@ void Button::setCallback(std::function<void()> callback) {
 }
 
 void Button::onClick() {
-    if (mCallback) {
+    if (mCallback)
         mCallback();
-    }
 }
 
-void Button::setPosition(const sf::Vector2f& position)
-{
+void Button::setPosition(const sf::Vector2f& position) {
     mButtonShape.setPosition(position);
     mButtonText.setPosition(position.x + mSize.x / 2.0f, position.y + mSize.y / 2.0f);
 }
 
-void Button::setText(const std::string& text)
-{
+void Button::setText(const std::string& text) {
     mButtonText.setString(text);
 }
 
-void Button::setBackgroundColor(sf::Color color)
-{
+void Button::setBackgroundColor(sf::Color color) {
     mButtonShape.setFillColor(color);
 }
 
-int Button::getIfHovered()
-{
+int Button::getIfHovered() {
     return mIsHovered;
 }
 
-const sf::Vector2f& Button::getPosition() const
-{
+const sf::Vector2f& Button::getPosition() const {
     return mPosition;
 }
 
-const sf::Vector2f& Button::getSize() const
-{
+const sf::Vector2f& Button::getSize() const {
     return mSize;
 }
+

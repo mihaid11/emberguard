@@ -7,8 +7,7 @@
 #include "../../Animation.h"
 #include "../entities/DrawableEntity.h"
 
-class NPC : public DrawableEntity
-{
+class NPC : public DrawableEntity {
 public:
     NPC(const sf::Vector2f& position);
 

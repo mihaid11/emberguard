@@ -3,16 +3,15 @@
 #include "SkillNode.h"
 #include <memory>
 
-class SkillTree
-{
+class SkillTree {
 public:
-	SkillTree();
+    SkillTree();
 
-	void addSkillNode(const std::string& name, int cost);
-	void unlockSkill(const std::string& name);
-	const std::vector<std::shared_ptr<SkillNode>>& getSkillNodes() const;
+    void addSkillNode(const std::string& name, int cost);
+    void unlockSkill(const std::string& name);
+    const std::vector<std::shared_ptr<SkillNode>>& getSkillNodes() const;
 
 private:
-	std::vector<std::shared_ptr<SkillNode>> mSkillNodes;
+    std::vector<std::shared_ptr<SkillNode>> mSkillNodes;
 };
 

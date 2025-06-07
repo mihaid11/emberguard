@@ -2,8 +2,9 @@
 #include <iostream>
 #include <sstream>
 
-PlayerMenu::PlayerMenu() : mIsSelected(false)
-{
+PlayerMenu::PlayerMenu()
+    : mIsSelected(false) {
+
     mIconBackground.setSize(sf::Vector2f(130, 25));
     mIconBackground.setFillColor(sf::Color(50, 50, 50));
 
@@ -19,9 +20,8 @@ PlayerMenu::PlayerMenu() : mIsSelected(false)
     mAttackRangeCircle.setFillColor(sf::Color(255, 0, 0, 50));
     mPlacementRangeCircle.setFillColor(sf::Color(0, 0, 255, 50));
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf")) {
+    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font" << std::endl;
-    }
 
     mStatsRectangle.setSize(sf::Vector2f(400, 70));
     mStatsRectangle.setFillColor(sf::Color(50, 50, 50, 200));
@@ -47,8 +47,7 @@ PlayerMenu::PlayerMenu() : mIsSelected(false)
     mStatsPosition = sf::Vector2f(700, 10);
 }
 
-void PlayerMenu::render(sf::RenderWindow& window, const Player& player)
-{
+void PlayerMenu::render(sf::RenderWindow& window, const Player& player) {
     window.draw(mIconBackground);
     window.draw(mPlayerIcon);
     window.draw(mHealthBarBackground);
@@ -84,13 +83,11 @@ void PlayerMenu::render(sf::RenderWindow& window, const Player& player)
     window.draw(mPlacementRangeText);
 }
 
-bool PlayerMenu::isMouseOverIcon(const sf::Vector2f& mousePos) const
-{
+bool PlayerMenu::isMouseOverIcon(const sf::Vector2f& mousePos) const {
     return mIconBackground.getGlobalBounds().contains(mousePos);
 }
 
-void PlayerMenu::updateHealthBar(float health)
-{
+void PlayerMenu::updateHealthBar(float health) {
     float healthPercentage = std::max(health / 100.0f, 0.0f);
     float fullHeight = 25.0f;
     float currentHeight = fullHeight * healthPercentage;
@@ -99,8 +96,7 @@ void PlayerMenu::updateHealthBar(float health)
     mHealthBar.setSize(sf::Vector2f(5, currentHeight));
 }
 
-void PlayerMenu::setPosition(const sf::Vector2f& position)
-{
+void PlayerMenu::setPosition(const sf::Vector2f& position) {
     mPosition = position;
     mIconBackground.setPosition(position);
 
@@ -109,27 +105,23 @@ void PlayerMenu::setPosition(const sf::Vector2f& position)
     mHealthBarBackground.setPosition(mHealthBar.getPosition());
 }
 
-void PlayerMenu::selectPlayer(bool select)
-{
+void PlayerMenu::selectPlayer(bool select) {
     mIsSelected = select;
     mIconBackground.setOutlineThickness(select ? 1.0f : 0.0f);
     mIconBackground.setOutlineColor(sf::Color::Yellow);
 }
 
-void PlayerMenu::toggleSelect()
-{
+void PlayerMenu::toggleSelect() {
     mIsSelected = !mIsSelected;
     mIconBackground.setOutlineThickness(mIsSelected ? 1.0f : 0.0f);
     mIconBackground.setOutlineColor(sf::Color::Yellow);
 }
 
-bool PlayerMenu::isVisible() const
-{
+bool PlayerMenu::isVisible() const {
     return mIsSelected;
 }
 
-void PlayerMenu::formatStats(const Player& player)
-{
+void PlayerMenu::formatStats(const Player& player) {
     std::ostringstream damageStream;
     damageStream.precision(2);
     damageStream << std::fixed << player.getDamage();
@@ -151,3 +143,4 @@ void PlayerMenu::formatStats(const Player& player)
     placementStream << std::fixed << player.getPlacementRange();
     mPlacementRangeText.setString("Place Range " + placementStream.str());
 }
+

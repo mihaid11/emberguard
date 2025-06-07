@@ -19,11 +19,9 @@ MainCharacter::MainCharacter(const sf::Vector2f& position, GameMap& map)
     mAnimations[int(AnimationIndex::WalkingRight)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/walkRight.png", 6, 1.52f);
 }
 
-void MainCharacter::update(float dt, bool inDialogue)
-{   
+void MainCharacter::update(float dt, bool inDialogue) {
     sf::Vector2f direction(0.f, 0.f);
-    if (!inDialogue)
-    {
+    if (!inDialogue) {
         static std::vector<sf::Keyboard::Key> keyOrder;
 
         auto addKey = [&](sf::Keyboard::Key key) {
@@ -46,9 +44,8 @@ void MainCharacter::update(float dt, bool inDialogue)
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { removeKey(sf::Keyboard::W); }
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { removeKey(sf::Keyboard::S); }
 
-        if (!keyOrder.empty()) {
+        if (!keyOrder.empty())
             mLastDirection = keyOrder.back();
-        }
 
         if (direction.x != 0.f || direction.y != 0.f) {
             float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -57,30 +54,28 @@ void MainCharacter::update(float dt, bool inDialogue)
 
         if (direction.x == 0.f && direction.y == 0.f) {
             switch (mLastDirection) {
+                case sf::Keyboard::A: mCurrentAnimation = AnimationIndex::IdleLeft; break;
+                case sf::Keyboard::D: mCurrentAnimation = AnimationIndex::IdleRight; break;
+                case sf::Keyboard::W: mCurrentAnimation = AnimationIndex::IdleUp; break;
+                case sf::Keyboard::S: mCurrentAnimation = AnimationIndex::IdleDown; break;
+                default: break;
+            }
+        } else {
+                switch (mLastDirection) {
+                case sf::Keyboard::A: mCurrentAnimation = AnimationIndex::WalkingLeft; break;
+                case sf::Keyboard::D: mCurrentAnimation = AnimationIndex::WalkingRight; break;
+                case sf::Keyboard::W: mCurrentAnimation = AnimationIndex::WalkingUp; break;
+                case sf::Keyboard::S: mCurrentAnimation = AnimationIndex::WalkingDown; break;
+                default: break;
+            }
+        }
+    } else {
+        switch (mLastDirection) {
             case sf::Keyboard::A: mCurrentAnimation = AnimationIndex::IdleLeft; break;
             case sf::Keyboard::D: mCurrentAnimation = AnimationIndex::IdleRight; break;
             case sf::Keyboard::W: mCurrentAnimation = AnimationIndex::IdleUp; break;
             case sf::Keyboard::S: mCurrentAnimation = AnimationIndex::IdleDown; break;
             default: break;
-            }
-        }
-        else {
-            switch (mLastDirection) {
-            case sf::Keyboard::A: mCurrentAnimation = AnimationIndex::WalkingLeft; break;
-            case sf::Keyboard::D: mCurrentAnimation = AnimationIndex::WalkingRight; break;
-            case sf::Keyboard::W: mCurrentAnimation = AnimationIndex::WalkingUp; break;
-            case sf::Keyboard::S: mCurrentAnimation = AnimationIndex::WalkingDown; break;
-            default: break;
-            }
-        }
-    }
-    else {
-        switch (mLastDirection) {
-        case sf::Keyboard::A: mCurrentAnimation = AnimationIndex::IdleLeft; break;
-        case sf::Keyboard::D: mCurrentAnimation = AnimationIndex::IdleRight; break;
-        case sf::Keyboard::W: mCurrentAnimation = AnimationIndex::IdleUp; break;
-        case sf::Keyboard::S: mCurrentAnimation = AnimationIndex::IdleDown; break;
-        default: break;
         }
     }
 
@@ -102,49 +97,40 @@ void MainCharacter::update(float dt, bool inDialogue)
 }
 
 
-void MainCharacter::render(sf::RenderWindow& window)
-{
+void MainCharacter::render(sf::RenderWindow& window) {
     window.draw(mSprite);
     //window.draw(mCollisionZone);
 }
 
-void MainCharacter::setPosition(const sf::Vector2f& position)
-{
+void MainCharacter::setPosition(const sf::Vector2f& position) {
     mSprite.setPosition(position);
     mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 14.5f, mPosition.y + 1.f));
     mPosition = position;
 }
 
-sf::Vector2f MainCharacter::getPosition() const
-{
+sf::Vector2f MainCharacter::getPosition() const {
     return mSprite.getPosition();
 }
 
-float MainCharacter::getHeight() const
-{
+float MainCharacter::getHeight() const {
     return mSprite.getGlobalBounds().height;
 }
 
-sf::FloatRect MainCharacter::getBounds() const
-{
+sf::FloatRect MainCharacter::getBounds() const {
     return mCollisionZone.getGlobalBounds();
 }
 
-void MainCharacter::setAnimation(int animation)
-{
+void MainCharacter::setAnimation(int animation) {
     if (animation == 4) {
         mLastDirection = sf::Keyboard::S;
         mCurrentAnimation = AnimationIndex::IdleDown;
-    }
-    else if (animation == 3) {
+    } else if (animation == 3) {
         mLastDirection = sf::Keyboard::W;
         mCurrentAnimation = AnimationIndex::IdleUp;
-    }
-    else if (animation == 2) {
+    } else if (animation == 2) {
         mLastDirection = sf::Keyboard::D;
         mCurrentAnimation = AnimationIndex::IdleRight;
-    }
-    else if (animation == 1) {
+    } else if (animation == 1) {
         mLastDirection = sf::Keyboard::A;
         mCurrentAnimation = AnimationIndex::IdleLeft;
     }
@@ -152,8 +138,7 @@ void MainCharacter::setAnimation(int animation)
     mAnimations[int(mCurrentAnimation)].applyToSprite(mSprite);
 }
 
-int MainCharacter::getAnimation()
-{
+int MainCharacter::getAnimation() {
     if (mCurrentAnimation == AnimationIndex::WalkingDown || mCurrentAnimation == AnimationIndex::IdleDown)
         return 4;
     if (mCurrentAnimation == AnimationIndex::WalkingUp || mCurrentAnimation == AnimationIndex::IdleUp)
@@ -164,3 +149,4 @@ int MainCharacter::getAnimation()
         return 1;
     return 0;
 }
+

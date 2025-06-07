@@ -78,9 +78,8 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     startGameButtonText.setString("Start Game");
     startGameButtonText.setCharacterSize(15);
     startGameButtonText.setFillColor(sf::Color::White);
-    startGameButtonText.setPosition(
-        startGameButton.getPosition().x + 25,
-        startGameButton.getPosition().y + 5);
+    startGameButtonText.setPosition(startGameButton.getPosition().x + 25,
+                                    startGameButton.getPosition().y + 5);
 
     mBorderUp.setPosition(sf::Vector2f(-10.f, -10.f));
     mBorderUp.setSize(sf::Vector2f(mWindow.getSize().x + 20.f, 10.f));
@@ -99,160 +98,146 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mBorderRight.setFillColor(sf::Color::Transparent);
 }
 
-GameEngine::~GameEngine()
-{
-    for (auto tower : mTowers) {
+GameEngine::~GameEngine(){
+    for (auto tower : mTowers)
         delete tower;
-    }
 }
 
 void GameEngine::processEvents() {
     sf::Event event;
     while (mWindow.pollEvent(event)) {
         switch (event.type) {
-        case sf::Event::Closed:
-            mGameManager->getGameEngine().saveGame();
-            mWindow.close();
-            break;
+            case sf::Event::Closed:
+                mGameManager->getGameEngine().saveGame();
+                mWindow.close();
+                break;
 
-        case sf::Event::MouseButtonPressed:
-            if (event.mouseButton.button == sf::Mouse::Left) {
-                sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
+            case sf::Event::MouseButtonPressed:
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
 
-                if (!mGameOver && !mLevelCompleted) {
-                    if (mIsPaused) {
-                        mSmallMenu.handleMouseClick(mousePos);
-                    }
-                    else {
-                        if (mPlayerMenu.isMouseOverIcon(mousePos)) {
-                            if (mPlayerMenu.isVisible()) {
-                                mPlayerMenu.toggleSelect();
-                            }
-                            else {
-                                mPlayerMenu.toggleSelect();
-                                if (mTowerMenu.isVisible()) {
+                    if (!mGameOver && !mLevelCompleted) {
+                        if (mIsPaused) {
+                            mSmallMenu.handleMouseClick(mousePos);
+                        } else {
+                            if (mPlayerMenu.isMouseOverIcon(mousePos)) {
+                                if (mPlayerMenu.isVisible()) {
+                                    mPlayerMenu.toggleSelect();
+                                } else {
+                                    mPlayerMenu.toggleSelect();
+                                    if (mTowerMenu.isVisible()) {
+                                        mTowerMenu.hide();
+                                        if (mSelectedTower) {
+                                            mSelectedTower->setSelected(false);
+                                            mSelectedTower = nullptr;
+                                        }
+                                    }
+                                }
+                            } else if (mTowerMenu.isVisible()) {
+                                int zoneIndex = mTowerMenu.findUpgradeZone(mousePos);
+                                if (zoneIndex != -1 && mSelectedTower) {
+                                    if (zoneIndex == 1) { // Check for sell zone
+                                        mTowerMenu.handleSellClick(*mSelectedTower, mCrystals);
+                                        mTowers.erase(std::remove(mTowers.begin(), mTowers.end(), mSelectedTower), mTowers.end());
+                                        delete mSelectedTower;
+                                        mSelectedTower = nullptr;
+                                    } else {
+                                        mTowerMenu.handleUpgradeClick(mousePos, *mSelectedTower, mCrystals);
+                                    }
+                                } else {
+                                    // Hide the menu if the click is outside
                                     mTowerMenu.hide();
                                     if (mSelectedTower) {
                                         mSelectedTower->setSelected(false);
                                         mSelectedTower = nullptr;
                                     }
                                 }
-                            }
-                        }
-                        else if (mTowerMenu.isVisible()) {
-                            int zoneIndex = mTowerMenu.findUpgradeZone(mousePos);
-                            if (zoneIndex != -1 && mSelectedTower) {
-                                if (zoneIndex == 1) { // Check for sell zone
-                                    mTowerMenu.handleSellClick(*mSelectedTower, mCrystals);
-                                    mTowers.erase(std::remove(mTowers.begin(), mTowers.end(), mSelectedTower), mTowers.end()); // Remove the tower from the vector
-                                    delete mSelectedTower; // Free the memory
-                                    mSelectedTower = nullptr;
-                                }
-                                else {
-                                    mTowerMenu.handleUpgradeClick(mousePos, *mSelectedTower, mCrystals);
-                                }
-                            }
-                            else {
-                                // Hide the menu if the click is outside
-                                mTowerMenu.hide();
-                                if (mSelectedTower) {
-                                    mSelectedTower->setSelected(false);
-                                    mSelectedTower = nullptr;
-                                }
-                            }
-                        }
-                        else if (mTowerSelectionMenu.isVisible()) {
-                            if (mTowerSelectionMenu.isInsideMenu(mousePos)) {
-                                // Place a new tower if clicking inside the selection menu
-                                int selectedTowerType = mTowerSelectionMenu.getSelectedTowerType(mousePos);
-                                if (selectedTowerType != -1) {
-                                    Tower* newTower = nullptr;
-                                    switch (selectedTowerType) {
-                                    case 0: // Laser Tower
-                                        if (mAvailableTowers[0] == 1)
-                                            newTower = new LaserTower(mousePos, mProjectiles);
-                                        else if (mAvailableTowers[0] == 2)
-                                            newTower = new FlameTurret(mousePos, mProjectiles);
-                                        break;
-                                    case 1:
-                                        if (mAvailableTowers[1] == 1)
-                                            newTower = new LaserTower(mousePos, mProjectiles);
-                                        else if (mAvailableTowers[1] == 2)
-                                            newTower = new FlameTurret(mousePos, mProjectiles);
-                                        break;
-                                    }
-
-                                    if (newTower) {
-                                        if (mCrystals >= newTower->getCost()) {
-                                            mTowers.push_back(newTower);
-                                            mCrystals -= newTower->getCost();
-                                            mSpentCrystals += newTower->getCost();
-                                            mTowerSelectionMenu.hide();
-                                            mSelectedTowerType = -1;
+                            } else if (mTowerSelectionMenu.isVisible()) {
+                                if (mTowerSelectionMenu.isInsideMenu(mousePos)) {
+                                    // Place a new tower if clicking inside the selection menu
+                                    int selectedTowerType = mTowerSelectionMenu.getSelectedTowerType(mousePos);
+                                    if (selectedTowerType != -1) {
+                                        Tower* newTower = nullptr;
+                                        switch (selectedTowerType) {
+                                            case 0: // Laser Tower
+                                                if (mAvailableTowers[0] == 1)
+                                                    newTower = new LaserTower(mousePos, mProjectiles);
+                                                else if (mAvailableTowers[0] == 2)
+                                                    newTower = new FlameTurret(mousePos, mProjectiles);
+                                                break;
+                                            case 1:
+                                                if (mAvailableTowers[1] == 1)
+                                                    newTower = new LaserTower(mousePos, mProjectiles);
+                                                else if (mAvailableTowers[1] == 2)
+                                                    newTower = new FlameTurret(mousePos, mProjectiles);
+                                                break;
                                         }
-                                        else {
-                                            std::cout << "Not enough crystals to buy tower" << std::endl;
-                                            delete newTower;
+
+                                        if (newTower) {
+                                            if (mCrystals >= newTower->getCost()) {
+                                                mTowers.push_back(newTower);
+                                                mCrystals -= newTower->getCost();
+                                                mSpentCrystals += newTower->getCost();
+                                                mTowerSelectionMenu.hide();
+                                                mSelectedTowerType = -1;
+                                            } else {
+                                                std::cout << "Not enough crystals to buy tower" << std::endl;
+                                                delete newTower;
+                                            }
                                         }
                                     }
-                                }
-                            }
-                            else {
-                                // Hide the tower selection menu if clicked outside
-                                mTowerSelectionMenu.hide();
-                            }
-                        }
-                        else {
-                            if (!gameStarted) {
-                                if (startGameButton.getGlobalBounds().contains(mousePos)) {
-                                    gameStarted = true;
-                                    continue;
-                                }
-                            }
-
-                            // Handle tower selection, enemy selection or tower placement
-                            bool towerClicked = false;
-                            for (auto& tower : mTowers) {
-                                if (tower->containsPoint(mousePos)) {
-                                    if (mSelectedTower) {
-                                        mSelectedTower->setSelected(false);
-                                        mTowerMenu.hide();
-                                    }
+                                } else {
+                                    // Hide the tower selection menu if clicked outside
                                     mTowerSelectionMenu.hide();
-                                    handleTowerClick(*tower, mousePos);
-                                    towerClicked = true;
-                                    break;
+                                }
+                            } else {
+                                if (!gameStarted) {
+                                    if (startGameButton.getGlobalBounds().contains(mousePos)) {
+                                        gameStarted = true;
+                                        continue;
+                                    }
+                                }
+
+                                // Handle tower selection, enemy selection or tower placement
+                                bool towerClicked = false;
+                                for (auto& tower : mTowers) {
+                                    if (tower->containsPoint(mousePos)) {
+                                        if (mSelectedTower) {
+                                            mSelectedTower->setSelected(false);
+                                            mTowerMenu.hide();
+                                        }
+                                        mTowerSelectionMenu.hide();
+                                        handleTowerClick(*tower, mousePos);
+                                        towerClicked = true;
+                                        break;
+                                    }
+                                }
+                                if (!towerClicked) {
+                                    handleNonTowerClick(mousePos);
                                 }
                             }
-                            if (!towerClicked) {
-                                handleNonTowerClick(mousePos);
-                            }
                         }
+                    } else if (mGameOver) {
+                        mGameOverMenu.handleMouseClick(mousePos);
+                    } else if (mLevelCompleted) {
+                        mLevelCompleteMenu.handleMouseClick(mousePos);
                     }
                 }
-                else if (mGameOver) {
-                    mGameOverMenu.handleMouseClick(mousePos);
-                }
-                else if (mLevelCompleted) {
-                    mLevelCompleteMenu.handleMouseClick(mousePos);
-                }
-            }
-            break;
-        case sf::Event::KeyPressed:
-            handleKeyPress(event.key.code);
-            break;
+                break;
+            case sf::Event::KeyPressed:
+                handleKeyPress(event.key.code);
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
     }
 }
 
 void GameEngine::handleTowerClick(Tower& tower, const sf::Vector2f& mousePos) {
     // Deselect any previously selected tower
-    if (mSelectedTower) {
+    if (mSelectedTower)
         mSelectedTower->setSelected(false);
-    }
 
     // Select the new tower
     tower.setSelected(true);
@@ -263,8 +248,7 @@ void GameEngine::handleTowerClick(Tower& tower, const sf::Vector2f& mousePos) {
         mTowerMenu.show(tower);
         if (mPlayerMenu.isVisible())
             mPlayerMenu.toggleSelect();
-    }
-    else {
+    } else {
         mOutOfRangeSelection.setFillColor(sf::Color::White);
         mShowText2 = true;
         mClockText2.restart();
@@ -279,18 +263,18 @@ void GameEngine::handleNonTowerClick(const sf::Vector2f& worldPos) {
         if (mTowerSelectionMenu.isVisible()) {
             Tower* newTower = nullptr;
             switch (mSelectedTowerType) {
-            case 0:
-                if (mAvailableTowers[0] == 1)
-                    newTower = new LaserTower(worldPos, mProjectiles);
-                else if (mAvailableTowers[0] == 2)
-                    newTower = new FlameTurret(worldPos, mProjectiles);
-                break;
-            case 1:
-                if (mAvailableTowers[0] == 1)
-                    newTower = new LaserTower(worldPos, mProjectiles);
-                else if (mAvailableTowers[1] == 2)
-                    newTower = new FlameTurret(worldPos, mProjectiles);
-                break;
+                case 0:
+                    if (mAvailableTowers[0] == 1)
+                        newTower = new LaserTower(worldPos, mProjectiles);
+                    else if (mAvailableTowers[0] == 2)
+                        newTower = new FlameTurret(worldPos, mProjectiles);
+                    break;
+                case 1:
+                    if (mAvailableTowers[0] == 1)
+                        newTower = new LaserTower(worldPos, mProjectiles);
+                    else if (mAvailableTowers[1] == 2)
+                        newTower = new FlameTurret(worldPos, mProjectiles);
+                    break;
             }
 
             if (newTower) {
@@ -300,19 +284,16 @@ void GameEngine::handleNonTowerClick(const sf::Vector2f& worldPos) {
                     mCrystals -= newTower->getCost();
                     mSpentCrystals += newTower->getCost();
                     mTowerSelectionMenu.hide();
-                }
-                else {
+                } else {
                     std::cout << "Not enough crystals to place a tower!" << std::endl;
                     delete newTower;
                 }
             }
-        }
-        else {
+        } else {
             mMenuOpenPosition = worldPos;
             mTowerSelectionMenu.show(worldPos);
         }
-    }
-    else {
+    } else {
         mOutOfRangePlacement.setFillColor(sf::Color::White);
         mShowText1 = true;
         mClockText1.restart();
@@ -325,8 +306,7 @@ void GameEngine::handleKeyPress(sf::Keyboard::Key keyCode) {
         if (!mIsPaused) {
             if (mPlayerMenu.isVisible()) {
                 mPlayerMenu.toggleSelect();
-            }
-            else {
+            } else {
                 mPlayerMenu.toggleSelect();
                 if (mTowerMenu.isVisible()) {
                     mTowerMenu.hide();
@@ -337,27 +317,22 @@ void GameEngine::handleKeyPress(sf::Keyboard::Key keyCode) {
                 }
             }
         }
-    }
-    else if (keyCode == sf::Keyboard::Escape) {
+    } else if (keyCode == sf::Keyboard::Escape) {
         if (mIsPaused) {
             mIsPaused = false;
             mSmallMenu.hide();
-        }
-        else {
+        } else {
             if (mPlayerMenu.isVisible()) {
                 mPlayerMenu.toggleSelect();
-            }
-            else if (mTowerMenu.isVisible()) {
+            } else if (mTowerMenu.isVisible()) {
                 mTowerMenu.hide();
                 if (mSelectedTower) {
                     mSelectedTower->setSelected(false);
                     mSelectedTower = nullptr;
                 }
-            }
-            else if (mTowerSelectionMenu.isVisible()) {
+            } else if (mTowerSelectionMenu.isVisible()) {
                 mTowerSelectionMenu.hide();
-            }
-            else {
+            } else {
                 mIsPaused = true;
                 mSmallMenu.show();
             }
@@ -366,8 +341,7 @@ void GameEngine::handleKeyPress(sf::Keyboard::Key keyCode) {
     mLevelCompleteMenu.updateCrystals(mCrystals);
 }
 
-void GameEngine::update()
-{
+void GameEngine::update() {
     if (!mGameOver && !mLevelCompleted) {
         if (mIsPaused) {
             sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
@@ -386,7 +360,6 @@ void GameEngine::update()
         }
 
         if (gameStarted) {
-
             // Update current wave
             mCurrentWave.update(dt, mEnemies);
 
@@ -394,13 +367,11 @@ void GameEngine::update()
                 return !enemy.isDead(); // Check if there are any living enemies
                 });
 
-            if (mCurrentWave.isComplete() && !enemiesLeft)
-            {
-                if (mCurrentWaveNumber < 3) // 3 max number of waves for now
-                {
+            if (mCurrentWave.isComplete() && !enemiesLeft) {
+                // 3 is the max number of waves for now
+                if (mCurrentWaveNumber < 3) {
                     mCurrentWaveNumber++;
-                    switch (mCurrentWaveNumber)
-                    {
+                    switch (mCurrentWaveNumber) {
                     case 2:
                         mCurrentWave = Wave(mCurrentLevel, mCurrentWaveNumber, { 1 });
                         break;
@@ -408,65 +379,52 @@ void GameEngine::update()
                         mCurrentWave = Wave(mCurrentLevel, mCurrentWaveNumber, { 0, 1 });
                         break;
                     }
-                }
-                else
-                {
+                } else {
                     mLevelCompleted = true;
                 }
             }
 
             // Update towers
             for (auto& tower : mTowers)
-            {
                 tower->update(dt, mEnemies);
-            }
 
             // Update projectiles
-            for (auto projectile = mProjectiles.begin(); projectile != mProjectiles.end();)
-            {
-                if (projectile->getTarget() == nullptr)
-                {
+            for (auto projectile = mProjectiles.begin(); projectile != mProjectiles.end();) {
+                if (projectile->getTarget() == nullptr) {
                     projectile = mProjectiles.erase(projectile);
                     continue;
                 }
                 projectile->update(dt);
 
-                if (projectile->hasHitTarget())
-                {
+                if (projectile->hasHitTarget()) {
                     projectile->getTarget()->takeDamage(projectile->getDamage());
                     projectile = mProjectiles.erase(projectile);
-                }
-                else
-                {
+                } else {
                     ++projectile;
                 }
             }
 
             // Update enemies
-            for (auto enemy = mEnemies.begin(); enemy != mEnemies.end();)
-            {
+            for (auto enemy = mEnemies.begin(); enemy != mEnemies.end();) {
                 enemy->update(dt, mPlayer);
 
-                if (enemy->hasReachedEnd())
-                {
+                if (enemy->hasReachedEnd()) {
                     mTowerHealth -= enemy->getDamageToTower();
                     enemy = mEnemies.erase(enemy);
-                    if (mTowerHealth <= 0)
-                    {
+                    if (mTowerHealth <= 0) {
                         mGameOver = true;
                         return;
                     }
                     continue;
                 }
 
-                if (enemy->isDead())
-                {
+                if (enemy->isDead()) {
                     mCrystals += enemy->getReward();
 
                     enemy = mEnemies.erase(enemy);
-                }
-                else
+                } else {
                     ++enemy;
+                }
             }
         }
 
@@ -477,8 +435,7 @@ void GameEngine::update()
         if (mTowerSelectionMenu.isVisible()) {
             if (distance(mPlayer.getPosition(), mMenuOpenPosition) > mPlayer.getPlacementRange()) {
                 mTowerSelectionMenu.hide();
-            }
-            else {
+            } else {
                 sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
                 mTowerSelectionMenu.updateHover(mousePos, mCrystals);
             }
@@ -490,8 +447,7 @@ void GameEngine::update()
                 mTowerMenu.hide();
                 mSelectedTower->setSelected(false);
                 mSelectedTower = nullptr;
-            }
-            else {
+            } else {
                 sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
                 mTowerMenu.update(mousePos, mCrystals, mCrystalText.getPosition(), mCrystalText.getLocalBounds());
             }
@@ -499,9 +455,9 @@ void GameEngine::update()
 
         if (mShowText1) {
             float elapsedTime1 = mClockText1.getElapsedTime().asSeconds();
-            if (elapsedTime1 > 1.8f)
+            if (elapsedTime1 > 1.8f) {
                 mShowText1 = false;
-            else {
+            } else {
                 int alpha = static_cast<int>(255 * (1.0f - (elapsedTime1 / 1.8f)));
                 mOutOfRangePlacement.setFillColor(sf::Color(255, 255, 255, alpha));
             }
@@ -509,9 +465,9 @@ void GameEngine::update()
 
         if (mShowText2) {
             float elapsedTime2 = mClockText2.getElapsedTime().asSeconds();
-            if (elapsedTime2 > 1.8f)
+            if (elapsedTime2 > 1.8f) {
                 mShowText2 = false;
-            else {
+            } else {
                 int alpha = static_cast<int>(255 * (1.0f - (elapsedTime2 / 1.8f)));
                 mOutOfRangeSelection.setFillColor(sf::Color(255, 255, 255, alpha));
             }
@@ -521,19 +477,16 @@ void GameEngine::update()
         sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
         if (!gameStarted)
             updateButtonHover(startGameButton, startGameButtonText, mousePos);
-    }
-    else if (mGameOver) {
+    } else if (mGameOver) {
         sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
         mGameOverMenu.updateHover(mousePos);
-    }
-    else if (mLevelCompleted) {
+    } else if (mLevelCompleted) {
         sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
         mLevelCompleteMenu.updateHover(mousePos);
     }
 }
 
-void GameEngine::render()
-{
+void GameEngine::render() {
     mWindow.clear();
 
     if (!mLevelCompleted) {
@@ -558,9 +511,8 @@ void GameEngine::render()
         mWindow.draw(mHealthBar);
         mWindow.draw(mCrystalText);
 
-        if (mTowerSelectionMenu.isVisible()) {
+        if (mTowerSelectionMenu.isVisible())
             mTowerSelectionMenu.render(mWindow);
-        }
 
         if (mTowerMenu.isVisible() && mSelectedTower)
             mTowerMenu.render(mWindow);
@@ -575,40 +527,33 @@ void GameEngine::render()
         if (mIsPaused)
             mSmallMenu.render(mWindow);
 
-        if (mShowText2) {
+        if (mShowText2)
             mWindow.draw(mOutOfRangeSelection);
-        }
-        if (mShowText1) {
+        if (mShowText1)
             mWindow.draw(mOutOfRangePlacement);
-        }
 
-        if (mGameOver) {
+        if (mGameOver)
             mGameOverMenu.render(mWindow);
-        }
-    }
-    else {
+    } else {
         mLevelCompleteMenu.render(mWindow);
     }
 
     mWindow.display();
 }
 void GameEngine::updateButtonHover(sf::RectangleShape& button, sf::Text& buttonText, const sf::Vector2f& mousePos) {
-    if (button.getGlobalBounds().contains(mousePos)) {
+    if (button.getGlobalBounds().contains(mousePos))
         button.setFillColor(sf::Color(120, 120, 120, 210));
-    }
-    else {
+    else
         button.setFillColor(sf::Color(0, 0, 0, 200));
-    }
+
     buttonText.setFillColor(sf::Color::White);
 }
 
-bool GameEngine::isGameOver() const
-{
+bool GameEngine::isGameOver() const {
     return mGameOver;
 }
 
-void GameEngine::init(int level, int crystals, const std::vector<int>& availableTowers)
-{
+void GameEngine::init(int level, int crystals, const std::vector<int>& availableTowers) {
     mPlayer.setHealth(100);
     mCurrentLevel = level;
 
@@ -636,8 +581,7 @@ void GameEngine::init(int level, int crystals, const std::vector<int>& available
     mPlayer.setPosition(sf::Vector2f(100, 100));
 }
 
-bool GameEngine::isLevelCompleted(int level) const
-{
+bool GameEngine::isLevelCompleted(int level) const {
     // Check if all waves are complete and there are no remaining enemies
     bool wavesComplete = !gameStarted || (mCurrentWaveNumber >= 3);
     bool noEnemiesLeft = std::none_of(mEnemies.begin(), mEnemies.end(), [](const Enemy& enemy) {
@@ -646,3 +590,4 @@ bool GameEngine::isLevelCompleted(int level) const
 
     return wavesComplete && noEnemiesLeft;
 }
+

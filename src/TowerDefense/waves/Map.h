@@ -2,8 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class Map
-{
+class Map {
 public:
     Map(int level);
 
@@ -16,3 +15,4 @@ private:
 
     std::vector<sf::RectangleShape> mRoad;
 };
+

@@ -2,20 +2,19 @@
 #include <SFML/Graphics.hpp>
 #include "DialogueSegment.h"
 
-class Dialogue
-{
+class Dialogue {
 public:
-	Dialogue();
+    Dialogue();
 
-	void addSegment(const DialogueSegment& segment);
-	std::string getCurrentSegment();
-	int getCurrentIndex();
-	void indexIncrement();
-	bool hasMoreSegments() const;
-	void reset();
+    void addSegment(const DialogueSegment& segment);
+    std::string getCurrentSegment();
+    int getCurrentIndex();
+    void indexIncrement();
+    bool hasMoreSegments() const;
+    void reset();
 
 private:
-	std::vector<DialogueSegment> mSegments;
-	size_t mCurrentSegmentIndex;
+    std::vector<DialogueSegment> mSegments;
+    size_t mCurrentSegmentIndex;
 };
 

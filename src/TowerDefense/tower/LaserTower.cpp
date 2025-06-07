@@ -4,9 +4,8 @@
 #include <math.h>
 
 LaserTower::LaserTower(const sf::Vector2f& position, std::vector<Projectile>& projectiles)
-    : Tower(position, projectiles), mFireCooldown(1.25f), mProjectileSpeed(200.0f), mPosition(position), mDamage(5),
-    mIsContinuous(false), mIsHighDamage(false)
-{
+    : Tower(position, projectiles), mFireCooldown(1.25f), mProjectileSpeed(200.0f), mPosition(position),
+    mDamage(5), mIsContinuous(false), mIsHighDamage(false) {
     mCost = 100;
 }
 
@@ -52,7 +51,7 @@ void LaserTower::update(float dt, std::vector<Enemy>& enemies)
         }
     }
 
-    for (auto& projectile : mProjectiles) {
+    for (auto& projectile : mProjectiles)
         projectile.update(dt);
-    }
 }
+

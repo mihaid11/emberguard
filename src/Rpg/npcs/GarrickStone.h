@@ -3,8 +3,7 @@
 
 class GameManager;
 
-class GarrickStone : public NPC
-{
+class GarrickStone : public NPC {
 public:
     GarrickStone(const sf::Vector2f& position, GameManager* gameManager);
 

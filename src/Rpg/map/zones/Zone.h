@@ -22,3 +22,4 @@ private:
     int mZoneWidth;
     int mZoneHeight;
 };
+
