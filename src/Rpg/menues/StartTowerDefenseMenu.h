@@ -4,6 +4,7 @@
 #include <string>
 #include <functional>
 #include "../../TowerDefense/menues/Button.h"
+#include "../../TowerDefense/waves/PathsConfig.h"
 
 class GameManager;
 class RPGEngine;
@@ -11,7 +12,7 @@ class RPGEngine;
 class StartTowerDefenseMenu {
 public:
     StartTowerDefenseMenu(sf::RenderWindow& window, std::vector<int>& availableTowers,
-        RPGEngine* gameEngine, GameManager* gameManager, int level, int crystals);
+                          RPGEngine* gameEngine, GameManager* gameManager, int level, int crystals);
 
     void render(sf::RenderWindow& window);
     void handleMouseClick(const sf::Vector2f& mousePos);
@@ -37,9 +38,21 @@ private:
     int mLevel;
     int mCrystals;
 
+    // Level information
+    sf::Text mCurrentLevelText;
+    sf::Text mLevelDescriptionText;
+    sf::RectangleShape mLine;
+
     // Rendering of the error message variables
     bool mShowText;
     sf::Text mErrorText;
-    sf::Clock mClockText;
+    sf::Clock mClock;
+
+    // Minimap variables
+    sf::RectangleShape mMinimapBorder;
+    std::vector<sf::RectangleShape> mMinimapPaths;
+
+    std::vector<sf::CircleShape> mDifficultyCircles;
+    sf::Text mDifficultyText;
 };
 

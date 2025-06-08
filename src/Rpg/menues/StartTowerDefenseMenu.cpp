@@ -5,13 +5,12 @@
 
 StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vector<int>& availableTowers,
                                              RPGEngine* gameEngine, GameManager* gameManager, int level, int crystals)
-    : mStartButton(sf::Vector2f(1000.0f, 575.0f), sf::Vector2f(80.0f, 30.0f), "Start"),
+    : mStartButton(sf::Vector2f(826.f, 570.0f), sf::Vector2f(80.0f, 30.0f), "Start"),
     mGameManager(gameManager), mAvailableTowers(availableTowers), mCrystals(crystals),
     mLevel(level), mGameEngine(gameEngine), mShowText(false) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;
-
 
     mMenuShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, window.getSize().y * 3.0f / 4.0f));
     mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
@@ -22,6 +21,60 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vect
     mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
     mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
                                                (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
+
+    mMinimapBorder.setSize(sf::Vector2f(190.f, 110.f));
+    mMinimapBorder.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.58f,
+                                            mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.48f));
+    mMinimapBorder.setFillColor(sf::Color::Black);
+    mMinimapBorder.setOutlineColor(sf::Color::White);
+    mMinimapBorder.setOutlineThickness(1.7f);
+
+    const auto& paths = getPaths()[level - 1];
+    const float scaleX = mMinimapBorder.getSize().x / window.getSize().x;
+    const float scaleY = mMinimapBorder.getSize().y / window.getSize().y;
+
+    for (const auto& path : paths) {
+        for (size_t i = 0; i < path.size() - 1; ++i) {
+            sf::RectangleShape segment;
+            segment.setFillColor(sf::Color(128, 128, 128));
+
+            sf::Vector2f start(path[i].x * scaleX + mMinimapBorder.getPosition().x, path[i].y * scaleY + mMinimapBorder.getPosition().y);
+            sf::Vector2f end(path[i + 1].x * scaleX + mMinimapBorder.getPosition().x, path[i + 1].y * scaleY + mMinimapBorder.getPosition().y);
+
+            if (start.x == end.x) {
+                // Vertical path
+                segment.setSize({50.f * scaleX, std::abs(end.y - start.y)});
+                segment.setPosition(start.x - 25.f * scaleX, std::min(start.y, end.y));
+            } else {
+                // Horizontal path
+                segment.setSize({std::abs(end.x - start.x), 50.f * scaleY});
+                segment.setPosition(std::min(start.x, end.x), start.y - 25.f * scaleY);
+            }
+            mMinimapPaths.push_back(segment);
+        }
+    }
+
+    mDifficultyText.setFont(mFont);
+    mDifficultyText.setCharacterSize(16);
+    mDifficultyText.setPosition(sf::Vector2f(mMinimapBorder.getPosition().x + mMinimapBorder.getSize().x + 34.f,
+                                             mMinimapBorder.getPosition().y - 5.f));
+    mDifficultyText.setFillColor(sf::Color::White);
+    mDifficultyText.setString("Difficuly");
+
+    int currentDifficulty;
+    if (level == 1)
+        currentDifficulty = 2;
+    else
+        currentDifficulty = 3;
+    
+    float circleRadius = 8.f;
+    const sf::Vector2f startPos(mDifficultyText.getPosition().x, mDifficultyText.getPosition().y + 28.5f);
+    for (int i = 0; i < 5; ++i) {
+        sf::CircleShape circle(circleRadius);
+        circle.setPosition(startPos.x + i * (circleRadius * 2 + 6.35f), startPos.y);
+        circle.setFillColor(i < currentDifficulty ? sf::Color::White : sf::Color(100, 100, 100));
+        mDifficultyCircles.push_back(circle);
+    }
 
     mTowerSlots.resize(6);
     sf::Vector2f position(mMenuShape.getPosition().x + 50.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 50.f);
@@ -35,6 +88,7 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vect
     mSelectedTowers.reserve(mTowerSlots.size());
     mSelectingTowerSlots.resize(availableTowers.size());
     sf::Vector2f position1(mMenuShape.getPosition().x + 50.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 150.f);
+
     int indent = 0;
     for (int i = 0; i < availableTowers.size(); ++i) {
         mSelectingTowerSlots[i].setSize(sf::Vector2f(50.f, 50.f));
@@ -57,8 +111,36 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vect
     mErrorText.setFont(mFont);
     mErrorText.setCharacterSize(18);
     mErrorText.setString("Select at least one tower!");
-    mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.7f,
-                                        mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.8f));
+    mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f +
+                                       (mMenuShape.getSize().x / 2.f - mErrorText.getLocalBounds().width) / 2.f - 5.f,
+                                        mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.77f));
+    
+    mCurrentLevelText.setFillColor(sf::Color::White);
+    mCurrentLevelText.setFont(mFont);
+    mCurrentLevelText.setCharacterSize(31);
+    std::string levelString = "Level " + std::to_string(level);
+    mCurrentLevelText.setString(levelString);
+    mCurrentLevelText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.75f -
+                                               mCurrentLevelText.getLocalBounds().width / 2.f,
+                                               mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.15f));
+
+    mLevelDescriptionText.setFillColor(sf::Color::White);
+    mLevelDescriptionText.setFont(mFont);
+    mLevelDescriptionText.setCharacterSize(15);
+
+    std::string descriptionString = "";
+    if(level == 1)
+        descriptionString = "There once was a ship that put to sea\nThe name of the ship was the Billy O Tea";
+
+    mLevelDescriptionText.setString(descriptionString);
+    mLevelDescriptionText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.585f,
+                                                   mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.3f));
+
+    mLine.setFillColor(sf::Color(10, 10, 10, 100));
+    mLine.setSize(sf::Vector2f(2.9f, mMenuShape.getSize().y - mHoveredZoneShape.getSize().y));
+    mLine.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f - mLine.getSize().x / 2.f,
+                                   mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y));
+
 
     mStartButton.setCallback([&]() {
         if(!mSelectedTowers.empty()) {
@@ -66,7 +148,7 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vect
             mGameManager->switchToTowerDefense(mCrystals, mLevel, mSelectedTowers);
         } else {
             mErrorText.setFillColor(sf::Color::White);
-            mClockText.restart();
+            mClock.restart();
             mShowText = true;
         }
     });
@@ -75,14 +157,29 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vect
 void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
     window.draw(mMenuShape);
     window.draw(mHoveredZoneShape);
+    window.draw(mLevelDescriptionText);
+    window.draw(mCurrentLevelText);
+    window.draw(mLine);
+    
+    // Minimap rendering
+    window.draw(mMinimapBorder);
+    for (const auto& path: mMinimapPaths)
+        window.draw(path);
+
+    // Difficulty rendering
+    window.draw(mDifficultyText);
+    for (auto& circle: mDifficultyCircles)
+        window.draw(circle);
+
     for (int i = 0; i < mTowerSlots.size(); ++i) {
         if (i < mSelectedTowers.size()) {
             if (mSelectedTowers[i] == 1)
                 mTowerSlots[i].setFillColor(sf::Color::Green);
             else if (mSelectedTowers[i] == 2)
                 mTowerSlots[i].setFillColor(sf::Color::Red);
-        } else
+        } else {
             mTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+        }
         window.draw(mTowerSlots[i]);
     }
 
@@ -92,8 +189,9 @@ void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
                 mSelectingTowerSlots[i].setFillColor(sf::Color::Green);
             else if (mAvailableTowers[i] == 2)
                 mSelectingTowerSlots[i].setFillColor(sf::Color::Red);
-        } else
+        } else {
             mSelectingTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+        }
         window.draw(mSelectingTowerSlots[i]);
     }
 
@@ -102,7 +200,7 @@ void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
 
     // If the error text is visible gradually make it dissapear and render it
     if (mShowText) {
-        float elapsedTime = mClockText.getElapsedTime().asSeconds();
+        float elapsedTime = mClock.getElapsedTime().asSeconds();
         if (elapsedTime > 1.8f) {
             mShowText = false;
             mErrorText.setString("");
@@ -169,7 +267,7 @@ void StartTowerDefenseMenu::update(int crystals, std::vector<int>& availableTowe
         } else {
             mErrorText.setString("Select at least one tower!");
             mErrorText.setFillColor(sf::Color::White);
-            mClockText.restart();
+            mClock.restart();
             mShowText = true;
         }
     });
