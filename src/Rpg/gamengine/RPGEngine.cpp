@@ -53,7 +53,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mCameraFixedPosition(sf::Vector2f(0.f, 0.f)),
     mShowDialogue(false),
     mGameManager(gameManager),
-    mSaveSystem("../../savegame.txt"),
+    mSaveSystem("savegame.txt"),
     mMiraStanton(sf::Vector2f(1000.0f, 900.0f)),
     mElliotMarlowe(sf::Vector2f(100.0f, 0.0f)),
     mGarrickStone(sf::Vector2f(-100.0f, 0.0f), gameManager),
