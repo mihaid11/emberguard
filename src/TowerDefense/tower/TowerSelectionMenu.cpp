@@ -10,6 +10,7 @@ TowerSelectionMenu::TowerSelectionMenu(std::vector<int>& availableTowers)
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font2 ffsk" << std::endl;
+
     initializeHexagon();
     initializeLabels();
     initializeStats();
@@ -40,6 +41,8 @@ void TowerSelectionMenu::initializeLabels() {
                 label.setString("Laser");
             else if (mAvailableTowers[i] == 2)
                 label.setString("Flame");
+            else if (mAvailableTowers[i] == 3)
+                label.setString("Thunder");
             else
                 label.setString("");
         } else {
@@ -186,6 +189,8 @@ void TowerSelectionMenu::updateHover(const sf::Vector2f& mousePosition, int crys
                 towerCost = 100;
             else if (mAvailableTowers[i] == 2)
                 towerCost = 150;
+            else if (mAvailableTowers[i] == 3)
+                towerCost = 200;
 
             sf::Color normalColor;
 
@@ -268,8 +273,10 @@ void TowerSelectionMenu::formatStats(int i) {
 
     if (mAvailableTowers[i] == 2)
         mTowerIcon.setFillColor(sf::Color(255, 84, 84, 255));
-    else if(mAvailableTowers[i] == 1)
+    else if (mAvailableTowers[i] == 1)
         mTowerIcon.setFillColor(sf::Color::Green);
+    else if (mAvailableTowers[i] == 3)
+        mTowerIcon.setFillColor(sf::Color::Cyan);
 }
 
 bool TowerSelectionMenu::isPointInConvexShape(const sf::ConvexShape& shape, const sf::Vector2f& point) const {
