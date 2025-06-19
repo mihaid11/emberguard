@@ -48,7 +48,7 @@ void Projectile::update(float dt) {
 
         // Check if the projectile has hit the target
         if (!mHitTarget && checkCollision(mTarget)) {
-            //mTarget->takeDamage(mDamage);
+            mTarget->takeDamage(mDamage);
             mHitTarget = true;
         }
     }
