@@ -164,12 +164,24 @@ void GameEngine::processEvents() {
                                                     newTower = new LaserTower(mousePos, mProjectiles);
                                                 else if (mAvailableTowers[0] == 2)
                                                     newTower = new FlameTurret(mousePos, mProjectiles);
+                                                else if (mAvailableTowers[0] == 3)
+                                                    newTower = new ThunderRod(mousePos, mProjectiles, mEnemies);
                                                 break;
                                             case 1:
                                                 if (mAvailableTowers[1] == 1)
                                                     newTower = new LaserTower(mousePos, mProjectiles);
                                                 else if (mAvailableTowers[1] == 2)
                                                     newTower = new FlameTurret(mousePos, mProjectiles);
+                                                else if (mAvailableTowers[1] == 3)
+                                                    newTower = new ThunderRod(mousePos, mProjectiles, mEnemies);
+                                                break;
+                                            case 2:
+                                                if (mAvailableTowers[2] == 1)
+                                                    newTower = new LaserTower(mousePos, mProjectiles);
+                                                else if (mAvailableTowers[2] == 2)
+                                                    newTower = new FlameTurret(mousePos, mProjectiles);
+                                                else if (mAvailableTowers[2] == 3)
+                                                    newTower = new ThunderRod(mousePos, mProjectiles, mEnemies);
                                                 break;
                                         }
 
@@ -268,12 +280,24 @@ void GameEngine::handleNonTowerClick(const sf::Vector2f& worldPos) {
                         newTower = new LaserTower(worldPos, mProjectiles);
                     else if (mAvailableTowers[0] == 2)
                         newTower = new FlameTurret(worldPos, mProjectiles);
+                    else if (mAvailableTowers[0] == 3)
+                        newTower = new ThunderRod(worldPos, mProjectiles, mEnemies);
                     break;
                 case 1:
-                    if (mAvailableTowers[0] == 1)
+                    if (mAvailableTowers[1] == 1)
                         newTower = new LaserTower(worldPos, mProjectiles);
                     else if (mAvailableTowers[1] == 2)
                         newTower = new FlameTurret(worldPos, mProjectiles);
+                    else if (mAvailableTowers[1] == 3)
+                        newTower = new ThunderRod(worldPos, mProjectiles, mEnemies);
+                    break;
+                case 2:
+                    if (mAvailableTowers[2] == 1)
+                        newTower = new LaserTower(worldPos, mProjectiles);
+                    else if (mAvailableTowers[2] == 2)
+                        newTower = new FlameTurret(worldPos, mProjectiles);
+                    else if (mAvailableTowers[2] == 3)
+                        newTower = new ThunderRod(worldPos, mProjectiles, mEnemies);
                     break;
             }
 
@@ -390,18 +414,12 @@ void GameEngine::update() {
 
             // Update projectiles
             for (auto projectile = mProjectiles.begin(); projectile != mProjectiles.end();) {
-                if (projectile->getTarget() == nullptr) {
-                    projectile = mProjectiles.erase(projectile);
-                    continue;
-                }
                 projectile->update(dt);
 
-                if (projectile->hasHitTarget()) {
-                    projectile->getTarget()->takeDamage(projectile->getDamage());
+                if (projectile->shouldRemove())
                     projectile = mProjectiles.erase(projectile);
-                } else {
+                else
                     ++projectile;
-                }
             }
 
             // Update enemies

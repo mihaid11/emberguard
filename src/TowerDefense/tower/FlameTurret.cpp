@@ -7,6 +7,8 @@ static float distance(const sf::Vector2f& a, const sf::Vector2f& b) {
 
 FlameTurret::FlameTurret(const sf::Vector2f& position, std::vector<Projectile>& projectiles)
     : Tower(position, projectiles) {
+
+    mShape.setFillColor(sf::Color(120, 200, 50));
     mRange = 100.0f;
     mFireRate = 2.0f;
     mDamage = 10.0f;
@@ -28,7 +30,7 @@ void FlameTurret::update(float dt, std::vector<Enemy>& enemies) {
             float dist = distance(mShape.getPosition(), enemy.getPosition());
             if (dist <= mRange) {
                 selectedEnemy = &enemy;
-                fireFlame();
+                fireProjectile();
                 mTimeSinceLastShot = 0.0f;
                 break;
             }
@@ -40,7 +42,7 @@ void FlameTurret::update(float dt, std::vector<Enemy>& enemies) {
         mTarget = nullptr;
 }
 
-void FlameTurret::fireFlame() {
+void FlameTurret::fireProjectile() {
     if (!mTarget) return;
 
     // Fire the flame projectile
