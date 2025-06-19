@@ -11,6 +11,6 @@ public:
     void update(float dt, std::vector<Enemy>& enemies) override;
 
 private:
-    void fireFlame();
+    void fireProjectile() override;
 };
 
