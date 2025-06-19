@@ -9,6 +9,7 @@
 #include "../tower/TowerMenu.h"
 #include "../tower/LaserTower.h"
 #include "../tower/FlameTurret.h"
+#include "../tower/ThunderRod.h"
 #include "../player/Player.h"
 #include "../player/PlayerMenu.h"
 #include "../menues/SmallMenu.h"
