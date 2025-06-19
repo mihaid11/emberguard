@@ -50,7 +50,7 @@ protected:
     float mDamage;
     std::vector<Projectile>& mProjectiles;
 
-    void fireProjectile();
+    virtual void fireProjectile();
 
     std::vector<Upgrade> mUpgrades;
 };
