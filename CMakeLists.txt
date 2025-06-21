@@ -133,12 +133,14 @@ elseif(UNIX)
             ${SFML_LIBRARY_DIR}/libsfml-graphics.so.2.6.2
             ${SFML_LIBRARY_DIR}/libsfml-graphics.so.2.6
         COMMENT "Creating symbolic link: libsfml-graphics.so.2.6 -> libsfml-graphics.so.2.6.2"
-        
+    )
+    add_custom_command(TARGET Emberguard POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E create_symlink 
             ${SFML_LIBRARY_DIR}/libsfml-window.so.2.6.2
             ${SFML_LIBRARY_DIR}/libsfml-window.so.2.6
         COMMENT "Creating symbolic link: libsfml-window.so.2.6 -> libsfml-window.so.2.6.2"
-        
+    )
+    add_custom_command(TARGET Emberguard POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E create_symlink 
             ${SFML_LIBRARY_DIR}/libsfml-system.so.2.6.2
             ${SFML_LIBRARY_DIR}/libsfml-system.so.2.6
