@@ -176,6 +176,8 @@ void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
                 mTowerSlots[i].setFillColor(sf::Color::Green);
             else if (mSelectedTowers[i] == 2)
                 mTowerSlots[i].setFillColor(sf::Color::Red);
+            else if (mSelectedTowers[i] == 3)
+                mTowerSlots[i].setFillColor(sf::Color::Cyan);
         } else {
             mTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
         }
@@ -188,6 +190,8 @@ void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
                 mSelectingTowerSlots[i].setFillColor(sf::Color::Green);
             else if (mAvailableTowers[i] == 2)
                 mSelectingTowerSlots[i].setFillColor(sf::Color::Red);
+            else if (mAvailableTowers[i] == 3)
+                mSelectingTowerSlots[i].setFillColor(sf::Color::Cyan);
         } else {
             mSelectingTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
         }

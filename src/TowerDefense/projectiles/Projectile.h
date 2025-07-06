@@ -13,6 +13,7 @@ public:
     sf::Vector2f getPosition() const;
     float getDamage() const;
     Enemy* getTarget() const;
+    virtual bool shouldRemove() const {return mHitTarget || !mTarget;};
 
 protected:
     sf::RectangleShape mShape;
@@ -21,7 +22,7 @@ protected:
     float mDamage;
     bool mHitTarget;
     bool mAlive;
-
+ 
     bool checkCollision(const Enemy* target) const;
 };
 

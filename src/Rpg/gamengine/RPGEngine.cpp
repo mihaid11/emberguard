@@ -148,6 +148,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
 
     mAvailableTowers.push_back(2);
     mAvailableTowers.push_back(1);
+    mAvailableTowers.push_back(3);
 
     // Testing
     std::unique_ptr<Wood> woodItem = std::make_unique<Wood>();
