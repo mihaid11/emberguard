@@ -14,6 +14,7 @@ public:
     int getSelectedTowerType(const sf::Vector2f& point) const;
     bool isInsideMenu(const sf::Vector2f& point) const;
     void updateHover(const sf::Vector2f& mousePosition, int crystals);
+    sf::Vector2f getCenterPosition() const;
 
 private:
     sf::ConvexShape mHexagon;
