@@ -158,30 +158,31 @@ void GameEngine::processEvents() {
                                     int selectedTowerType = mTowerSelectionMenu.getSelectedTowerType(mousePos);
                                     if (selectedTowerType != -1) {
                                         Tower* newTower = nullptr;
+                                        sf::Vector2f position = mTowerSelectionMenu.getCenterPosition();
                                         switch (selectedTowerType) {
                                             case 0: // Laser Tower
                                                 if (mAvailableTowers[0] == 1)
-                                                    newTower = new LaserTower(mousePos, mProjectiles);
+                                                    newTower = new LaserTower(position, mProjectiles);
                                                 else if (mAvailableTowers[0] == 2)
-                                                    newTower = new FlameTurret(mousePos, mProjectiles);
+                                                    newTower = new FlameTurret(position, mProjectiles);
                                                 else if (mAvailableTowers[0] == 3)
-                                                    newTower = new ThunderRod(mousePos, mProjectiles, mEnemies);
+                                                    newTower = new ThunderRod(position, mProjectiles, mEnemies);
                                                 break;
                                             case 1:
                                                 if (mAvailableTowers[1] == 1)
-                                                    newTower = new LaserTower(mousePos, mProjectiles);
+                                                    newTower = new LaserTower(position, mProjectiles);
                                                 else if (mAvailableTowers[1] == 2)
-                                                    newTower = new FlameTurret(mousePos, mProjectiles);
+                                                    newTower = new FlameTurret(position, mProjectiles);
                                                 else if (mAvailableTowers[1] == 3)
-                                                    newTower = new ThunderRod(mousePos, mProjectiles, mEnemies);
+                                                    newTower = new ThunderRod(position, mProjectiles, mEnemies);
                                                 break;
                                             case 2:
                                                 if (mAvailableTowers[2] == 1)
-                                                    newTower = new LaserTower(mousePos, mProjectiles);
+                                                    newTower = new LaserTower(position, mProjectiles);
                                                 else if (mAvailableTowers[2] == 2)
-                                                    newTower = new FlameTurret(mousePos, mProjectiles);
+                                                    newTower = new FlameTurret(position, mProjectiles);
                                                 else if (mAvailableTowers[2] == 3)
-                                                    newTower = new ThunderRod(mousePos, mProjectiles, mEnemies);
+                                                    newTower = new ThunderRod(position, mProjectiles, mEnemies);
                                                 break;
                                         }
 
@@ -274,30 +275,31 @@ void GameEngine::handleNonTowerClick(const sf::Vector2f& worldPos) {
     if (distance(worldPos, mPlayer.getPosition()) <= mPlayer.getPlacementRange()) {
         if (mTowerSelectionMenu.isVisible()) {
             Tower* newTower = nullptr;
+            sf::Vector2f position = mTowerSelectionMenu.getCenterPosition();
             switch (mSelectedTowerType) {
                 case 0:
                     if (mAvailableTowers[0] == 1)
-                        newTower = new LaserTower(worldPos, mProjectiles);
+                        newTower = new LaserTower(position, mProjectiles);
                     else if (mAvailableTowers[0] == 2)
-                        newTower = new FlameTurret(worldPos, mProjectiles);
+                        newTower = new FlameTurret(position, mProjectiles);
                     else if (mAvailableTowers[0] == 3)
-                        newTower = new ThunderRod(worldPos, mProjectiles, mEnemies);
+                        newTower = new ThunderRod(position, mProjectiles, mEnemies);
                     break;
                 case 1:
                     if (mAvailableTowers[1] == 1)
-                        newTower = new LaserTower(worldPos, mProjectiles);
+                        newTower = new LaserTower(position, mProjectiles);
                     else if (mAvailableTowers[1] == 2)
-                        newTower = new FlameTurret(worldPos, mProjectiles);
+                        newTower = new FlameTurret(position, mProjectiles);
                     else if (mAvailableTowers[1] == 3)
-                        newTower = new ThunderRod(worldPos, mProjectiles, mEnemies);
+                        newTower = new ThunderRod(position, mProjectiles, mEnemies);
                     break;
                 case 2:
                     if (mAvailableTowers[2] == 1)
-                        newTower = new LaserTower(worldPos, mProjectiles);
+                        newTower = new LaserTower(position, mProjectiles);
                     else if (mAvailableTowers[2] == 2)
-                        newTower = new FlameTurret(worldPos, mProjectiles);
+                        newTower = new FlameTurret(position, mProjectiles);
                     else if (mAvailableTowers[2] == 3)
-                        newTower = new ThunderRod(worldPos, mProjectiles, mEnemies);
+                        newTower = new ThunderRod(position, mProjectiles, mEnemies);
                     break;
             }
 

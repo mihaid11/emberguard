@@ -219,6 +219,11 @@ void TowerSelectionMenu::updateHover(const sf::Vector2f& mousePosition, int crys
     }
 }
 
+sf::Vector2f TowerSelectionMenu::getCenterPosition() const {
+    // Hardcoded value for the tower radius, will modify later when tower sprites are introduced
+    return mPosition - sf::Vector2f(15.f, 15.f);
+}
+
 void TowerSelectionMenu::drawLines(sf::RenderWindow& window) const {
     sf::VertexArray lines(sf::Lines, 12);
 
