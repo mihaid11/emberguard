@@ -97,5 +97,10 @@ private:
     sf::RectangleShape mBorderDown;
     sf::RectangleShape mBorderLeft;
     sf::RectangleShape mBorderRight;
+
+    // Rendering of the error message variables
+    bool mShowNotEnoughCrystalsText;
+    sf::Text mNotEnoughCrystalsText;
+    sf::Clock mNotEnoughCrystalsClock;
 };
 
