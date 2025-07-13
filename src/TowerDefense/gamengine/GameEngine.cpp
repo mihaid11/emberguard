@@ -31,6 +31,7 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mGameOver(false),
     mLevelCompleted(false),
     mIsPaused(false),
+    mShowNotEnoughCrystalsText(false),
     mShowText1(false),
     mShowText2(false),
     mGameManager(gameManager),
@@ -80,6 +81,11 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     startGameButtonText.setFillColor(sf::Color::White);
     startGameButtonText.setPosition(startGameButton.getPosition().x + 25,
                                     startGameButton.getPosition().y + 5);
+
+    mNotEnoughCrystalsText.setFillColor(sf::Color::White);
+    mNotEnoughCrystalsText.setFont(mFont);
+    mNotEnoughCrystalsText.setCharacterSize(14);
+    mNotEnoughCrystalsText.setString("Not enough crystals to buy tower!");
 
     mBorderUp.setPosition(sf::Vector2f(-10.f, -10.f));
     mBorderUp.setSize(sf::Vector2f(mWindow.getSize().x + 20.f, 10.f));
@@ -194,7 +200,11 @@ void GameEngine::processEvents() {
                                                 mTowerSelectionMenu.hide();
                                                 mSelectedTowerType = -1;
                                             } else {
-                                                std::cout << "Not enough crystals to buy tower" << std::endl;
+                                                mNotEnoughCrystalsText.setPosition(sf::Vector2f(position.x - 104.35f, position.y - 81.f));
+                                                mNotEnoughCrystalsText.setString("Not enough crystals to buy tower!");
+                                                mNotEnoughCrystalsText.setFillColor(sf::Color::White);
+                                                mNotEnoughCrystalsClock.restart();
+                                                mShowNotEnoughCrystalsText = true;
                                                 delete newTower;
                                             }
                                         }
@@ -311,7 +321,11 @@ void GameEngine::handleNonTowerClick(const sf::Vector2f& worldPos) {
                     mSpentCrystals += newTower->getCost();
                     mTowerSelectionMenu.hide();
                 } else {
-                    std::cout << "Not enough crystals to place a tower!" << std::endl;
+                    mNotEnoughCrystalsText.setPosition(sf::Vector2f(position.x - 104.35f, position.y - 81.f));
+                    mNotEnoughCrystalsText.setString("Not enough crystals to buy tower!");
+                    mNotEnoughCrystalsText.setFillColor(sf::Color::White);
+                    mNotEnoughCrystalsClock.restart();
+                    mShowNotEnoughCrystalsText = true;
                     delete newTower;
                 }
             }
@@ -544,16 +558,31 @@ void GameEngine::render() {
             mWindow.draw(startGameButtonText);
         }
 
-        if (mIsPaused)
-            mSmallMenu.render(mWindow);
-
         if (mShowText2)
             mWindow.draw(mOutOfRangeSelection);
+
         if (mShowText1)
             mWindow.draw(mOutOfRangePlacement);
 
+        // If the error text is visible gradually make it dissapear and render it
+        if (mShowNotEnoughCrystalsText) {
+            float elapsedTime = mNotEnoughCrystalsClock.getElapsedTime().asSeconds();
+            if (elapsedTime > 1.8f) {
+                mShowNotEnoughCrystalsText = false;
+                mNotEnoughCrystalsText.setString("");
+            }
+            else {
+                int alpha = static_cast<int>(255 * (1.0f - (elapsedTime / 1.8f)));
+                mNotEnoughCrystalsText.setFillColor(sf::Color(255, 255, 255, alpha));
+            }
+            mWindow.draw(mNotEnoughCrystalsText);
+        }
+
         if (mGameOver)
             mGameOverMenu.render(mWindow);
+
+        if (mIsPaused)
+            mSmallMenu.render(mWindow);
     } else {
         mLevelCompleteMenu.render(mWindow);
     }
