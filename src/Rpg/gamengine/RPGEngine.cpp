@@ -48,8 +48,8 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mMap(),
     mTimeSystem(1.2f),
     mCharacter(sf::Vector2f(400.f, 300.f), mMap),
-    mView(sf::Vector2f(400.f, 300.f), sf::Vector2f(1280.f, 720.f)),
-    mFixedCamera(sf::Vector2f(0.f, 0.f), sf::Vector2f(1280.f, 720.f)),
+    mView(sf::Vector2f(400.f, 300.f), sf::Vector2f(740.f, 420.f)),
+    mFixedCamera(sf::Vector2f(0.f, 0.f), sf::Vector2f(740.f, 420.f)),
     mCameraFixedPosition(sf::Vector2f(0.f, 0.f)),
     mShowDialogue(false),
     mGameManager(gameManager),
@@ -116,25 +116,32 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mMap.addEntity<Barrier>(sf::Vector2f(-10.f, mMap.getSize().y), sf::Vector2f(mMap.getSize().y + 20.f, 10.f));
 
     // MCHouseInt barriers
-    mMap.addEntity<Barrier>(sf::Vector2f(-1004.f, -920.f), sf::Vector2f(30.f, 420.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(-443.5f, -920.f), sf::Vector2f(30.f, 260.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(-1000.f, -553.5f), sf::Vector2f(105.f, 25.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(-758.f, -685.f), sf::Vector2f(325.f, 25.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(-838.f, -553.5f), sf::Vector2f(107.f, 25.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(-759.5f, -685.f), sf::Vector2f(30.f, 130.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(-897.f, -520.f), sf::Vector2f(60.f, 20.f));
+    // Left
+    mMap.addEntity<Barrier>(sf::Vector2f(-991.75f, -935.f), sf::Vector2f(30.f, 420.f));
+    // Right
+    mMap.addEntity<Barrier>(sf::Vector2f(-534.5f, -920.f), sf::Vector2f(30.f, 260.f));
+    // Bottom Left
+    mMap.addEntity<Barrier>(sf::Vector2f(-1007.f, -586.3f), sf::Vector2f(105.f, 25.f));
+    // Bottom Right
+    mMap.addEntity<Barrier>(sf::Vector2f(-858.f, -586.3f), sf::Vector2f(107.f, 25.f));
+    // Middle Right
+    mMap.addEntity<Barrier>(sf::Vector2f(-791.f, -696.5f), sf::Vector2f(325.f, 25.f));
+    // Middle Up
+    mMap.addEntity<Barrier>(sf::Vector2f(-794.f, -685.f), sf::Vector2f(30.f, 130.f));
+    // Bottom Middle
+    mMap.addEntity<Barrier>(sf::Vector2f(-903.f, -561.f), sf::Vector2f(60.f, 20.f));
 
     // MCHouseInt bed
-    mMap.addEntity<Bed>(sf::Vector2f(-544.f, -833.f), 1.65f, "assets/sprites/buildings/bed.png",
-                        sf::Vector2f(-539.f, -838.f), sf::Vector2f(75.2f, 1.f),
-                        sf::Vector2f(-546.f, -839.f), sf::Vector2f(85.f, 41.f), mTimeSystem,
+    mMap.addEntity<Bed>(sf::Vector2f(-639.f, -810.f), 1.8f, "assets/sprites/buildings/bed.png",
+                        sf::Vector2f(-634.f, -815.f), sf::Vector2f(75.2f, 1.f),
+                        sf::Vector2f(-640.f, -816.f), sf::Vector2f(90.f, 41.f), mTimeSystem,
                         gameManager);
 
     mMap.addEntity<MCHouse>(sf::Vector2f(300.f, 300.f), "assets/sprites/buildings/mcHouseExt.png",
                             sf::Vector2f(313.f, 481.f), sf::Vector2f(143.f, 30.f), 1, sf::Vector2f(340.f, 505.f),
                             sf::Vector2f(60.f, 30.f), mCharacter, mIsInsideAStructure, mCameraFixedPosition);
-    mMap.addEntity<MCHouseInt>(sf::Vector2f(-1000.f, -1000.f), "assets/sprites/buildings/mcHouseInt.png",
-                               sf::Vector2f(-980.f, -920.f), sf::Vector2f(580.f, 40.f), 1, sf::Vector2f(-894.f, -530.f),
+    mMap.addEntity<MCHouseInt>(sf::Vector2f(-990.f, -954.f), "assets/sprites/buildings/mcHouseInt.png",
+                               sf::Vector2f(-980.f, -898.f), sf::Vector2f(580.f, 40.f), 1, sf::Vector2f(-903.f, -565.f),
                                sf::Vector2f(48.f, 18.f), mCharacter, mIsInsideAStructure, mCameraFixedPosition);
 
     //mZoneManager.loadTileset("assets/sprites/tiles/Tileset.png");
@@ -402,7 +409,7 @@ void RPGEngine::update() {
                         }
 
                         mNPCManager.update(dt);
-                        mView.setCenter(mCharacter.getPosition());
+                        mView.setCenter(mCharacter.getCenterPosition());
                         mFixedCamera.setCenter(mCameraFixedPosition);
 
                         mTimeSystem.update(dt);

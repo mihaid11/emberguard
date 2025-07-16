@@ -3,7 +3,7 @@
 #include <math.h>
 
 MainCharacter::MainCharacter(const sf::Vector2f& position, GameMap& map)
-    : mPosition(position), mSpeed(150.0f), mMap(map), mPriority(0) {
+    : mPosition(position), mSpeed(142.0f), mMap(map), mPriority(0) {
     mCollisionZone.setSize(sf::Vector2f(37.f, 62.f));
     mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 14.5f, mPosition.y + 1.f));
     mCollisionZone.setFillColor(sf::Color::Red);
@@ -110,6 +110,11 @@ void MainCharacter::setPosition(const sf::Vector2f& position) {
 
 sf::Vector2f MainCharacter::getPosition() const {
     return mSprite.getPosition();
+}
+
+sf::Vector2f MainCharacter::getCenterPosition() const {
+    return sf::Vector2f(mSprite.getPosition().x + mSprite.getLocalBounds().width / 2.f,
+                        mSprite.getPosition().y + mSprite.getLocalBounds().height / 2.f);
 }
 
 float MainCharacter::getHeight() const {
