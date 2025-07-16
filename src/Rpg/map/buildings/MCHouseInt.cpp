@@ -7,12 +7,12 @@ MCHouseInt::MCHouseInt(const sf::Vector2f& position, const std::string filename,
                        sf::Vector2f& cameraFixedPosition)
     : Entity(position, filename, collPosition, collSize, canInteract, interactPos, interactSize), mMainCharacter(mainCharacter),
     mIsInsideAStructure(isInsideAStructure), mCameraFixedPosition(cameraFixedPosition) {
-    mSprite.setScale(sf::Vector2f(1.65f, 1.65f));
+    mSprite.setScale(sf::Vector2f(1.37f, 1.37f));
 }
 
 void MCHouseInt::interact() {
     std::cout << "Teleporting MC from house!" << std::endl;
-    mMainCharacter.setPosition(sf::Vector2f(343.f, 553.f));
+    mMainCharacter.setPosition(sf::Vector2f(340.f, 538.f));
     mMainCharacter.setAnimation(4);
     mIsInsideAStructure = false;
     mCameraFixedPosition = { 0.f, 0.f };

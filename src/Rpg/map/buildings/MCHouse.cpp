@@ -12,7 +12,7 @@ MCHouse::MCHouse(const sf::Vector2f& position, const std::string filename, const
 
 void MCHouse::interact() {
     std::cout << "Teleporting MC to house!" << std::endl;
-    mMainCharacter.setPosition(sf::Vector2f(-900.f, -600.f));
+    mMainCharacter.setPosition(sf::Vector2f(-912.f, -638.f));
     mMainCharacter.setAnimation(3);
     mIsInsideAStructure = true;
     mCameraFixedPosition = { -760.f, -760.f };
