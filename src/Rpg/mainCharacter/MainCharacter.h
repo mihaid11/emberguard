@@ -13,6 +13,7 @@ public:
 
     void setPosition(const sf::Vector2f& position);
     sf::Vector2f getPosition() const override;
+    sf::Vector2f getCenterPosition() const;
     float getHeight() const override;
     sf::FloatRect getBounds() const;
     void setAnimation(int animation);
