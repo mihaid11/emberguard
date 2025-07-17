@@ -2,8 +2,9 @@
 #include <iostream>
 
 GameManager::GameManager()
-    : mCurrentState(GameState::RPG), mWindow(sf::VideoMode(1280, 720), "emberguard"),
-    mRpgEngine(mWindow, this), mTowerDefenseEngine(mWindow, this) {
+    : mCurrentState(GameState::MainMenu), mWindow(sf::VideoMode(1280, 720), "emberguard"),
+    mRpgEngine(mWindow, this), mTowerDefenseEngine(mWindow, this),
+    mMainMenu(mWindow, this) {
 
 }
 
@@ -19,6 +20,10 @@ void GameManager::run() {
 
 void GameManager::update() {
     switch (mCurrentState) {
+        case GameState::MainMenu:
+            mMainMenu.processEvents();
+            mMainMenu.update();
+            break;
         case GameState::RPG:
             mRpgEngine.processEvents();
             mRpgEngine.update();
@@ -35,6 +40,9 @@ void GameManager::update() {
 
 void GameManager::render() {
     switch (mCurrentState) {
+        case GameState::MainMenu:
+            mMainMenu.render();
+            break;
         case GameState::RPG:
             mRpgEngine.render();
             break;
@@ -62,14 +70,26 @@ void GameManager::updateTransition() {
     // TODO : Implement transitioning logic
 }
 
+// Used for transition between TowerDefense and RPG
 void GameManager::switchToRPG(int crystals) {
     mCurrentState = GameState::RPG;
     mRpgEngine.resume(crystals);
 }
 
+// Used for transition between MainMenu and RPG
+void GameManager::enterRPG(int saveNumber) {
+    mRpgEngine.setSaveNumber(saveNumber);
+    mCurrentState = GameState::RPG;
+}
+
 void GameManager::switchToTowerDefense(int crystals, int level, const std::vector<int>& availableTowers) {
     mCurrentState = GameState::TowerDefense;
     mTowerDefenseEngine.init(level, crystals, availableTowers);
+}
+
+void GameManager::switchToMainMenu() {
+    mMainMenu.reset();
+    mCurrentState = GameState::MainMenu;
 }
 
 bool GameManager::isLevelCompleted(int level) const {
