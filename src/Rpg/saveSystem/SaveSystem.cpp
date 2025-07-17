@@ -2,8 +2,9 @@
 #include <fstream>
 #include <iostream>
 
-SaveSystem::SaveSystem(const std::string& saveFilePath)
-    : mSaveFilePath(saveFilePath) {}
+SaveSystem::SaveSystem() : mSaveFilePath("") {
+
+}
 
 void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::Vector2f>& npcPositions, const std::vector<int>& npcWaypoints,
                       const int& crystals, const int& year, const int& day, const int& hour,
@@ -46,7 +47,6 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
         outFile << inventoryItemId[i] << " " << inventoryItemQuantity[i] << std::endl;
 
     outFile << droppedItemId.size() << std::endl;
-    std::cout << droppedItemId.size() << std::endl;
     for (int i = 0; i < droppedItemId.size(); ++i) {
         outFile << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;
         // std::cout << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;
@@ -199,7 +199,7 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
 
     int invSize, drpSize;
     inFile >> invSize;
-    std::cout << "Inventory Size: " << invSize << std::endl;
+    //std::cout << "Inventory Size: " << invSize << std::endl;
 
     for (size_t i = 0; i < invSize; ++i) {
         int id, quantity;
@@ -210,7 +210,7 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
     }
 
     inFile >> drpSize;
-    std::cout << "Dropped Items Size: " << drpSize << std::endl;
+    //std::cout << "Dropped Items Size: " << drpSize << std::endl;
 
     for (size_t i = 0; i < drpSize; ++i) {
         int id, quantity;
@@ -239,5 +239,41 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
 
     inFile.close();
     return true;
+}
+
+bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int& day, int& hour, int& minute) {
+    sf::Vector2f playerPosition;
+    std::vector<sf::Vector2f> npcPositions;
+    std::vector<int> npcWaypoints;
+    int bankBalance, penalty, interest, amountToRepay, daysToRepayment,
+        startYear, startDay, startHour, startMinute, hasBorrowActive, extracting, inSlot, completed, timerActive,
+        startYear1, startDay1, startHour1, startMinute1, slotItemId, insideStructure;
+    std::vector<int> droppedItemId;
+    std::vector<float> droppedItemXPos;
+    std::vector<float> droppedItemYPos;
+    std::vector<int> droppedItemQuantity;
+    std::vector<int> inventoryItemId;
+    std::vector<int> inventoryItemQuantity;
+    sf::Vector2f cameraFixedPosition;
+
+    std::string tmp = mSaveFilePath;
+    mSaveFilePath = saveFile;
+    bool success = load(playerPosition, npcPositions, npcWaypoints, crystals,
+        year, day, hour, minute, bankBalance, hasBorrowActive, penalty, interest, amountToRepay, daysToRepayment,
+        startYear, startDay, startHour, startMinute, inventoryItemId, inventoryItemQuantity, droppedItemId,
+        droppedItemXPos, droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed, timerActive, startYear1,
+        startDay1, startHour1, startMinute1, slotItemId, insideStructure, cameraFixedPosition);
+
+    mSaveFilePath = tmp;
+    return success;
+}
+
+void SaveSystem::setSaveFilePath(int saveNumber) {
+    if (saveNumber == 1)
+        mSaveFilePath = "save1.txt";
+    else if (saveNumber == 2)
+        mSaveFilePath = "save2.txt";
+    else if (saveNumber == 3)
+        mSaveFilePath = "save3.txt";
 }
 
