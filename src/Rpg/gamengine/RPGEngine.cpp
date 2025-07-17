@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <filesystem>
 #include <math.h>
 #include "../../GameManager.h"
 
@@ -53,7 +54,8 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mCameraFixedPosition(sf::Vector2f(0.f, 0.f)),
     mShowDialogue(false),
     mGameManager(gameManager),
-    mSaveSystem("savegame.txt"),
+    mSaveSystem(),
+    mSaveNumber(0),
     mMiraStanton(sf::Vector2f(1000.0f, 900.0f)),
     mElliotMarlowe(sf::Vector2f(100.0f, 0.0f)),
     mGarrickStone(sf::Vector2f(-100.0f, 0.0f), gameManager),
@@ -62,7 +64,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mNPCManager(),
     mCurrentInteractingNPC(nullptr),
     mSkillTree(),
-    mMenu(window, mSkillTree, mInventory, mCharacter.getPosition(), mDroppedItems, *this),
+    mMenu(window, mSkillTree, mInventory, mCharacter.getPosition(), mDroppedItems, *this, gameManager),
     mHotbar(mInventory, sf::Vector2f(mWindow.getSize().x / 2 - 45.f * 3 / 2, mWindow.getSize().y - 45.f - 4.f),
         mInventory.getSlotCount() / 2, sf::Vector2f(45.f, 45.f)),
     mShowMenu(false),
@@ -166,7 +168,16 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
 
     std::unique_ptr<TowerBlueprintEpic> towerBE = std::make_unique<TowerBlueprintEpic>();
     mInventory.addItem(std::move(towerBE), 2);
-    loadGame();
+
+    if(mSaveNumber != 0) {
+        if (saveExists(mSaveNumber)) {
+            loadGame();
+        } else {
+            newGame();
+            mCharacter.setPosition(sf::Vector2f(340.f, 560.f));
+            mCharacter.setAnimation(4);
+        }
+    }
 }
 
 void RPGEngine::processEvents() {
@@ -822,6 +833,7 @@ void RPGEngine::loadGame() {
             }
         }
 
+        /*
         for (int i = 0; i < mInventory.getSlotCount(); ++i) {
             if (mInventory.getItemAt(i))
                 std::cout << mInventory.getItemAt(i)->getType() << " " << mInventory.getItemQuantityAt(i) << std::endl;
@@ -831,13 +843,20 @@ void RPGEngine::loadGame() {
             std::cout << droppedItem.getItem()->getType() << " " << droppedItem.getPosition().x << " "
                 << droppedItem.getPosition().y << " " << droppedItem.getQuantity() << std::endl;
         }
+        */
     } else {
         std::cerr << "Failed to load game data." << std::endl;
     }
 }
 
 void RPGEngine::resetSaveGame() {
-    std::ofstream saveFile("savegame.txt", std::ofstream::trunc);
+    std::ofstream saveFile;
+    if (mSaveNumber == 1)
+        std::ofstream saveFile("save1.txt", std::ofstream::trunc);
+    else if (mSaveNumber == 2)
+        std::ofstream saveFile("save2.txt", std::ofstream::trunc);
+    else if (mSaveNumber == 3)
+        std::ofstream saveFile("save3.txt", std::ofstream::trunc);
 
     if (saveFile.is_open())
         std::cout << "Save file cleared. Game will start from initial positions." << std::endl;
@@ -868,5 +887,44 @@ void RPGEngine::resetSaveGame() {
     mAnalyzeMenu.reset();
     mShopMenu.regenerateIds();
     mIsInsideAStructure = false;
+}
+
+bool RPGEngine::saveExists(int saveNumber) const {
+    if (saveNumber == 1)
+        return std::filesystem::exists("save1.txt");
+    if (saveNumber == 2)
+        return std::filesystem::exists("save2.txt");
+    if (saveNumber == 3)
+        return std::filesystem::exists("save3.txt");
+    return false;
+}
+
+void RPGEngine::newGame() {
+    if (mSaveNumber == 1) {
+        std::ofstream file("save1.txt");
+        file.close();
+    } else if (mSaveNumber == 2) {
+        std::ofstream file("save2.txt");
+        file.close();
+    } else if (mSaveNumber == 3) {
+        std::ofstream file("save3.txt");
+        file.close();
+    }
+}
+
+void RPGEngine::setSaveNumber(int saveNumber) {
+    mSaveNumber = saveNumber;
+    mSaveSystem.setSaveFilePath(mSaveNumber);
+    if (saveExists(saveNumber)) {
+        loadGame();
+    } else {
+        newGame();
+        mCharacter.setPosition(sf::Vector2f(340.f, 560.f));
+        mCharacter.setAnimation(4);
+    }
+}
+
+SaveSystem& RPGEngine::getSaveSystem() {
+    return mSaveSystem;
 }
 

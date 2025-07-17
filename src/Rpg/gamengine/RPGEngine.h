@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <string.h>
 #include "../mainCharacter/MainCharacter.h"
 #include "../map/GameMap.h"
 #include "../npcs/NPC.h"
@@ -46,6 +47,11 @@ public:
     void saveGame();
     void loadGame();
     void resetSaveGame();
+    bool saveExists(int saveNumber) const;
+    void newGame();
+    void setSaveNumber(int saveNumber);
+
+    SaveSystem& getSaveSystem();
 
 private:
     sf::RenderWindow& mWindow;
@@ -77,6 +83,9 @@ private:
     std::vector<int> mAvailableTowers;
 
     SaveSystem mSaveSystem;
+    int mSaveNumber;
+    std::string mSavePath;
+
     NPCManager mNPCManager;
     //DialogueManager mDialogueManager;
     SkillTree mSkillTree;

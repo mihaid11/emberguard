@@ -7,7 +7,7 @@
 
 class SaveSystem {
 public:
-    SaveSystem(const std::string& saveFilePath);
+    SaveSystem();
 
     void save(const sf::Vector2f& playerPosition, const std::vector<sf::Vector2f>& npcPositions, const std::vector<int>& npcWaypoints,
               const int& crystals, const int& year, const int& day, const int& hour,
@@ -31,6 +31,11 @@ public:
               int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear1,
               int& startDay1, int& startHour1, int& startMinute1, int& slotItemId,
               int& insideStructure, sf::Vector2f& fixedCameraPos);
+
+    // Method used for the extraction of some fields for MainMenu
+    bool loadPartial(std::string saveFile, int& crystals, int& year, int &day, int& hour, int& minute);
+
+    void setSaveFilePath(int saveNumber);
 
 private:
     std::string mSaveFilePath;
