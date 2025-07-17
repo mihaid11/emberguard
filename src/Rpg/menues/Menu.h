@@ -9,11 +9,12 @@
 #include "../inventory/items/DroppedItem.h"
 
 class RPGEngine;
+class GameManager;
 
 class Menu {
 public:
     Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
-         const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems, RPGEngine& rpgEngine);
+         const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems, RPGEngine& rpgEngine, GameManager* gameManager);
 
     void render(sf::RenderWindow& window);
     void handleMouseClick(const sf::Vector2f& mousePos);
@@ -28,6 +29,7 @@ public:
 private:
     sf::RectangleShape mMenuShape;
     sf::RectangleShape mHoveredZoneShape;
+    GameManager* mGameManager;
 
     std::vector<Button> mButtons;
     Button skillTreeButton;
