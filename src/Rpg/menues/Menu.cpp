@@ -1,10 +1,12 @@
 #include "Menu.h"
 #include <iostream>
 #include "../gamengine/RPGEngine.h"
+#include "../../GameManager.h"
 
 Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
-          const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems, RPGEngine& rpgEngine)
-    : mCurrentMenu("Inventory"),
+          const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems,
+          RPGEngine& rpgEngine, GameManager* gameManager)
+    : mCurrentMenu("Inventory"), mGameManager(gameManager),
     inventoryButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Inventory"),
     skillTreeButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "SkillTree"),
     exitButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Exit"), mShowText(false) {
@@ -60,7 +62,10 @@ Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
 
     exitButton.setCallback([&]() {
         rpgEngine.saveGame();
-        window.close();
+        if (mGameManager)
+            mGameManager->switchToMainMenu();
+        else
+            std::cerr << "Error: GameManager is nullptr in exitButton callback." << std::endl;
     });
 
     mButtons.push_back(inventoryButton);
