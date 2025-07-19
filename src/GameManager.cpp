@@ -2,10 +2,12 @@
 #include <iostream>
 
 GameManager::GameManager()
-    : mCurrentState(GameState::MainMenu), mWindow(sf::VideoMode(1280, 720), "emberguard"),
+    : mCurrentState(GameState::MainMenu),
+    mWindow(sf::VideoMode(1280, 720), "emberguard"),
     mRpgEngine(mWindow, this), mTowerDefenseEngine(mWindow, this),
-    mMainMenu(mWindow, this) {
+    mMainMenu(mWindow, this), mMaxFps(60) {
 
+    mWindow.setFramerateLimit(mMaxFps);
 }
 
 void GameManager::run() {

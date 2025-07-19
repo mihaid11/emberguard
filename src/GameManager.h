@@ -34,6 +34,7 @@ private:
     void updateTransition();
 
     sf::RenderWindow mWindow;
+    float mMaxFps;
     GameState mCurrentState;
     RPGEngine mRpgEngine;
     GameEngine mTowerDefenseEngine;
