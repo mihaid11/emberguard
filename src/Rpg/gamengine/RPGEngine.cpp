@@ -669,9 +669,12 @@ void RPGEngine::renderDateTime(sf::RenderWindow& window, sf::Font& font, const s
 }
 
 void RPGEngine::resume(int crystals) {
-    mWindow.setView(mWindow.getDefaultView());
     mCrystals = crystals;
+    closeMenues();
+}
 
+void RPGEngine::closeMenues() {
+    mWindow.setView(mWindow.getDefaultView());
     if (mShowDialogue)
         mShowDialogue = false;
         mNPCManager.resumeCurrentNPC();
