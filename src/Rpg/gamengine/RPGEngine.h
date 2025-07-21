@@ -43,6 +43,7 @@ public:
     void render();
     void renderDateTime(sf::RenderWindow& window, sf::Font& font, const std::string& date, const std::string& time);
     void resume(int crystals);
+    void closeMenues();
 
     void saveGame();
     void loadGame();

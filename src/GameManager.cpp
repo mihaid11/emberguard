@@ -81,6 +81,7 @@ void GameManager::switchToRPG(int crystals) {
 // Used for transition between MainMenu and RPG
 void GameManager::enterRPG(int saveNumber) {
     mRpgEngine.setSaveNumber(saveNumber);
+    mRpgEngine.closeMenues();
     mCurrentState = GameState::RPG;
 }
 
