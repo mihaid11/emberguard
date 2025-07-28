@@ -30,6 +30,7 @@
 #include "../map/buildings/MCHouseInt.h"
 #include "../map/buildings/Barrier.h"
 #include "../map/buildings/Bed.h"
+#include "../../TransitionSystem.h"
 //#include "../map/zones/ZoneManager.h"
 
 class GameManager;
@@ -120,6 +121,8 @@ private:
     bool mIsInsideAStructure;
     sf::Vector2f mCameraFixedPosition;
     sf::View mFixedCamera;
+
+    TransitionSystem mTransitionSystem;
 
     // TODO : Implement method for efficient tile rendering
     //ZoneManager mZoneManager;

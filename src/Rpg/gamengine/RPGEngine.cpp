@@ -47,7 +47,7 @@ static bool intersects(const sf::FloatRect& rect1, const sf::FloatRect& rect2) {
 RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     : mWindow(window),
     mMap(),
-    mTimeSystem(1.2f),
+    mTimeSystem(0.36f),
     mCharacter(sf::Vector2f(400.f, 300.f), mMap),
     mView(sf::Vector2f(400.f, 300.f), sf::Vector2f(740.f, 420.f)),
     mFixedCamera(sf::Vector2f(0.f, 0.f), sf::Vector2f(740.f, 420.f)),
@@ -81,7 +81,8 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
     mShopMenu(window, mInventory, 5, mCrystals),
-    mAnalyzeMenu(window, mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals) {
+    mAnalyzeMenu(window, mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals),
+    mTransitionSystem(sf::Vector2f(window.getSize().x, window.getSize().y)) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;
@@ -136,8 +137,8 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     // MCHouseInt bed
     mMap.addEntity<Bed>(sf::Vector2f(-639.f, -810.f), 1.8f, "assets/sprites/buildings/bed.png",
                         sf::Vector2f(-634.f, -815.f), sf::Vector2f(75.2f, 1.f),
-                        sf::Vector2f(-640.f, -816.f), sf::Vector2f(90.f, 41.f), mTimeSystem,
-                        gameManager);
+                        sf::Vector2f(-640.f, -816.f), sf::Vector2f(90.f, 41.f),
+                        mTimeSystem, mTransitionSystem, gameManager);
 
     mMap.addEntity<MCHouse>(sf::Vector2f(300.f, 300.f), "assets/sprites/buildings/mcHouseExt.png",
                             sf::Vector2f(313.f, 481.f), sf::Vector2f(143.f, 30.f), 1, sf::Vector2f(340.f, 505.f),
@@ -187,6 +188,9 @@ void RPGEngine::processEvents() {
             saveGame();
             mWindow.close();
         } else if (event.type == sf::Event::KeyPressed) {
+            if (mTransitionSystem.isTransitioning())
+                return;
+
             if (event.key.code == sf::Keyboard::E) {
                 if (!mShowDialogue) {
                     mNPCManager.handleInteraction(mCharacter, mShowDialogue, mDialogueText);
@@ -390,6 +394,13 @@ void RPGEngine::update() {
                             mHotbar.update();
                         }
 
+                        mTransitionSystem.update(dt);
+
+                        mTimeSystem.update(dt);
+
+                        if (mTransitionSystem.isTransitioning())
+                            return;
+
                         mCharacter.update(dt, mShowDialogue);
                         //mZoneManager.update(mCharacter.getPosition());
 
@@ -422,8 +433,6 @@ void RPGEngine::update() {
                         mNPCManager.update(dt);
                         mView.setCenter(mCharacter.getCenterPosition());
                         mFixedCamera.setCenter(mCameraFixedPosition);
-
-                        mTimeSystem.update(dt);
 
                         if (!mNPCManager.playerClose(mCharacter.getPosition())) {
                             mShowDialogue = false;
@@ -567,13 +576,6 @@ void RPGEngine::render() {
         mWindow.draw(mInteractText);
     }
 
-    if (!mShowBankMenu && !mShowMenu && !mShowStartMenu && !mShowShopMenu && !mShowAnalyzeMenu) {
-        mWindow.setView(mWindow.getDefaultView());
-        renderDateTime(mWindow, mFont, currentDate, currentTime);
-        if(!mShowDialogue)
-            mHotbar.render(mWindow);
-    }
-
     if (mShowDialogue) {
         mWindow.setView(mWindow.getDefaultView());
 
@@ -616,30 +618,31 @@ void RPGEngine::render() {
         }
     }
 
-    if (mShowMenu) {
-        mWindow.setView(mWindow.getDefaultView());
+
+    mWindow.setView(mWindow.getDefaultView());
+
+    if (mShowMenu)
         mMenu.render(mWindow);
-    }
 
-    if (mShowStartMenu) {
-        mWindow.setView(mWindow.getDefaultView());
+    if (mShowStartMenu)
         mStartTowerDefenseMenu.render(mWindow);
-    }
 
-    if (mShowBankMenu) {
-        mWindow.setView(mWindow.getDefaultView());
+    if (mShowBankMenu)
         mBankMenu.render(mWindow);
-    }
 
-    if (mShowShopMenu) {
-        mWindow.setView(mWindow.getDefaultView());
+    if (mShowShopMenu)
         mShopMenu.render(mWindow);
-    }
 
-    if (mShowAnalyzeMenu) {
-        mWindow.setView(mWindow.getDefaultView());
+    if (mShowAnalyzeMenu)
         mAnalyzeMenu.render(mWindow);
-    }
+
+    if(!mShowDialogue)
+        mHotbar.render(mWindow);
+
+    mTransitionSystem.render(mWindow);
+
+    if (!mShowBankMenu && !mShowMenu && !mShowStartMenu && !mShowShopMenu && !mShowAnalyzeMenu)
+        renderDateTime(mWindow, mFont, currentDate, currentTime);
 
     mWindow.display();
 }
