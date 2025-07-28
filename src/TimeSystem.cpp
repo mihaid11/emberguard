@@ -79,3 +79,7 @@ void TimeSystem::setMinute(int minute) {
     mMinute = minute;
 }
 
+void TimeSystem::setTimeScale(float timeScale) {
+    mTimeScale = timeScale;
+}
+
