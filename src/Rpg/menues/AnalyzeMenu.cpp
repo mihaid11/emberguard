@@ -254,19 +254,7 @@ void AnalyzeMenu::handleMouseClick(const sf::Vector2f& mousePos) {
 
         if (mousePos.x >= mSlot.getPosition().x && mousePos.x <= mSlot.getPosition().x + mSlot.getSize().x &&
             mousePos.y >= mSlot.getPosition().y && mousePos.y <= mSlot.getPosition().y + mSlot.getSize().y) {
-            if (mSlotItem->getId() == 2) {
-                std::unique_ptr<TowerBlueprint> towerB = std::make_unique<TowerBlueprint>();
-                mInventory.addItem(std::move(towerB), 1);
-            } else if (mSlotItem->getId() == 3) {
-                std::unique_ptr<TowerBlueprintRare> towerBR = std::make_unique<TowerBlueprintRare>();
-                mInventory.addItem(std::move(towerBR), 1);
-            } else if (mSlotItem->getId() == 4) {
-                std::unique_ptr<TowerBlueprintEpic> towerBE = std::make_unique<TowerBlueprintEpic>();
-                mInventory.addItem(std::move(towerBE), 1);
-            } else if (mSlotItem->getId() == 5) {
-                std::unique_ptr<TowerBlueprintMythic> towerBM = std::make_unique<TowerBlueprintMythic>();
-                mInventory.addItem(std::move(towerBM), 1);
-            }
+            mInventory.addItem(mSlotItem->clone(), 1);
             mSlotItem = nullptr;
             mInSlot = false;
             mCompleted = false;
@@ -288,21 +276,10 @@ void AnalyzeMenu::handleMouseClick(const sf::Vector2f& mousePos) {
                 mInventory.getItemAt(hoveredSlot)->getId() == 4 ||
                 mInventory.getItemAt(hoveredSlot)->getId() == 5) {
                 if (mInventory.getItemQuantityAt(hoveredSlot) == 1) {
-                    // if it is the last tower blueprint of the kind the removeItemAt call makes the pointer nullptr
-                    // so const_char<Item*> didnt work, tried by new Item(*mInventory.getItemAt(hoveredSlot))
-                    // Item is an abstract class so I cant directly instantiate itemChance
-                    // maybe will add a clone method to the Item class in the future
-                    if (mInventory.getItemAt(hoveredSlot)->getId() == 2)
-                        mSlotItem = new TowerBlueprint();
-                    else if(mInventory.getItemAt(hoveredSlot)->getId() == 3)
-                        mSlotItem = new TowerBlueprintRare();
-                    else if(mInventory.getItemAt(hoveredSlot)->getId() == 4)
-                        mSlotItem = new TowerBlueprintEpic();
-                    else if(mInventory.getItemAt(hoveredSlot)->getId() == 5)
-                        mSlotItem = new TowerBlueprintMythic();
+                    mSlotItem = mInventory.getItemAt(hoveredSlot)->clone().release();
                     mInventory.removeItemAt(hoveredSlot);
                 } else {
-                    mSlotItem = const_cast<Item*>(mInventory.getItemAt(hoveredSlot));
+                    mSlotItem = mInventory.getItemAt(hoveredSlot)->clone().release();
                     mInventory.setItemQuantityAt(hoveredSlot, mInventory.getItemQuantityAt(hoveredSlot) - 1);
                 }
                 mInSlot = true;
