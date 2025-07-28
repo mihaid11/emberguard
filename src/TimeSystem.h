@@ -22,6 +22,8 @@ public:
     void setHour(int hour);
     void setMinute(int minute);
 
+    void setTimeScale(float timeScale);
+
 private:
     int mYear;
     int mDay;
