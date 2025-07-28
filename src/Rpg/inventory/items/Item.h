@@ -1,12 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <memory>
 
 class Item {
 public:
     Item(const std::string& name, const std::string& description, int id, int price, const sf::RectangleShape& icon);
     virtual ~Item() = default;
     virtual std::string getType() const = 0;
+    virtual std::unique_ptr<Item> clone() const = 0;
 
     const std::string& getName() const;
     const std::string& getDescription() const;

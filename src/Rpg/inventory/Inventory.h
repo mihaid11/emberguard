@@ -20,13 +20,13 @@ public:
     int getSlotCount() const;
     void resize(int newRows, int newCols);
     void removeItemAt(int slotIndex);
+    int getFirstEmptySlot() const;
 
 private:
     std::vector<InventoryItem> mSlots;
     int mRows;
     int mCols;
 
-    int getFirstEmptySlot() const;
     int findSlotWithItem(int id) const;
 };
 
