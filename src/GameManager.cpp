@@ -107,3 +107,7 @@ RPGEngine& GameManager::getGameEngine() {
     return mRpgEngine;
 }
 
+sf::RenderWindow& GameManager::getWindow() {
+    return mWindow;
+}
+

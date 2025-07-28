@@ -26,6 +26,7 @@ public:
     GameEngine& getGame();
     RPGEngine& getGameEngine();
     MainMenu& getMainMenu();
+    sf::RenderWindow& getWindow();
     void startTransition(bool toRPG);
 
 private:
