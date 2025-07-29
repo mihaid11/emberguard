@@ -34,9 +34,6 @@ void GameManager::update() {
             mTowerDefenseEngine.processEvents();
             mTowerDefenseEngine.update();
             break;
-        case GameState::Transition:
-            updateTransition();
-            break;
     }
 }
 
@@ -51,25 +48,7 @@ void GameManager::render() {
         case GameState::TowerDefense:
             mTowerDefenseEngine.render();
             break;
-        case GameState::Transition:
-            // TODO : Implement transition rendering
-            break;
     }
-}
-
-void GameManager::startTransition(bool toRPG) {
-    //mCurrentState = GameState::Transition;
-    mTransitionPhase = TransitionPhase::FadeOut;
-    mTransitionClock.restart();
-    mTransitioningToRPG = toRPG;
-
-    mTransitionCircle.setFillColor(sf::Color::Black);
-    mTransitionCircle.setRadius(0);
-    mTransitionCircle.setOrigin(0, 0);
-}
-
-void GameManager::updateTransition() {
-    // TODO : Implement transitioning logic
 }
 
 // Used for transition between TowerDefense and RPG

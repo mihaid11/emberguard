@@ -8,8 +8,7 @@
 enum class GameState {
     MainMenu,
     RPG,
-    TowerDefense,
-    Transition
+    TowerDefense
 };
 
 class GameManager {
@@ -27,12 +26,10 @@ public:
     RPGEngine& getGameEngine();
     MainMenu& getMainMenu();
     sf::RenderWindow& getWindow();
-    void startTransition(bool toRPG);
 
 private:
     void update();
     void render();
-    void updateTransition();
 
     sf::RenderWindow mWindow;
     float mMaxFps;
@@ -42,20 +39,5 @@ private:
     MainMenu mMainMenu;
 
     DialogueManager mDialogueManager;
-
-    // Transition logic
-    enum class TransitionPhase {
-        FadeOut,
-        Wait,
-        FadeIn,
-        None
-    };
-
-    TransitionPhase mTransitionPhase = TransitionPhase::None;
-    sf::CircleShape mTransitionCircle;
-    sf::Clock mTransitionClock;
-    float mTransitionDuration = 1.0f;
-    float mWaitDuration = 1.0f;
-    bool mTransitioningToRPG = true;
 };
 
