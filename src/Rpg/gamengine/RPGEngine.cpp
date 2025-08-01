@@ -141,6 +141,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
                         sf::Vector2f(-634.f, -815.f), sf::Vector2f(75.2f, 1.f),
                         sf::Vector2f(-640.f, -816.f), sf::Vector2f(90.f, 41.f),
                         mTimeSystem, mTransitionSystem, gameManager);
+    // TODO: Add chest sprite
     mMap.addEntity<Chest>(sf::Vector2f(-750.f, -810.f), 1.8f, "assets/sprites/buildings/bed.png",
                           sf::Vector2f(-745.f, -815.f), sf::Vector2f(75.2f, 1.f),
                           sf::Vector2f(-751.f, -816.f), sf::Vector2f(90.f, 41.f), mShowChestMenu);
@@ -727,6 +728,8 @@ void RPGEngine::saveGame() {
 
     std::vector<int> inventoryItemId;
     std::vector<int> inventoryItemQuantity;
+    std::vector<int> chestItemId;
+    std::vector<int> chestItemQuantity;
     std::vector<int> droppedItemId;
     std::vector<float> droppedItemXPos;
     std::vector<float> droppedItemYPos;
@@ -760,6 +763,13 @@ void RPGEngine::saveGame() {
         }
     }
 
+    for (int ind = 0; ind < mChestInventory.getSlotCount(); ++ind) {
+        if (mChestInventory.getItemAt(ind)) {
+            chestItemId.push_back(mChestInventory.getItemAt(ind)->getId());
+            chestItemQuantity.push_back(mChestInventory.getItemQuantityAt(ind));
+        }
+    }
+
     for (auto& droppedItem : mDroppedItems) {
         droppedItemId.push_back(droppedItem.getItem()->getId());
         droppedItemXPos.push_back(droppedItem.getPosition().x);
@@ -775,10 +785,13 @@ void RPGEngine::saveGame() {
         std::cout << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;*/
 
     mSaveSystem.save(mCharacter.getPosition(), npcPositions, npcWaypoints, mCrystals,
-        year, day, hour, minute, bankBalance, hasBorrowActive, penalty, interest, amountToRepay, daysToRepayment,
-        startYear, startDay, startHour, startMinute, inventoryItemId, inventoryItemQuantity, droppedItemId, droppedItemXPos, droppedItemYPos,
-        droppedItemQuantity, extracting, inSlot, completed, timerActive, startYear1, startDay1, startHour1, startMinute1, slotItemId,
-        mIsInsideAStructure, mCameraFixedPosition);
+                     year, day, hour, minute, bankBalance, hasBorrowActive, penalty,
+                     interest, amountToRepay, daysToRepayment, startYear, startDay,
+                     startHour, startMinute, inventoryItemId, inventoryItemQuantity,
+                     chestItemId, chestItemQuantity, droppedItemId, droppedItemXPos,
+                     droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed,
+                     timerActive, startYear1, startDay1, startHour1, startMinute1,
+                     slotItemId, mIsInsideAStructure, mCameraFixedPosition);
 }
 
 void RPGEngine::loadGame() {
@@ -794,12 +807,17 @@ void RPGEngine::loadGame() {
     std::vector<int> droppedItemQuantity;
     std::vector<int> inventoryItemId;
     std::vector<int> inventoryItemQuantity;
+    std::vector<int> chestItemId;
+    std::vector<int> chestItemQuantity;
 
-    if (mSaveSystem.load(playerPosition, npcPositions, npcWaypoints, crystals,
-        year, day, hour, minute, bankBalance, hasBorrowActive, penalty, interest, amountToRepay, daysToRepayment,
-        startYear, startDay, startHour, startMinute, inventoryItemId, inventoryItemQuantity, droppedItemId,
-        droppedItemXPos, droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed, timerActive, startYear1,
-        startDay1, startHour1, startMinute1, slotItemId, insideStructure, mCameraFixedPosition)) {
+    if (mSaveSystem.load(playerPosition, npcPositions, npcWaypoints, crystals, year,
+                         day, hour, minute, bankBalance, hasBorrowActive, penalty,
+                         interest, amountToRepay, daysToRepayment, startYear, startDay,
+                         startHour, startMinute, inventoryItemId, inventoryItemQuantity,
+                         chestItemId, chestItemQuantity, droppedItemId, droppedItemXPos,
+                         droppedItemYPos, droppedItemQuantity, extracting, inSlot,
+                         completed, timerActive, startYear1, startDay1, startHour1,
+                         startMinute1, slotItemId, insideStructure, mCameraFixedPosition)) {
 
         mCharacter.setPosition(playerPosition);
         mIsInsideAStructure = insideStructure;
@@ -859,6 +877,25 @@ void RPGEngine::loadGame() {
             } else if (inventoryItemId[i] == 5) {
                 std::unique_ptr<TowerBlueprintMythic> towerBlueprintMythic = std::make_unique<TowerBlueprintMythic>();
                 mInventory.addItem(std::move(towerBlueprintMythic), inventoryItemQuantity[i]);
+            }
+        }
+
+        for (size_t i = 0; i < chestItemId.size(); ++i) {
+            if (chestItemId[i] == 1) {
+                std::unique_ptr<Wood> woodItem = std::make_unique<Wood>();
+                mChestInventory.addItem(std::move(woodItem), chestItemQuantity[i]);
+            } else if (chestItemId[i] == 2) {
+                std::unique_ptr<TowerBlueprint> towerBlueprint = std::make_unique<TowerBlueprint>();
+                mChestInventory.addItem(std::move(towerBlueprint), chestItemQuantity[i]);
+            } else if (chestItemId[i] == 3) {
+                std::unique_ptr<TowerBlueprintRare> towerBlueprintRare = std::make_unique<TowerBlueprintRare>();
+                mChestInventory.addItem(std::move(towerBlueprintRare), chestItemQuantity[i]);
+            } else if (chestItemId[i] == 4) {
+                std::unique_ptr<TowerBlueprintEpic> towerBlueprintEpic = std::make_unique<TowerBlueprintEpic>();
+                mChestInventory.addItem(std::move(towerBlueprintEpic), chestItemQuantity[i]);
+            } else if (chestItemId[i] == 5) {
+                std::unique_ptr<TowerBlueprintMythic> towerBlueprintMythic = std::make_unique<TowerBlueprintMythic>();
+                mChestInventory.addItem(std::move(towerBlueprintMythic), chestItemQuantity[i]);
             }
         }
 
