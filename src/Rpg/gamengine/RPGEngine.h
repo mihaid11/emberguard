@@ -25,11 +25,13 @@
 #include "../inventory/Hotbar.h"
 #include "../menues/ShopMenu.h"
 #include "../menues/AnalyzeMenu.h"
+#include "../menues/ChestMenu.h"
 #include "../entities/DrawableEntity.h"
 #include "../map/buildings/MCHouse.h"
 #include "../map/buildings/MCHouseInt.h"
 #include "../map/buildings/Barrier.h"
 #include "../map/buildings/Bed.h"
+#include "../map/buildings/Chest.h"
 #include "../../TransitionSystem.h"
 //#include "../map/zones/ZoneManager.h"
 
@@ -76,6 +78,7 @@ private:
     bool mShowShopMenu;
     bool mShowBankMenu;
     bool mShowAnalyzeMenu;
+    bool mShowChestMenu;
     sf::Text mDialogueText;
     sf::Font mFont;
 
@@ -92,12 +95,14 @@ private:
     //DialogueManager mDialogueManager;
     SkillTree mSkillTree;
     Inventory mInventory;
+    Inventory mChestInventory;
     Hotbar mHotbar;
     Menu mMenu;
     ShopMenu mShopMenu;
     StartTowerDefenseMenu mStartTowerDefenseMenu;
     BankMenu mBankMenu;
     AnalyzeMenu mAnalyzeMenu;
+    ChestMenu mChestMenu;
 
     NPC* mCurrentInteractingNPC;
     TimeSystem mTimeSystem;
