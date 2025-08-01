@@ -62,6 +62,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mVincentHale(sf::Vector2f(600.0f, 400.0f)),
     mSeraphinaLumeris(sf::Vector2f(-20.0f, 980.0f)),
     mNPCManager(),
+    mChestInventory(2, 2),
     mCurrentInteractingNPC(nullptr),
     mSkillTree(),
     mMenu(window, mSkillTree, mInventory, mCharacter.getPosition(), mDroppedItems, *this, gameManager),
@@ -82,6 +83,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
     mShopMenu(window, mInventory, 5, mCrystals),
     mAnalyzeMenu(window, mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals),
+    mChestMenu(window, mInventory, mChestInventory, sf::Vector2f(70.f, 70.f)),
     mTransitionSystem(sf::Vector2f(window.getSize().x, window.getSize().y)) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
@@ -139,7 +141,9 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
                         sf::Vector2f(-634.f, -815.f), sf::Vector2f(75.2f, 1.f),
                         sf::Vector2f(-640.f, -816.f), sf::Vector2f(90.f, 41.f),
                         mTimeSystem, mTransitionSystem, gameManager);
-
+    mMap.addEntity<Chest>(sf::Vector2f(-750.f, -810.f), 1.8f, "assets/sprites/buildings/bed.png",
+                          sf::Vector2f(-745.f, -815.f), sf::Vector2f(75.2f, 1.f),
+                          sf::Vector2f(-751.f, -816.f), sf::Vector2f(90.f, 41.f), mShowChestMenu);
     mMap.addEntity<MCHouse>(sf::Vector2f(300.f, 300.f), "assets/sprites/buildings/mcHouseExt.png",
                             sf::Vector2f(313.f, 481.f), sf::Vector2f(143.f, 30.f), 1, sf::Vector2f(340.f, 505.f),
                             sf::Vector2f(60.f, 30.f), mCharacter, mIsInsideAStructure, mCameraFixedPosition);
@@ -233,6 +237,8 @@ void RPGEngine::processEvents() {
                     mShowShopMenu = false;
                 } else if (mShowAnalyzeMenu) {
                     mShowAnalyzeMenu = false;
+                } else if (mShowChestMenu) {
+                    mShowChestMenu = false;
                 } else {
                     mShowMenu = !mShowMenu;
                     if (!mShowMenu)
@@ -255,6 +261,7 @@ void RPGEngine::processEvents() {
                     mShowBankMenu = false;
                     mShowShopMenu = false;
                     mShowAnalyzeMenu = false;
+                    mShowChestMenu = false;
                     if (mShowDialogue) {
                         mShowDialogue = false;
                         if (mCurrentInteractingNPC) {
@@ -272,6 +279,7 @@ void RPGEngine::processEvents() {
                     mShowStartMenu = false;
                     mShowShopMenu = false;
                     mShowAnalyzeMenu = false;
+                    mShowChestMenu = false;
                     if (mShowDialogue) {
                         mShowDialogue = false;
                         if (mCurrentInteractingNPC) {
@@ -298,6 +306,7 @@ void RPGEngine::processEvents() {
                     mShowBankMenu = false;
                     mShowStartMenu = false;
                     mShowAnalyzeMenu = false;
+                    mShowChestMenu = false;
                 } else
                     mShowShopMenu = false;
             } else if (event.key.code == sf::Keyboard::Q) {
@@ -316,7 +325,7 @@ void RPGEngine::processEvents() {
                     }
                 }
 
-                if (!mShowMenu && !mShowBankMenu && !mShowStartMenu && !mShowDialogue && !mShowAnalyzeMenu) {
+                if (!mShowMenu && !mShowBankMenu && !mShowStartMenu && !mShowDialogue && !mShowAnalyzeMenu && !mShowChestMenu) {
                     int slotIndex = mHotbar.getHoveredSlot();
                     if (slotIndex != -1) {
                         if (mInventory.getItemAt(slotIndex)) {
@@ -330,7 +339,7 @@ void RPGEngine::processEvents() {
                     }
                 }
             } else if (event.key.code == sf::Keyboard::Num1 || event.key.code == sf::Keyboard::Num2 || event.key.code == sf::Keyboard::Num3) {
-                if (!mShowBankMenu && !mShowDialogue && !mShowMenu && !mShowStartMenu) {
+                if (!mShowBankMenu && !mShowDialogue && !mShowMenu && !mShowStartMenu && !mShowAnalyzeMenu && !mShowChestMenu) {
                     int slot = -1;
                     if (event.key.code == sf::Keyboard::Num1)
                         slot = 0;
@@ -347,6 +356,7 @@ void RPGEngine::processEvents() {
                     mShowStartMenu = false;
                     mShowShopMenu = false;
                     mShowBankMenu = false;
+                    mShowChestMenu = false;
                     if (mShowDialogue) {
                         mShowDialogue = false;
                         if (mCurrentInteractingNPC) {
@@ -370,8 +380,10 @@ void RPGEngine::processEvents() {
                     mShopMenu.handleMouseClick(mousePos);
                 if (mShowAnalyzeMenu)
                     mAnalyzeMenu.handleMouseClick(mousePos);
+                if (mShowChestMenu)
+                    mChestMenu.handleMouseClick(mousePos);
 
-                if(!mShowMenu && !mShowStartMenu && !mShowBankMenu && !mShowShopMenu && !mShowAnalyzeMenu && !mShowDialogue) {
+                if(!mShowMenu && !mShowStartMenu && !mShowBankMenu && !mShowShopMenu && !mShowAnalyzeMenu && !mShowChestMenu && !mShowDialogue) {
                     int slot = mHotbar.contains(mousePos);
                     mHotbar.setHoveredSlot(slot);
                 }
@@ -388,115 +400,120 @@ void RPGEngine::update() {
             if (!mShowBankMenu) {
                 if (!mShowShopMenu) {
                     if (!mShowAnalyzeMenu) {
-                        sf::Vector2f previousPosition = mCharacter.getPosition();
+                        if (!mShowChestMenu) {
+                            sf::Vector2f previousPosition = mCharacter.getPosition();
 
-                        if (!mShowDialogue) {
-                            mHotbar.update();
-                        }
-
-                        mTransitionSystem.update(dt);
-
-                        mTimeSystem.update(dt);
-
-                        if (mTransitionSystem.isTransitioning())
-                            return;
-
-                        mCharacter.update(dt, mShowDialogue);
-                        //mZoneManager.update(mCharacter.getPosition());
-
-                        if (mMap.checkCollision(mCharacter.getBounds()))
-                            mCharacter.setPosition(previousPosition);
-
-                        for (auto& npc : mNPCManager.getNPCs()) {
-                            if (npc->getBounds().intersects(mCharacter.getBounds())) {
-                                sf::Vector2f npcPos = npc->getPosition();
-                                sf::Vector2f direction = previousPosition - npcPos;
-                                float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-
-                                if (distance < 10.0f) {  // Push the player away from the npc with a threshold
-                                    direction /= distance;
-                                    previousPosition += direction * 5.0f * dt;
-                                    mCharacter.setPosition(previousPosition);
-                                }
+                            if (!mShowDialogue) {
+                                mHotbar.update();
                             }
 
-                            if (npc->isPlayerClose(mCharacter.getPosition())) {
-                                if (mShowDialogue)
-                                    npc->setInteract(false);
+                            mTransitionSystem.update(dt);
+
+                            mTimeSystem.update(dt);
+
+                            if (mTransitionSystem.isTransitioning())
+                                return;
+
+                            mCharacter.update(dt, mShowDialogue);
+                            //mZoneManager.update(mCharacter.getPosition());
+
+                            if (mMap.checkCollision(mCharacter.getBounds()))
+                                mCharacter.setPosition(previousPosition);
+
+                            for (auto& npc : mNPCManager.getNPCs()) {
+                                if (npc->getBounds().intersects(mCharacter.getBounds())) {
+                                    sf::Vector2f npcPos = npc->getPosition();
+                                    sf::Vector2f direction = previousPosition - npcPos;
+                                    float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+                                    if (distance < 10.0f) {  // Push the player away from the npc with a threshold
+                                        direction /= distance;
+                                        previousPosition += direction * 5.0f * dt;
+                                        mCharacter.setPosition(previousPosition);
+                                    }
+                                }
+
+                                if (npc->isPlayerClose(mCharacter.getPosition())) {
+                                    if (mShowDialogue)
+                                        npc->setInteract(false);
+                                    else
+                                        npc->setInteract(true);
+                                }
                                 else
-                                    npc->setInteract(true);
+                                    npc->setInteract(false);
                             }
-                            else
-                                npc->setInteract(false);
-                        }
 
-                        mNPCManager.update(dt);
-                        mView.setCenter(mCharacter.getCenterPosition());
-                        mFixedCamera.setCenter(mCameraFixedPosition);
+                            mNPCManager.update(dt);
+                            mView.setCenter(mCharacter.getCenterPosition());
+                            mFixedCamera.setCenter(mCameraFixedPosition);
 
-                        if (!mNPCManager.playerClose(mCharacter.getPosition())) {
-                            mShowDialogue = false;
-                        }
+                            if (!mNPCManager.playerClose(mCharacter.getPosition())) {
+                                mShowDialogue = false;
+                            }
 
-                        for (auto it = mDroppedItems.begin(); it != mDroppedItems.end();) {
-                            float distance = std::sqrt(
-                                std::pow(mCharacter.getPosition().x - it->getPosition().x, 2.f) +
-                                std::pow(mCharacter.getPosition().y - it->getPosition().y, 2.f)
-                            );
+                            for (auto it = mDroppedItems.begin(); it != mDroppedItems.end();) {
+                                float distance = std::sqrt(
+                                    std::pow(mCharacter.getPosition().x - it->getPosition().x, 2.f) +
+                                    std::pow(mCharacter.getPosition().y - it->getPosition().y, 2.f)
+                                );
 
-                            if (it->getPickUpCap()) {
-                                if (distance < 35.f) {
-                                    const Item* item = it->getItem();
-                                    if (item->getId() == 1)
-                                        mInventory.addItem(std::make_unique<Wood>(), it->getQuantity());
-                                    else if (item->getId() == 2)
-                                        mInventory.addItem(std::make_unique<TowerBlueprint>(), it->getQuantity());
-                                    else if (item->getId() == 3)
-                                        mInventory.addItem(std::make_unique<TowerBlueprintRare>(), it->getQuantity());
-                                    else if (item->getId() == 4)
-                                        mInventory.addItem(std::make_unique<TowerBlueprintEpic>(), it->getQuantity());
-                                    else if(item->getId() == 5)
-                                        mInventory.addItem(std::make_unique<TowerBlueprintMythic>(), it->getQuantity());
+                                if (it->getPickUpCap()) {
+                                    if (distance < 35.f) {
+                                        const Item* item = it->getItem();
+                                        if (item->getId() == 1)
+                                            mInventory.addItem(std::make_unique<Wood>(), it->getQuantity());
+                                        else if (item->getId() == 2)
+                                            mInventory.addItem(std::make_unique<TowerBlueprint>(), it->getQuantity());
+                                        else if (item->getId() == 3)
+                                            mInventory.addItem(std::make_unique<TowerBlueprintRare>(), it->getQuantity());
+                                        else if (item->getId() == 4)
+                                            mInventory.addItem(std::make_unique<TowerBlueprintEpic>(), it->getQuantity());
+                                        else if(item->getId() == 5)
+                                            mInventory.addItem(std::make_unique<TowerBlueprintMythic>(), it->getQuantity());
 
-                                    it = mDroppedItems.erase(it);
-                                    continue;
+                                        it = mDroppedItems.erase(it);
+                                        continue;
+                                    }
+                                } else {
+                                    if (distance > 35.f)
+                                        it->setPickUpCap(true);
                                 }
-                            } else {
-                                if (distance > 35.f)
-                                    it->setPickUpCap(true);
+                                ++it;
                             }
-                            ++it;
-                        }
-                        mMap.update();
+                            mMap.update();
 
-                        mShowInteract = false;
+                            mShowInteract = false;
 
-                        for (auto& entity : mMap.getEntities()) {
-                            if (!entity->isInteractable())
-                                continue;
+                            for (auto& entity : mMap.getEntities()) {
+                                if (!entity->isInteractable())
+                                    continue;
 
-                            if (entity->getInteractBounds().intersects(mCharacter.getBounds())) {
-                                mShowInteract = true;
+                                if (entity->getInteractBounds().intersects(mCharacter.getBounds())) {
+                                    mShowInteract = true;
 
-                                mInteractPos = entity->getInteractPosition();
+                                    mInteractPos = entity->getInteractPosition();
 
-                                mInteractCircle.setPosition({mInteractPos.x +
-                                    entity->getInteractBounds().width + 1.5f, mInteractPos.y});
+                                    mInteractCircle.setPosition({mInteractPos.x +
+                                        entity->getInteractBounds().width + 1.5f, mInteractPos.y});
 
-                                mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
-                                    mInteractCircle.getPosition().y + 2.8f});
+                                    mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
+                                        mInteractCircle.getPosition().y + 2.8f});
 
-                                break;
+                                    break;
+                                }
                             }
-                        }
 
-                        if (!mShowInteract) {
-                            mInteractPos = { 0.f, 0.f };
-                            mInteractCircle.setPosition(mInteractPos);
-                            mInteractText.setPosition(mInteractPos);
-                        }
+                            if (!mShowInteract) {
+                                mInteractPos = { 0.f, 0.f };
+                                mInteractCircle.setPosition(mInteractPos);
+                                mInteractText.setPosition(mInteractPos);
+                            }
 
-                        mAnalyzeMenu.update();
+                            mAnalyzeMenu.update();
+                        } else {
+                            sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
+                            mChestMenu.updateHover(mousePos);
+                        }
                     } else {
                         sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
                         mAnalyzeMenu.updateHover(mousePos);
@@ -636,12 +653,15 @@ void RPGEngine::render() {
     if (mShowAnalyzeMenu)
         mAnalyzeMenu.render(mWindow);
 
+    if (mShowChestMenu)
+        mChestMenu.render(mWindow);
+
     if(!mShowDialogue)
         mHotbar.render(mWindow);
 
     mTransitionSystem.render(mWindow);
 
-    if (!mShowBankMenu && !mShowMenu && !mShowStartMenu && !mShowShopMenu && !mShowAnalyzeMenu)
+    if (!mShowBankMenu && !mShowMenu && !mShowStartMenu && !mShowShopMenu && !mShowAnalyzeMenu && !mShowChestMenu)
         renderDateTime(mWindow, mFont, currentDate, currentTime);
 
     mWindow.display();
@@ -696,6 +716,9 @@ void RPGEngine::closeMenues() {
 
     if (mShowAnalyzeMenu)
         mShowAnalyzeMenu = false;
+
+    if (mShowChestMenu)
+        mShowChestMenu = false;
 }
 
 void RPGEngine::saveGame() {
