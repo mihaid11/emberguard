@@ -12,6 +12,7 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
                       const int& penalty, const int& interest, const int& amountToRepay, const int& daysToRepayment,
                       const int& startYear, const int& startDay, const int& startHour, const int& startMinute,
                       const std::vector<int>& inventoryItemId, const std::vector<int>& inventoryItemQuantity,
+                      const std::vector<int>& chestItemId, const std::vector<int>& chestItemQuantity,
                       const std::vector<int>& droppedItemId, const std::vector<float>& droppedItemXPos,
                       const std::vector<float>& droppedItemYPos, const std::vector<int>& droppedItemQuantity,
                       const int& extracting, const int& inSlot, const int& completed, const int& timerActive,
@@ -46,6 +47,10 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
     for (int i = 0; i < inventoryItemId.size(); ++i)
         outFile << inventoryItemId[i] << " " << inventoryItemQuantity[i] << std::endl;
 
+    outFile << chestItemId.size() << std::endl;
+    for (int i = 0; i < chestItemId.size(); ++i)
+        outFile << chestItemId[i] << " " << chestItemQuantity[i] << std::endl;
+
     outFile << droppedItemId.size() << std::endl;
     for (int i = 0; i < droppedItemId.size(); ++i) {
         outFile << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;
@@ -62,6 +67,7 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
                       int& hasBorrowActive, int& penalty, int& interest, int& amountToRepay, int& daysToRepayment,
                       int& startYear, int& startDay, int& startHour, int& startMinute,
                       std::vector<int>& inventoryItemId, std::vector<int>& inventoryItemQuantity,
+                      std::vector<int>& chestItemId, std::vector<int>& chestItemQuantity,
                       std::vector<int>& droppedItemId, std::vector<float>& droppedItemXPos,
                       std::vector<float>& droppedItemYPos, std::vector<int>& droppedItemQuantity,
                       int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear1,
@@ -197,7 +203,7 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
         return false;
     }
 
-    int invSize, drpSize;
+    int invSize, chestSize, drpSize;
     inFile >> invSize;
     //std::cout << "Inventory Size: " << invSize << std::endl;
 
@@ -207,6 +213,14 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
         inventoryItemId.push_back(id);
         inventoryItemQuantity.push_back(quantity);
         //std::cout << "Item " << i << ": " << inventoryItemId[i] << ", " << inventoryItemQuantity[i] << std::endl;
+    }
+
+    inFile >> chestSize;
+    for (size_t i = 0; i < chestSize; ++i) {
+        int id, quantity;
+        inFile >> id >> quantity;
+        chestItemId.push_back(id);
+        chestItemQuantity.push_back(quantity);
     }
 
     inFile >> drpSize;
@@ -254,15 +268,21 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
     std::vector<int> droppedItemQuantity;
     std::vector<int> inventoryItemId;
     std::vector<int> inventoryItemQuantity;
+    std::vector<int> chestItemId;
+    std::vector<int> chestItemQuantity;
     sf::Vector2f cameraFixedPosition;
 
     std::string tmp = mSaveFilePath;
     mSaveFilePath = saveFile;
-    bool success = load(playerPosition, npcPositions, npcWaypoints, crystals,
-        year, day, hour, minute, bankBalance, hasBorrowActive, penalty, interest, amountToRepay, daysToRepayment,
-        startYear, startDay, startHour, startMinute, inventoryItemId, inventoryItemQuantity, droppedItemId,
-        droppedItemXPos, droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed, timerActive, startYear1,
-        startDay1, startHour1, startMinute1, slotItemId, insideStructure, cameraFixedPosition);
+    bool success = load(playerPosition, npcPositions, npcWaypoints, crystals, year, day,
+                        hour, minute, bankBalance, hasBorrowActive, penalty, interest,
+                        amountToRepay, daysToRepayment, startYear, startDay, startHour,
+                        startMinute, inventoryItemId, inventoryItemQuantity,
+                        chestItemId, chestItemQuantity,
+                        droppedItemId, droppedItemXPos, droppedItemYPos,
+                        droppedItemQuantity, extracting, inSlot, completed, timerActive,
+                        startYear1, startDay1, startHour1, startMinute1, slotItemId,
+                        insideStructure, cameraFixedPosition);
 
     mSaveFilePath = tmp;
     return success;
