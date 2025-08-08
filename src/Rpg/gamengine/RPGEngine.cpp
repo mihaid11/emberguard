@@ -316,8 +316,17 @@ void RPGEngine::processEvents() {
                     if (slotIndex != -1) {
                         if (mInventory.getItemAt(slotIndex)) {
                             const Item* item = mInventory.getItemAt(slotIndex);
+                            sf::Vector2f droppedItemPos;
+                            if (mCharacter.getAnimation() == 1)
+                                droppedItemPos = {-35.5f, 2.f};
+                            else if (mCharacter.getAnimation() == 2)
+                                droppedItemPos = {13.f, 2.f};
+                            else if (mCharacter.getAnimation() == 3)
+                                droppedItemPos = {-11.5f, -mCharacter.getHeight() / 1.1f};
+                            else if (mCharacter.getAnimation() == 4)
+                                droppedItemPos = {-11.5f, mCharacter.getHeight() / 2.f};
                             const DroppedItem dropItem = DroppedItem(item,
-                                { mCharacter.getPosition().x + 10.f, mCharacter.getPosition().y - 10.f },
+                                mCharacter.getCenterPosition() + droppedItemPos,
                                 mInventory.getItemQuantityAt(slotIndex));
 
                             mInventory.removeItemAt(slotIndex);
@@ -331,7 +340,17 @@ void RPGEngine::processEvents() {
                     if (slotIndex != -1) {
                         if (mInventory.getItemAt(slotIndex)) {
                             const Item* item = mInventory.getItemAt(slotIndex);
-                            const DroppedItem dropItem = DroppedItem(item, mCharacter.getPosition(),
+                            sf::Vector2f droppedItemPos;
+                            if (mCharacter.getAnimation() == 1)
+                                droppedItemPos = {-35.5f, 2.f};
+                            else if (mCharacter.getAnimation() == 2)
+                                droppedItemPos = {13.f, 2.f};
+                            else if (mCharacter.getAnimation() == 3)
+                                droppedItemPos = {-11.5f, -mCharacter.getHeight() / 1.1f};
+                            else if (mCharacter.getAnimation() == 4)
+                                droppedItemPos = {-11.5f, mCharacter.getHeight() / 2.f};
+                            const DroppedItem dropItem = DroppedItem(item,
+                                mCharacter.getCenterPosition() + droppedItemPos,
                                 mInventory.getItemQuantityAt(slotIndex));
 
                             mInventory.removeItemAt(slotIndex);
