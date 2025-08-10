@@ -6,6 +6,7 @@
 #include "../npcs/NPC.h"
 #include "../npcs/NPCManager.h"
 #include "../dialogueSystem/DialogueManager.h"
+#include "../story/StoryManager.h"
 #include "../menues/Menu.h"
 #include "../saveSystem/SaveSystem.h"
 #include "../menues/StartTowerDefenseMenu.h"
@@ -86,11 +87,13 @@ private:
     int mCrystals;
     int mCurrentLevel;
     std::vector<int> mAvailableTowers;
+    int mChapter;
 
     SaveSystem mSaveSystem;
     int mSaveNumber;
     std::string mSavePath;
 
+    StoryManager mStoryManager;
     NPCManager mNPCManager;
     //DialogueManager mDialogueManager;
     SkillTree mSkillTree;
