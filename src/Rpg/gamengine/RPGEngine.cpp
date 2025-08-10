@@ -78,6 +78,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mCrystals(100),
     mStorageCapacity(500),
     mCurrentLevel(1),
+    mChapter(1),
     //mZoneManager(),
     mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
@@ -796,6 +797,7 @@ void RPGEngine::saveGame() {
         droppedItemQuantity.push_back(droppedItem.getQuantity());
     }
 
+    int chapter = mStoryManager.getChapter();
 
     /*for (int i = 0; i < inventoryItemId.size(); ++i)
         std::cout << inventoryItemId[i] << " " << inventoryItemQuantity[i] << std::endl;
@@ -810,16 +812,17 @@ void RPGEngine::saveGame() {
                      chestItemId, chestItemQuantity, droppedItemId, droppedItemXPos,
                      droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed,
                      timerActive, startYear1, startDay1, startHour1, startMinute1,
-                     slotItemId, mIsInsideAStructure, mCameraFixedPosition);
+                     slotItemId, mIsInsideAStructure, mCameraFixedPosition, chapter);
 }
 
 void RPGEngine::loadGame() {
     sf::Vector2f playerPosition;
     std::vector<sf::Vector2f> npcPositions;
     std::vector<int> npcWaypoints;
-    int crystals, year, day, hour, minute, bankBalance, penalty, interest, amountToRepay, daysToRepayment,
-        startYear, startDay, startHour, startMinute, hasBorrowActive, extracting, inSlot, completed, timerActive,
-        startYear1, startDay1, startHour1, startMinute1, slotItemId, insideStructure;
+    int crystals, year, day, hour, minute, bankBalance, penalty, interest,
+        amountToRepay, daysToRepayment, startYear, startDay, startHour, startMinute,
+        hasBorrowActive, extracting, inSlot, completed, timerActive, startYear1,
+        startDay1, startHour1, startMinute1, slotItemId, insideStructure, chapter;
     std::vector<int> droppedItemId;
     std::vector<float> droppedItemXPos;
     std::vector<float> droppedItemYPos;
@@ -836,12 +839,15 @@ void RPGEngine::loadGame() {
                          chestItemId, chestItemQuantity, droppedItemId, droppedItemXPos,
                          droppedItemYPos, droppedItemQuantity, extracting, inSlot,
                          completed, timerActive, startYear1, startDay1, startHour1,
-                         startMinute1, slotItemId, insideStructure, mCameraFixedPosition)) {
+                         startMinute1, slotItemId, insideStructure,
+                         mCameraFixedPosition, chapter)) {
 
         mCharacter.setPosition(playerPosition);
         mIsInsideAStructure = insideStructure;
         mNPCManager.loadNPCStates(npcPositions, npcWaypoints);
         mCrystals = crystals;
+        mChapter = chapter;
+        mStoryManager.setChapter(chapter);
 
         mTimeSystem.setYear(year);
         mTimeSystem.setDay(day);
@@ -953,6 +959,8 @@ void RPGEngine::resetSaveGame() {
     mCharacter.setPosition(sf::Vector2f(400.f, 300.f));
     mNPCManager.loadNPCStates({}, {});
     mCrystals = 100;
+    mChapter = 1;
+    mStoryManager.setChapter(1);
 
     mTimeSystem.setYear(1);
     mTimeSystem.setDay(1);
