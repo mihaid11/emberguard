@@ -17,7 +17,8 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
                       const std::vector<float>& droppedItemYPos, const std::vector<int>& droppedItemQuantity,
                       const int& extracting, const int& inSlot, const int& completed, const int& timerActive,
                       const int& startYear1, const int& startDay1, const int& startHour1, const int& startMinute1,
-                      const int& slotItemId, const int& insideStructure, const sf::Vector2f& fixedCameraPos) {
+                      const int& slotItemId, const int& insideStructure, const sf::Vector2f& fixedCameraPos,
+                      const int& chapter) {
 
     std::ofstream outFile(mSaveFilePath);
     if (!outFile) {
@@ -40,8 +41,9 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
     outFile << hasBorrowActive << " " << penalty << " " << interest << " " << amountToRepay << " " << daysToRepayment
         << " " << startYear << " " << startDay << " " << startHour << " " << startMinute << std::endl;
 
-    outFile << extracting << " " << inSlot << " " << completed << " " << timerActive << " " << startYear1 << " "
-        << startDay1 << " " << startHour1 << " " << startMinute1 << " " << slotItemId << std::endl;
+    outFile << extracting << " " << inSlot << " " << completed << " " << timerActive
+        << " " << startYear1 << " " << startDay1 << " " << startHour1 << " "
+        << startMinute1 << " " << slotItemId << std::endl;
 
     outFile << inventoryItemId.size() << std::endl;
     for (int i = 0; i < inventoryItemId.size(); ++i)
@@ -57,7 +59,8 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
         // std::cout << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;
     }
 
-    outFile << insideStructure << " " << fixedCameraPos.x << " " << fixedCameraPos.y << std::endl;
+    outFile << insideStructure << " " << fixedCameraPos.x << " " << fixedCameraPos.y
+        << " " << chapter << std::endl;
 
     outFile.close();
 }
@@ -72,7 +75,7 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
                       std::vector<float>& droppedItemYPos, std::vector<int>& droppedItemQuantity,
                       int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear1,
                       int& startDay1, int& startHour1, int& startMinute1, int& slotItemId,
-                      int& insideStructure, sf::Vector2f& fixedCameraPos) {
+                      int& insideStructure, sf::Vector2f& fixedCameraPos, int& chapter) {
 
     std::ifstream inFile(mSaveFilePath);
     if (!inFile) {
@@ -250,6 +253,10 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
         std::cerr << "Error reading fixed camera pos Y from save file." << std::endl;
         return false;
     }
+    if (!(inFile >> chapter)) {
+        std::cerr << "Error reading chapter from save file." << std::endl;
+        return false;
+    }
 
     inFile.close();
     return true;
@@ -260,8 +267,9 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
     std::vector<sf::Vector2f> npcPositions;
     std::vector<int> npcWaypoints;
     int bankBalance, penalty, interest, amountToRepay, daysToRepayment,
-        startYear, startDay, startHour, startMinute, hasBorrowActive, extracting, inSlot, completed, timerActive,
-        startYear1, startDay1, startHour1, startMinute1, slotItemId, insideStructure;
+        startYear, startDay, startHour, startMinute, hasBorrowActive, extracting,
+        inSlot, completed, timerActive, startYear1, startDay1, startHour1,
+        startMinute1, slotItemId, insideStructure, chapter;
     std::vector<int> droppedItemId;
     std::vector<float> droppedItemXPos;
     std::vector<float> droppedItemYPos;
@@ -282,7 +290,7 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
                         droppedItemId, droppedItemXPos, droppedItemYPos,
                         droppedItemQuantity, extracting, inSlot, completed, timerActive,
                         startYear1, startDay1, startHour1, startMinute1, slotItemId,
-                        insideStructure, cameraFixedPosition);
+                        insideStructure, cameraFixedPosition, chapter);
 
     mSaveFilePath = tmp;
     return success;

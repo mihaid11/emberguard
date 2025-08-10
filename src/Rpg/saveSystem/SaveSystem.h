@@ -20,7 +20,8 @@ public:
               const std::vector<float>& droppedItemYPos, const std::vector<int>& droppedItemQuantity,
               const int& extracting, const int& inSlot, const int& completed, const int& timerActive,
               const int& startYear1, const int& startDay1, const int& startHour1, const int& startMinute1,
-              const int& slotItemid, const int& insideStructure, const sf::Vector2f& fixedCameraPos);
+              const int& slotItemid, const int& insideStructure, const sf::Vector2f& fixedCameraPos,
+              const int& chapter);
 
     bool load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& npcPositions, std::vector<int>& npcWaypoints,
               int& crystals, int& year, int& day, int& hour, int& minute, int& bankBalance,
@@ -32,7 +33,7 @@ public:
               std::vector<float>& droppedItemYPos, std::vector<int>& droppedItemQuantity,
               int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear1,
               int& startDay1, int& startHour1, int& startMinute1, int& slotItemId,
-              int& insideStructure, sf::Vector2f& fixedCameraPos);
+              int& insideStructure, sf::Vector2f& fixedCameraPos, int& chapter);
 
     // Method used for the extraction of some fields for MainMenu
     bool loadPartial(std::string saveFile, int& crystals, int& year, int &day, int& hour, int& minute);
