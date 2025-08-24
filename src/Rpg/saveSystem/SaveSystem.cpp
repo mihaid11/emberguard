@@ -1,4 +1,5 @@
 #include "SaveSystem.h"
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 
@@ -18,7 +19,8 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
                       const int& extracting, const int& inSlot, const int& completed, const int& timerActive,
                       const int& startYear1, const int& startDay1, const int& startHour1, const int& startMinute1,
                       const int& slotItemId, const int& insideStructure, const sf::Vector2f& fixedCameraPos,
-                      const int& chapter) {
+                      const int& chapter, const std::vector<std::string>& flagKeys,
+                      const std::vector<int>& flagValues) {
 
     std::ofstream outFile(mSaveFilePath);
     if (!outFile) {
@@ -62,6 +64,11 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
     outFile << insideStructure << " " << fixedCameraPos.x << " " << fixedCameraPos.y
         << " " << chapter << std::endl;
 
+    outFile << flagValues.size() << std::endl;
+    for (int i = 0; i < flagValues.size(); ++i) {
+        outFile << flagKeys[i] << " " << flagValues[i] << std::endl;
+    }
+
     outFile.close();
 }
 
@@ -75,7 +82,8 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
                       std::vector<float>& droppedItemYPos, std::vector<int>& droppedItemQuantity,
                       int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear1,
                       int& startDay1, int& startHour1, int& startMinute1, int& slotItemId,
-                      int& insideStructure, sf::Vector2f& fixedCameraPos, int& chapter) {
+                      int& insideStructure, sf::Vector2f& fixedCameraPos, int& chapter,
+                      std::vector<std::string>& flagKeys, std::vector<int>& flagValues) {
 
     std::ifstream inFile(mSaveFilePath);
     if (!inFile) {
@@ -258,6 +266,23 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
         return false;
     }
 
+    int flagSize = 0;
+    if (!(inFile >> flagSize)) {
+        std::cerr << "Failed to read flag size, assuming no flags." << std::endl;
+        flagSize = 0;
+    }
+
+    for (int i = 0; i < flagSize; ++i) {
+        std::string flagKey;
+        int flagValue;
+        if (!(inFile >> flagKey >> flagValue)) {
+            std::cerr << "Error" << std::endl;
+            return false;
+        }
+        flagKeys.push_back(flagKey);
+        flagValues.push_back(flagValue);
+    }
+
     inFile.close();
     return true;
 }
@@ -278,6 +303,8 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
     std::vector<int> inventoryItemQuantity;
     std::vector<int> chestItemId;
     std::vector<int> chestItemQuantity;
+    std::vector<std::string> flagKeys;
+    std::vector<int> flagValues;
     sf::Vector2f cameraFixedPosition;
 
     std::string tmp = mSaveFilePath;
@@ -290,7 +317,8 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
                         droppedItemId, droppedItemXPos, droppedItemYPos,
                         droppedItemQuantity, extracting, inSlot, completed, timerActive,
                         startYear1, startDay1, startHour1, startMinute1, slotItemId,
-                        insideStructure, cameraFixedPosition, chapter);
+                        insideStructure, cameraFixedPosition, chapter, flagKeys,
+                        flagValues);
 
     mSaveFilePath = tmp;
     return success;
