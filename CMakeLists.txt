@@ -27,6 +27,7 @@ set(SFML_INCLUDE_DIR "${SFML_DIR}/include")
 set(SFML_LIBRARY_DIR "${SFML_DIR}/lib")
 
 include_directories(${SFML_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/External/nlohmann_json/include)
 
 # Define SFML libraries based on the build configuration (Debug or Release)
 if(CMAKE_CONFIGURATION_TYPES)  # Multi-config generator (like Visual Studio)
@@ -148,9 +149,14 @@ elseif(UNIX)
     )
 endif()
 
-# Post-build step for copying assets directory
+# Copy assets directory
 add_custom_command(TARGET Emberguard POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:Emberguard>/assets
 )
 
+# Copy dialogues directory
+add_custom_command(TARGET Emberguard POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/src/Rpg/dialogueSystem/dialogues $<TARGET_FILE_DIR:Emberguard>/dialogues
+)
