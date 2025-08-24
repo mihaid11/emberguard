@@ -8,6 +8,7 @@ void Dialogue::addSegment(const DialogueSegment& segment) {
 }
 
 std::string Dialogue::getCurrentSegment() {
+    if (mSegments.empty()) return "";
     return mSegments[mCurrentSegmentIndex].getText();
 }
 
