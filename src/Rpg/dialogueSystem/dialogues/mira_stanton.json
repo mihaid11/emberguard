@@ -1,0 +1,20 @@
+{
+  "npc_id": "mira_stanton",
+  "dialogues": [
+    {
+      "conditions": { "chapter": 1, "met_wizard": true },
+      "lines": [
+        "Ah, I see you’ve met the wizard.",
+        "Things are changing..."
+      ]
+    },
+    {
+      "conditions": { "chapter": 1 },
+      "lines": [
+        "Alden! There you are!",
+        "I was just thinking about that shortcut we found through the forest last week.",
+        "You up for another adventure?"
+      ]
+    }
+  ]
+}

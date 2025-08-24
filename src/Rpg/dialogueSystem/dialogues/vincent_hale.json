@@ -1,0 +1,26 @@
+{
+  "npc_id": "vincent_hale",
+  "dialogues": [
+    {
+      "conditions": { "chapter": 1, "joined_guild": true },
+      "lines": [
+        "Ah, so you’re one of us now.",
+        "Remember: loyalty to the guild above all."
+      ]
+    },
+    {
+      "conditions": { "chapter": 1 },
+      "lines": [
+        "Heh. Don’t waste my time, boy.",
+        "Unless you’ve got coin, move along."
+      ]
+    },
+    {
+      "conditions": { "chapter": 2 },
+      "lines": [
+        "You dare show your face here?",
+        "The guild never forgets betrayal."
+      ]
+    }
+  ]
+}

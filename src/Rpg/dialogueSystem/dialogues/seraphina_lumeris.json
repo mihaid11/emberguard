@@ -1,0 +1,26 @@
+{
+  "npc_id": "seraphina_lumeris",
+  "dialogues": [
+    {
+      "conditions": { "chapter": 1, "met_wizard": true },
+      "lines": [
+        "The wizard has chosen to reveal himself? Then fate quickens its pace.",
+        "Be careful, Alden. Not every prophecy is meant to be fulfilled."
+      ]
+    },
+    {
+      "conditions": { "chapter": 1 },
+      "lines": [
+        "The stars have been restless tonight.",
+        "Something approaches — I can feel it."
+      ]
+    },
+    {
+      "conditions": { "chapter": 2 },
+      "lines": [
+        "You’ve come back, and wiser than before.",
+        "Now, let us speak of what the stars demand of you."
+      ]
+    }
+  ]
+}

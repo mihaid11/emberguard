@@ -1,0 +1,26 @@
+{
+  "npc_id": "elliot_marlowe",
+  "dialogues": [
+    {
+      "conditions": { "chapter": 1, "met_wizard": true },
+      "lines": [
+        "Ah, I see you’ve met the wizard.",
+        "Things are changing..."
+      ]
+    },
+    {
+      "conditions": { "chapter": 1 },
+      "lines": [
+        "Oh! You startled me. I didn’t hear you approach.",
+        "I’ve been working on a new melody, want to hear?"
+      ]
+    },
+    {
+      "conditions": { "chapter": 2 },
+      "lines": [
+        "The town feels tense… like everyone’s holding their breath.",
+        "Music might be the only comfort left."
+      ]
+    }
+  ]
+}
