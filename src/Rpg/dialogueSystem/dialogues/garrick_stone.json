@@ -1,0 +1,26 @@
+{
+  "npc_id": "garrick_stone",
+  "dialogues": [
+    {
+      "conditions": { "chapter": 1, "met_wizard": true },
+      "lines": [
+        "So, you’ve met the wizard. Hah! Don’t let him fill your head with nonsense.",
+        "Magic always comes with a price."
+      ]
+    },
+    {
+      "conditions": { "chapter": 1 },
+      "lines": [
+        "Stay sharp out there, lad. The woods aren’t as quiet as they seem.",
+        "Even silence can hide danger."
+      ]
+    },
+    {
+      "conditions": { "chapter": 2 },
+      "lines": [
+        "That sword you carry… It belonged to a true hero once.",
+        "Perhaps it’s time you lived up to it."
+      ]
+    }
+  ]
+}
