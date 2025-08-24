@@ -3,16 +3,21 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <unordered_map>
 #include "../dialogueSystem/DialogueManager.h"
+#include "../dialogueSystem/DialogueDatabase.h"
+#include "../story/StoryManager.h"
 #include "../../Animation.h"
 #include "../entities/DrawableEntity.h"
 
 class NPC : public DrawableEntity {
 public:
-    NPC(const sf::Vector2f& position);
+    NPC(const sf::Vector2f& position, const std::string& mId);
 
     void advanceDialogue();
     void update(float dt);
+    void refreshDialogue(const DialogueDatabase& dialogueDatabase, const StoryManager& storyManager);
+    void clearDialogue();
 
     void setDialogue(const std::string& key, const Dialogue& dialogue);
     void setActiveDialogue(const std::string& key);
@@ -36,22 +41,22 @@ public:
     int getCurrentWaypoint() const;
     void setCurrentWaypoint(int waypoint);
 
-    sf::Color getColor() const;
     void setInteractPosition(const sf::Vector2f& position);
     void setAnimationOpposing(int animationIndex);
     void setInteract(bool showInteract);
 
+    std::string getID() const { return mId; }
     sf::Sprite& getSprite();
 
 protected:
-    sf::CircleShape mShape;
+    std::string mId;
     float mInteractionRadius;
     sf::CircleShape mInteractCircle;
     sf::Text mInteractText;
     bool mShowInteract;
     sf::Font mFont;
 
-    std::map<std::string, Dialogue> mDialogues;
+    std::unordered_map<std::string, Dialogue> mDialogues;
     std::string mActiveDialogueKey;
     DialogueManager mDialogueManager;
 
