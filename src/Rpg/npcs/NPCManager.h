@@ -2,13 +2,16 @@
 #include <memory>
 #include <vector>
 #include "NPC.h"
+#include "../dialogueSystem/DialogueDatabase.h"
+#include "../story/StoryManager.h"
 #include "../mainCharacter/MainCharacter.h"
 
 class NPCManager {
 public:
-    NPCManager();
+    NPCManager(StoryManager& storyManager, DialogueDatabase& dialogueDatabase);
 
     void addNPC(std::unique_ptr<NPC> npc);
+    void refreshNPCDialogues();
     void update(float dt);
     void render(sf::RenderWindow& window);
     void handleInteraction(MainCharacter& player, bool& mShowDialogue, sf::Text& dialogueText);
@@ -28,6 +31,8 @@ public:
 private:
     std::vector<std::unique_ptr<NPC>> mNPCs;
     NPC* mCurrentNPC;
+    StoryManager& mStoryManager;
+    DialogueDatabase& mDialogueDatabase;
     bool mShowDialogue;
 };
 
