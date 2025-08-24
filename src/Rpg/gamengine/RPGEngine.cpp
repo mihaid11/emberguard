@@ -56,12 +56,12 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mGameManager(gameManager),
     mSaveSystem(),
     mSaveNumber(0),
-    mMiraStanton(sf::Vector2f(1000.0f, 900.0f)),
-    mElliotMarlowe(sf::Vector2f(100.0f, 0.0f)),
-    mGarrickStone(sf::Vector2f(-100.0f, 0.0f), gameManager),
-    mVincentHale(sf::Vector2f(600.0f, 400.0f)),
-    mSeraphinaLumeris(sf::Vector2f(-20.0f, 980.0f)),
-    mNPCManager(),
+    mMiraStanton(sf::Vector2f(1000.0f, 900.0f), "mira_stanton"),
+    mElliotMarlowe(sf::Vector2f(100.0f, 0.0f), "elliot_marlowe"),
+    mGarrickStone(sf::Vector2f(-100.0f, 0.0f), "garrick_stone",gameManager),
+    mVincentHale(sf::Vector2f(600.0f, 400.0f), "vincent_hale"),
+    mSeraphinaLumeris(sf::Vector2f(-20.0f, 980.0f), "seraphina_lumeris"),
+    mNPCManager(mStoryManager, mDialogueDatabase),
     mChestInventory(2, 2),
     mCurrentInteractingNPC(nullptr),
     mSkillTree(),
@@ -155,12 +155,21 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
 
     //mZoneManager.loadTileset("assets/sprites/tiles/Tileset.png");
 
+    //Add NPCs dialogues
+    mDialogueDatabase.loadDialogueFromFile("dialogues/mira_stanton.json");
+    mDialogueDatabase.loadDialogueFromFile("dialogues/seraphina_lumeris.json");
+    mDialogueDatabase.loadDialogueFromFile("dialogues/garrick_stone.json");
+    mDialogueDatabase.loadDialogueFromFile("dialogues/vincent_hale.json");
+    mDialogueDatabase.loadDialogueFromFile("dialogues/elliot_marlowe.json");
+
     // Add NPCs
-    mNPCManager.addNPC(std::make_unique<GarrickStone>(sf::Vector2f(650.0f, 400.0f), gameManager));
-    mNPCManager.addNPC(std::make_unique<MiraStanton>(sf::Vector2f(1000.0f, 900.0f)));
-    mNPCManager.addNPC(std::make_unique<ElliotMarlowe>(sf::Vector2f(100.0f, 0.0f)));
-    mNPCManager.addNPC(std::make_unique<VincentHale>(sf::Vector2f(-100.0f, 0.0f)));
-    mNPCManager.addNPC(std::make_unique<SeraphinaLumeris>(sf::Vector2f(-20.0f, 980.0f)));
+    mNPCManager.addNPC(std::make_unique<GarrickStone>(sf::Vector2f(650.0f, 400.0f), "garrick_stone", gameManager));
+    mNPCManager.addNPC(std::make_unique<MiraStanton>(sf::Vector2f(1000.0f, 900.0f), "mira_stanton"));
+    mNPCManager.addNPC(std::make_unique<ElliotMarlowe>(sf::Vector2f(100.0f, 0.0f), "elliot_marlowe"));
+    mNPCManager.addNPC(std::make_unique<VincentHale>(sf::Vector2f(-100.0f, 0.0f), "vincent_hale"));
+    mNPCManager.addNPC(std::make_unique<SeraphinaLumeris>(sf::Vector2f(-20.0f, 980.0f), "seraphina_lumeris"));
+    mStoryManager.bindNPCManager(&mNPCManager);
+    mStoryManager.setChapter(1);
 
     mAvailableTowers.push_back(2);
     mAvailableTowers.push_back(1);
@@ -798,6 +807,14 @@ void RPGEngine::saveGame() {
     }
 
     int chapter = mStoryManager.getChapter();
+    std::unordered_map<std::string, bool> flags = mStoryManager.getAllFlags();
+    std::vector<std::string> flagKeys;
+    std::vector<int> flagValues;
+
+    for (auto& flag : flags) {
+        flagKeys.push_back(flag.first);
+        flagValues.push_back(flag.second ? 1 : 0);
+    }
 
     /*for (int i = 0; i < inventoryItemId.size(); ++i)
         std::cout << inventoryItemId[i] << " " << inventoryItemQuantity[i] << std::endl;
@@ -812,7 +829,8 @@ void RPGEngine::saveGame() {
                      chestItemId, chestItemQuantity, droppedItemId, droppedItemXPos,
                      droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed,
                      timerActive, startYear1, startDay1, startHour1, startMinute1,
-                     slotItemId, mIsInsideAStructure, mCameraFixedPosition, chapter);
+                     slotItemId, mIsInsideAStructure, mCameraFixedPosition, chapter,
+                     flagKeys, flagValues);
 }
 
 void RPGEngine::loadGame() {
@@ -831,6 +849,8 @@ void RPGEngine::loadGame() {
     std::vector<int> inventoryItemQuantity;
     std::vector<int> chestItemId;
     std::vector<int> chestItemQuantity;
+    std::vector<std::string> flagKeys;
+    std::vector<int> flagValues;
 
     if (mSaveSystem.load(playerPosition, npcPositions, npcWaypoints, crystals, year,
                          day, hour, minute, bankBalance, hasBorrowActive, penalty,
@@ -840,13 +860,18 @@ void RPGEngine::loadGame() {
                          droppedItemYPos, droppedItemQuantity, extracting, inSlot,
                          completed, timerActive, startYear1, startDay1, startHour1,
                          startMinute1, slotItemId, insideStructure,
-                         mCameraFixedPosition, chapter)) {
+                         mCameraFixedPosition, chapter, flagKeys, flagValues)) {
 
         mCharacter.setPosition(playerPosition);
         mIsInsideAStructure = insideStructure;
         mNPCManager.loadNPCStates(npcPositions, npcWaypoints);
         mCrystals = crystals;
         mChapter = chapter;
+        std::unordered_map<std::string, bool> flags;
+        for (size_t i = 0; i < flagKeys.size(); ++i) {
+            flags[flagKeys[i]] = (flagValues[i] == 1);
+        }
+        mStoryManager.setAllFlags(flags);
         mStoryManager.setChapter(chapter);
 
         mTimeSystem.setYear(year);
