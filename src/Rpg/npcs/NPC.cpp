@@ -3,10 +3,10 @@
 #include <iostream>
 #include <math.h>
 
-NPC::NPC(const sf::Vector2f& position)
+NPC::NPC(const sf::Vector2f& position, const std::string& id)
     : mInteractionRadius(60.0f), mPaused(false), mSpeed(35.0f),
     mCurrentWaypoint(0), mIsPaused(false), mPauseDuration(3.0f),
-    mPauseTimer(0.0f), mPriority(0), mShowInteract(false) {
+    mPauseTimer(0.0f), mPriority(0), mShowInteract(false), mId(id) {
 
     mSprite.setTextureRect({ 0, 0, 64, 64 });
     mAnimations[int(AnimationIndex::IdleUp)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/idleUp.png", 4, 2.5f);
@@ -64,6 +64,22 @@ bool NPC::hasMoreDialogue() const {
 }
 
 void NPC::resetDialogue() {
+    mDialogueManager.resetDialogue();
+}
+
+void NPC::refreshDialogue(const DialogueDatabase& dialogueDatabase, const StoryManager& storyManager) {
+    auto dialogueOpt = dialogueDatabase.getDialogueForNPC(mId, storyManager);
+    if (dialogueOpt.has_value()) {
+        setDialogue("auto", dialogueOpt.value());
+        setActiveDialogue("auto");
+    } else {
+        clearDialogue();
+    }
+}
+
+void NPC::clearDialogue() {
+    mDialogues.clear();
+    mActiveDialogueKey.clear();
     mDialogueManager.resetDialogue();
 }
 
@@ -184,10 +200,6 @@ int NPC::getCurrentWaypoint() const {
 
 void NPC::setCurrentWaypoint(int waypoint) {
     mCurrentWaypoint = waypoint;
-}
-
-sf::Color NPC::getColor() const {
-    return  mShape.getFillColor();
 }
 
 void NPC::setInteractPosition(const sf::Vector2f& position) {
