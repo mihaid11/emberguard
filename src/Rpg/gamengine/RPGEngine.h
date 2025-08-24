@@ -94,6 +94,7 @@ private:
     std::string mSavePath;
 
     StoryManager mStoryManager;
+    DialogueDatabase mDialogueDatabase;
     NPCManager mNPCManager;
     //DialogueManager mDialogueManager;
     SkillTree mSkillTree;
