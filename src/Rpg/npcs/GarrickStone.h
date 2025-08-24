@@ -5,13 +5,9 @@ class GameManager;
 
 class GarrickStone : public NPC {
 public:
-    GarrickStone(const sf::Vector2f& position, GameManager* gameManager);
-
-    //void interact(GameManager* gameManager);
+    GarrickStone(const sf::Vector2f& position, const std::string& id, GameManager* gameManager);
 
 private:
-    Dialogue mGreeting1Dialogue;
-
     GameManager* mGameManager;
 };
 
