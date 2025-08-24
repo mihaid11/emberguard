@@ -2,6 +2,8 @@
 #include <string>
 #include <unordered_map>
 
+class NPCManager;
+
 class StoryManager {
 public:
     StoryManager() = default;
@@ -12,7 +14,13 @@ public:
     void setChapter(int chapter);
     int getChapter() const;
 
+    const std::unordered_map<std::string, bool>& getAllFlags() const;
+    void setAllFlags(const std::unordered_map<std::string, bool>& flags);
+
+    void bindNPCManager(NPCManager* manager);
+
 private:
     std::unordered_map<std::string, bool> mFlags;
-    int mChapter;
+    int mChapter = 1;
+    NPCManager* mNPCManager;
 };
