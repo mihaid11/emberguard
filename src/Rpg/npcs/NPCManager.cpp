@@ -1,12 +1,19 @@
 #include "NPCManager.h"
 #include <iostream>
 
-NPCManager::NPCManager() : mCurrentNPC(nullptr), mShowDialogue(false) {
+NPCManager::NPCManager(StoryManager& storyManager, DialogueDatabase& dialogueDatabase)
+    : mCurrentNPC(nullptr), mShowDialogue(false),
+    mStoryManager(storyManager), mDialogueDatabase(dialogueDatabase) {
 
 }
 
 void NPCManager::addNPC(std::unique_ptr<NPC> npc) {
     mNPCs.push_back(std::move(npc));
+}
+
+void NPCManager::refreshNPCDialogues() {
+    for (auto& npc : mNPCs)
+        npc->refreshDialogue(mDialogueDatabase, mStoryManager);
 }
 
 void NPCManager::update(float dt) {
