@@ -22,6 +22,7 @@ private:
     struct DialogueEntry {
         nlohmann::json conditions;
         std::vector<std::string> lines;
+        std::vector<DialogueChoice> choices;
     };
 
     struct NPCDialogue {
@@ -32,4 +33,8 @@ private:
     std::unordered_map<std::string, NPCDialogue> mDialogueData;
 
     bool conditionsMatch(const nlohmann::json& conditions, const StoryManager& storyManager) const;
+    DialogueChoice parseChoice(const nlohmann::json& choiceJson) const;
+    void buildDialogueSegments(Dialogue& dialogue,
+                               const std::vector<std::string>& lines,
+                               const std::vector<DialogueChoice>& choices) const;
 };
