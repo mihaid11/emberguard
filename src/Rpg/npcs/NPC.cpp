@@ -98,9 +98,8 @@ bool NPC::isPlayerClose(const sf::Vector2f& playerPosition) const {
 }
 
 void NPC::advanceDialogue() {
-    if (mDialogueManager.isDialogueInProgress()) {
+    if (mDialogueManager.isDialogueInProgress())
         mDialogueManager.getCurrentDialogue().indexIncrement();
-    }
 }
 
 void NPC::update(float dt) {
@@ -248,3 +247,18 @@ void NPC::updatePause(float dt) {
     }
 }
 
+bool NPC::hasChoices() const {
+    return mDialogueManager.currentHasChoices();
+}
+
+std::vector<DialogueChoice> NPC::getChoices() const {
+    return mDialogueManager.getChoices();
+}
+
+void NPC::selectChoice(int choiceIndex) {
+    mDialogueManager.choose(choiceIndex);
+}
+
+DialogueManager& NPC::getDialogueManager() {
+    return mDialogueManager;
+}

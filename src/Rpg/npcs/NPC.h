@@ -14,18 +14,23 @@ class NPC : public DrawableEntity {
 public:
     NPC(const sf::Vector2f& position, const std::string& mId);
 
-    void advanceDialogue();
     void update(float dt);
-    void refreshDialogue(const DialogueDatabase& dialogueDatabase, const StoryManager& storyManager);
-    void clearDialogue();
+    void render(sf::RenderWindow& window) override;
 
     void setDialogue(const std::string& key, const Dialogue& dialogue);
     void setActiveDialogue(const std::string& key);
     Dialogue getActiveDialogue();
-
     std::string getCurrentDialogue();
     bool hasMoreDialogue() const;
     void resetDialogue();
+    void advanceDialogue();
+    void refreshDialogue(const DialogueDatabase& dialogueDatabase, const StoryManager& storyManager);
+    void clearDialogue();
+
+    bool hasChoices() const;
+    std::vector<DialogueChoice> getChoices() const;
+    void selectChoice(int choiceIndex);
+    DialogueManager& getDialogueManager();
 
     void resumeMovement();
     void pauseMovement();
@@ -35,7 +40,6 @@ public:
     std::string getActiveDialogueKey() const;
     void setPosition(const sf::Vector2f& position);
 
-    void render(sf::RenderWindow& window) override;
     bool isPlayerClose(const sf::Vector2f& playerPosition) const;
 
     int getCurrentWaypoint() const;
