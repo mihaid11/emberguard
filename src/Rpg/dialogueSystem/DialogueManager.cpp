@@ -24,15 +24,15 @@ void DialogueManager::resetDialogue() {
     mCurrentDialogue.reset();
 }
 
-bool DialogueManager::isDialogueCompleted(const std::string& npcName, const std::string& questName) {
-    return false;
+bool DialogueManager::currentHasChoices() const {
+    return mCurrentDialogue.currentSegmentHasChoices();
 }
 
-void DialogueManager::updateNPCDialogue(const std::string& npcName, const std::string& dialogueKey) {
-
+std::vector<DialogueChoice> DialogueManager::getChoices() const {
+    return mCurrentDialogue.getCurrentChoices();
 }
 
-void DialogueManager::setNPCDialogue(const std::string& npcName, const std::string& dialogueKey) {
-
+void DialogueManager::choose(int index) {
+    mCurrentDialogue.applyChoice(index);
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Dialogue.h"
+#include <vector>
 #include <string>
 
 class DialogueManager {
@@ -13,9 +14,9 @@ public:
     bool isDialogueInProgress() const;
     void resetDialogue();
 
-    bool isDialogueCompleted(const std::string& npcName, const std::string& questName);
-    void updateNPCDialogue(const std::string& npcName, const std::string& dialogueKey);
-    void setNPCDialogue(const std::string& npcName, const std::string& dialogueKey);
+    bool currentHasChoices() const;
+    std::vector<DialogueChoice> getChoices() const;
+    void choose(int index);
 
 private:
     Dialogue mCurrentDialogue;
