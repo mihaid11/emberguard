@@ -28,6 +28,10 @@ public:
 
     NPC* getCurrentNPC();
 
+    bool currentNPCHasChoices() const;
+    std::vector<DialogueChoice> getCurrentNPCChoices() const;
+    void selectChoiceForCurrentNPC(int choiceIndex, bool& showDialogue, sf::Text& dialogueText);
+
 private:
     std::vector<std::unique_ptr<NPC>> mNPCs;
     NPC* mCurrentNPC;
