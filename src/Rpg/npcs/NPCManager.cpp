@@ -76,23 +76,6 @@ void NPCManager::handleInteraction(MainCharacter& player, bool& showDialogue,
     }
 }
 
-void NPCManager::interactWithCurrentNPC(bool& showDialogue, sf::Text& dialogueText) {
-    if (mCurrentNPC) {
-        if (mCurrentNPC->hasMoreDialogue()) {
-            stopCurrentNPC();
-            dialogueText.setString(mCurrentNPC->getCurrentDialogue());
-            // std::cout << "Current Dialogue: " << mCurrentNPC->getCurrentDialogue() << std::endl;
-            mCurrentNPC->advanceDialogue();
-        } else {
-            mShowDialogue = false;
-            showDialogue = false;
-            mCurrentNPC->resetDialogue();
-            mCurrentNPC->resumeMovement();
-            mCurrentNPC = nullptr;
-        }
-    }
-}
-
 void NPCManager::stopCurrentNPC() {
     if (mCurrentNPC)
         mCurrentNPC->pauseMovement();
@@ -147,5 +130,55 @@ void NPCManager::resumeAllNPC() {
 
 NPC* NPCManager::getCurrentNPC() {
     return mCurrentNPC;
+}
+
+bool NPCManager::currentNPCHasChoices() const {
+    if (mCurrentNPC)
+        return mCurrentNPC->hasChoices();
+
+    return false;
+}
+
+std::vector<DialogueChoice> NPCManager::getCurrentNPCChoices() const {
+    if (mCurrentNPC)
+        return mCurrentNPC->getChoices();
+
+    return std::vector<DialogueChoice>();
+}
+
+void NPCManager::selectChoiceForCurrentNPC(int choiceIndex, bool& showDialogue, sf::Text& dialogueText) {
+    if (mCurrentNPC && mCurrentNPC->hasChoices()) {
+        mCurrentNPC->selectChoice(choiceIndex);
+        dialogueText.setString(mCurrentNPC->getCurrentDialogue());
+
+        if (!mCurrentNPC->hasMoreDialogue()) {
+            mShowDialogue = false;
+            showDialogue = false;
+            mCurrentNPC->resetDialogue();
+            mCurrentNPC->resumeMovement();
+            mCurrentNPC = nullptr;
+        }
+    }
+}
+
+void NPCManager::interactWithCurrentNPC(bool& showDialogue, sf::Text& dialogueText) {
+    if (!mCurrentNPC) return;
+
+    if (mCurrentNPC->hasChoices()) {
+        stopCurrentNPC();
+        return;
+    }
+
+    if (mCurrentNPC->hasMoreDialogue()) {
+        stopCurrentNPC();
+        dialogueText.setString(mCurrentNPC->getCurrentDialogue());
+        mCurrentNPC->advanceDialogue();
+    } else {
+        mShowDialogue = false;
+        showDialogue = false;
+        mCurrentNPC->resetDialogue();
+        mCurrentNPC->resumeMovement();
+        mCurrentNPC = nullptr;
+    }
 }
 
