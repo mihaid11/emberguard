@@ -46,6 +46,7 @@ public:
     void update();
     void render();
     void renderDateTime(sf::RenderWindow& window, sf::Font& font, const std::string& date, const std::string& time);
+    void renderDialogueChoices(const sf::Vector2f& dialogueBoxPos, const sf::Vector2f& dialogueBoxSize);
     void resume(int crystals);
     void closeMenues();
 
@@ -126,6 +127,10 @@ private:
 
     sf::CircleShape mDialogueInteractCircle;
     sf::Text mDialogueInteractText;
+
+    int mSelectedChoice;
+    std::vector<sf::RectangleShape> mChoiceBoxes;
+    std::vector<sf::Text> mChoiceTexts;
 
     bool mIsInsideAStructure;
     sf::Vector2f mCameraFixedPosition;

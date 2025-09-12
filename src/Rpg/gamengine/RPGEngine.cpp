@@ -79,6 +79,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mStorageCapacity(500),
     mCurrentLevel(1),
     mChapter(1),
+    mSelectedChoice(0),
     //mZoneManager(),
     mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
@@ -206,6 +207,22 @@ void RPGEngine::processEvents() {
             if (mTransitionSystem.isTransitioning())
                 return;
 
+            if (mShowDialogue && mNPCManager.currentNPCHasChoices()) {
+                auto choices = mNPCManager.getCurrentNPCChoices();
+
+                if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W) {
+                    mSelectedChoice = (mSelectedChoice - 1 + choices.size()) % choices.size();
+                    return;
+                } else if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S) {
+                    mSelectedChoice = (mSelectedChoice + 1) % choices.size();
+                    return;
+                } else if (event.key.code == sf::Keyboard::E || event.key.code == sf::Keyboard::Return) {
+                    mNPCManager.selectChoiceForCurrentNPC(mSelectedChoice, mShowDialogue, mDialogueText);
+                    mSelectedChoice = 0;
+                    return;
+                }
+            }
+
             if (event.key.code == sf::Keyboard::E) {
                 if (!mShowDialogue) {
                     mNPCManager.handleInteraction(mCharacter, mShowDialogue, mDialogueText);
@@ -222,7 +239,8 @@ void RPGEngine::processEvents() {
                         }
                     }
                 } else if (mCurrentInteractingNPC && mShowDialogue) {
-                    mNPCManager.interactWithCurrentNPC(mShowDialogue, mDialogueText);
+                    if (!mNPCManager.currentNPCHasChoices())
+                        mNPCManager.interactWithCurrentNPC(mShowDialogue, mDialogueText);
                 } else {
                     mShowDialogue = false;
                     if (mCurrentInteractingNPC) {
@@ -234,6 +252,7 @@ void RPGEngine::processEvents() {
             } else if (event.key.code == sf::Keyboard::Escape) {
                 if (mShowDialogue) {
                     mShowDialogue = false;
+                    mSelectedChoice = 0;
                     if (mCurrentInteractingNPC) {
                         mCurrentInteractingNPC->resumeMovement();
                         mCurrentInteractingNPC->resetDialogue();
@@ -400,6 +419,16 @@ void RPGEngine::processEvents() {
         } else if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Left) {
                 sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
+                if (mShowDialogue && mNPCManager.currentNPCHasChoices()) {
+                    for (size_t i = 0; i < mChoiceBoxes.size(); ++i) {
+                        if (mChoiceBoxes[i].getGlobalBounds().contains(mousePos)) {
+                            mNPCManager.selectChoiceForCurrentNPC(i, mShowDialogue, mDialogueText);
+                            mSelectedChoice = 0;
+                            return;
+                        }
+                    }
+                }
+
                 if (mShowMenu)
                     mMenu.handleMouseClick(mousePos);
                 if (mShowStartMenu)
@@ -663,6 +692,9 @@ void RPGEngine::render() {
             yOffset += lineHeight;
             mDialogueText.setPosition(dialogueBox.getPosition().x + 158.f, yOffset);
         }
+
+        if (mNPCManager.currentNPCHasChoices())
+            renderDialogueChoices(dialogueBox.getPosition(), dialogueBox.getSize());
     }
 
 
@@ -695,6 +727,50 @@ void RPGEngine::render() {
         renderDateTime(mWindow, mFont, currentDate, currentTime);
 
     mWindow.display();
+}
+
+void RPGEngine::renderDialogueChoices(const sf::Vector2f& dialogueBoxPos, const sf::Vector2f& dialogueBoxSize) {
+    auto choices = mNPCManager.getCurrentNPCChoices();
+    if (choices.empty()) return;
+
+    mChoiceBoxes.clear();
+    mChoiceTexts.clear();
+
+    float choiceY = dialogueBoxPos.y + dialogueBoxSize.y + 10.f;
+    float choiceWidth = dialogueBoxSize.x;
+    float choiceHeight = 35.f;
+
+    for (size_t i = 0; i < choices.size(); ++i) {
+        sf::RectangleShape choiceBox;
+        choiceBox.setSize({choiceWidth, choiceHeight});
+        choiceBox.setPosition(dialogueBoxPos.x, choiceY);
+
+        if (i == mSelectedChoice) {
+            choiceBox.setFillColor(sf::Color(70, 70, 70, 255));
+            choiceBox.setOutlineColor(sf::Color(150, 150, 150, 150));
+            choiceBox.setOutlineThickness(2.f);
+        } else {
+            choiceBox.setFillColor(sf::Color(40, 40, 40, 255));
+            choiceBox.setOutlineColor(sf::Color(100, 100, 100, 155));
+            choiceBox.setOutlineThickness(1.f);
+        }
+
+        sf::Text choiceText;
+        choiceText.setFont(mFont);
+        choiceText.setCharacterSize(mDialogueText.getCharacterSize());
+        choiceText.setFillColor(sf::Color::White);
+
+        choiceText.setString(choices[i].text);
+        choiceText.setPosition(dialogueBoxPos.x + 15.f, choiceY + 8.f);
+
+        mChoiceBoxes.push_back(choiceBox);
+        mChoiceTexts.push_back(choiceText);
+
+        mWindow.draw(choiceBox);
+        mWindow.draw(choiceText);
+
+        choiceY += choiceHeight + 5.f;
+    }
 }
 
 void RPGEngine::renderDateTime(sf::RenderWindow& window, sf::Font& font, const std::string& date, const std::string& time) {
