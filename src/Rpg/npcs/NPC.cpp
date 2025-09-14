@@ -99,7 +99,8 @@ bool NPC::isPlayerClose(const sf::Vector2f& playerPosition) const {
 
 void NPC::advanceDialogue() {
     if (mDialogueManager.isDialogueInProgress())
-        mDialogueManager.getCurrentDialogue().indexIncrement();
+        if (!mDialogueManager.currentHasChoices())
+            mDialogueManager.getCurrentDialogue().indexIncrement();
 }
 
 void NPC::update(float dt) {

@@ -68,6 +68,7 @@ void NPCManager::handleInteraction(MainCharacter& player, bool& showDialogue,
             showDialogue = true;
             mShowDialogue = true;
             dialogueText.setString(mCurrentNPC->getCurrentDialogue());
+            stopCurrentNPC();
             //std::cout << "Interacting with NPC: " << typeid(*mCurrentNPC).name() << std::endl;
             //std::cout << "Current Dialogue: " << mCurrentNPC->getCurrentDialogue() << std::endl;
 
@@ -169,10 +170,11 @@ void NPCManager::interactWithCurrentNPC(bool& showDialogue, sf::Text& dialogueTe
         return;
     }
 
+    mCurrentNPC->advanceDialogue();
+
     if (mCurrentNPC->hasMoreDialogue()) {
         stopCurrentNPC();
         dialogueText.setString(mCurrentNPC->getCurrentDialogue());
-        mCurrentNPC->advanceDialogue();
     } else {
         mShowDialogue = false;
         showDialogue = false;
