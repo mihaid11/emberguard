@@ -18,12 +18,12 @@ int Dialogue::getCurrentIndex() {
 }
 
 void Dialogue::indexIncrement() {
-    if (hasMoreSegments())
+    if (mCurrentSegmentIndex < mSegments.size())
         ++mCurrentSegmentIndex;
 }
 
 bool Dialogue::hasMoreSegments() const {
-    return mCurrentSegmentIndex < mSegments.size();
+    return !mSegments.empty() && mCurrentSegmentIndex < mSegments.size();
 }
 
 void Dialogue::reset() {
@@ -31,13 +31,13 @@ void Dialogue::reset() {
 }
 
 bool Dialogue::currentSegmentHasChoices() const {
-    if (mSegments.empty()) return false;
+    if (mSegments.empty() || mCurrentSegmentIndex >= mSegments.size()) return false;
     return mSegments[mCurrentSegmentIndex].hasChoices();
 }
 
 const std::vector<DialogueChoice>& Dialogue::getCurrentChoices() const {
     static std::vector<DialogueChoice> empty;
-    if (mSegments.empty()) return empty;
+    if (mSegments.empty() || mCurrentSegmentIndex >= mSegments.size()) return empty;
     return mSegments[mCurrentSegmentIndex].getChoices();
 }
 
@@ -55,16 +55,15 @@ void Dialogue::applyChoice(int choiceIndex) {
 }
 
 void Dialogue::addChoiceSegments(const DialogueChoice& choice) {
-    mSegments.erase(mSegments.begin() + mCurrentSegmentIndex + 1, mSegments.end());
+    if (mCurrentSegmentIndex < mSegments.size())
+        mSegments.erase(mSegments.begin() + mCurrentSegmentIndex + 1, mSegments.end());
 
     for (size_t i = 0; i < choice.nextLines.size(); ++i) {
         DialogueSegment segment(choice.nextLines[i]);
 
-        if (i == choice.nextLines.size() - 1 && !choice.subChoices.empty()) {
-            for (const auto& subChoice : choice.subChoices) {
+        if (i == choice.nextLines.size() - 1 && !choice.subChoices.empty())
+            for (const auto& subChoice : choice.subChoices)
                 segment.addChoice(subChoice);
-            }
-        }
 
         mSegments.push_back(segment);
     }

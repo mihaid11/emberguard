@@ -228,7 +228,6 @@ void RPGEngine::processEvents() {
                     mNPCManager.handleInteraction(mCharacter, mShowDialogue, mDialogueText);
                     if (mShowDialogue) {
                         mCurrentInteractingNPC = mNPCManager.getCurrentNPC();
-                        mNPCManager.interactWithCurrentNPC(mShowDialogue, mDialogueText);
                     } else {
                         for (auto& entity : mMap.getEntities()) {
                             if (entity->isInteractable())
