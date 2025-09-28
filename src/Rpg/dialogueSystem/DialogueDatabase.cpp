@@ -24,10 +24,12 @@ bool DialogueDatabase::loadDialogueFromFile(const std::string& filepath) {
         for (const auto& line : dialogue["lines"])
             entry.lines.push_back(line.get<std::string>());
 
-        if (dialogue.contains("choices")) {
+        if (dialogue.contains("actions"))
+            entry.actions = parseActions(dialogue["actions"]);
+
+        if (dialogue.contains("choices"))
             for (const auto& choiceJson : dialogue["choices"])
                 entry.choices.push_back(parseChoice(choiceJson));
-        }
 
         npcDialogue.dialogues.push_back(std::move(entry));
     }
@@ -45,19 +47,36 @@ DialogueChoice DialogueDatabase::parseChoice(const json& choiceJson) const {
     DialogueChoice choice;
     choice.text = choiceJson.value("text", "");
 
-    if (choiceJson.contains("next_lines")) {
-        for (const auto& line : choiceJson["next_lines"]) {
+    if (choiceJson.contains("next_lines"))
+        for (const auto& line : choiceJson["next_lines"])
             choice.nextLines.push_back(line.get<std::string>());
-        }
-    }
 
-    if (choiceJson.contains("choices")) {
-        for (const auto& subChoice : choiceJson["choices"]) {
+    if (choiceJson.contains("actions"))
+        choice.actions = parseActions(choiceJson["actions"]);
+
+    if (choiceJson.contains("choices"))
+        for (const auto& subChoice : choiceJson["choices"])
             choice.subChoices.push_back(parseChoice(subChoice));
-        }
-    }
 
     return choice;
+}
+
+std::vector<DialogueAction> DialogueDatabase::parseActions(const json& actionsJson) const {
+    std::vector<DialogueAction> actions;
+
+    if (!actionsJson.is_array()) return actions;
+
+    for (const auto& actionJson : actionsJson) {
+        DialogueAction action;
+        action.type = actionJson.value("type", "");
+        action.target = actionJson.value("target", "");
+        action.value = actionJson.value("value", 1);
+
+        if (!action.type.empty() && !action.target.empty())
+            actions.push_back(action);
+    }
+
+    return actions;
 }
 
 bool DialogueDatabase::conditionsMatch(const json& conditions, const StoryManager& storyManager) const {
@@ -77,9 +96,8 @@ bool DialogueDatabase::conditionsMatch(const json& conditions, const StoryManage
 
 std::optional<Dialogue> DialogueDatabase::getDialogueForNPC(const std::string& npcId, const StoryManager& storyManager) const {
     auto it = mDialogueData.find(npcId);
-    if (it == mDialogueData.end()) {
+    if (it == mDialogueData.end())
         return std::nullopt;
-    }
 
     const NPCDialogue& npcDialogue = it->second;
 
@@ -87,7 +105,7 @@ std::optional<Dialogue> DialogueDatabase::getDialogueForNPC(const std::string& n
     for (const DialogueEntry& entry : npcDialogue.dialogues) {
         if (conditionsMatch(entry.conditions, storyManager)) {
             Dialogue dialogue;
-            buildDialogueSegments(dialogue, entry.lines, entry.choices);
+            buildDialogueSegments(dialogue, entry.lines, entry.choices, entry.actions);
             return dialogue;
         }
     }
@@ -97,14 +115,19 @@ std::optional<Dialogue> DialogueDatabase::getDialogueForNPC(const std::string& n
 
 void DialogueDatabase::buildDialogueSegments(Dialogue& dialogue,
                                              const std::vector<std::string>& lines,
-                                             const std::vector<DialogueChoice>& choices) const {
+                                             const std::vector<DialogueChoice>& choices,
+                                             const std::vector<DialogueAction>& actions) const {
     for (size_t i = 0; i < lines.size(); ++i) {
         DialogueSegment segment(lines[i]);
 
-        if (i == lines.size() - 1 && !choices.empty()) {
-            for (const auto& choice : choices) {
-                segment.addChoice(choice);
-            }
+        if (i == lines.size() - 1) {
+            if (!choices.empty())
+                for (const auto& choice : choices)
+                    segment.addChoice(choice);
+
+            if (!actions.empty())
+                for (const auto& action : actions)
+                    segment.addAction(action);
         }
 
         dialogue.addSegment(segment);

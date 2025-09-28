@@ -23,6 +23,7 @@ private:
         nlohmann::json conditions;
         std::vector<std::string> lines;
         std::vector<DialogueChoice> choices;
+        std::vector<DialogueAction> actions;
     };
 
     struct NPCDialogue {
@@ -34,7 +35,9 @@ private:
 
     bool conditionsMatch(const nlohmann::json& conditions, const StoryManager& storyManager) const;
     DialogueChoice parseChoice(const nlohmann::json& choiceJson) const;
+    std::vector<DialogueAction> parseActions(const nlohmann::json& actionsJson) const;
     void buildDialogueSegments(Dialogue& dialogue,
                                const std::vector<std::string>& lines,
-                               const std::vector<DialogueChoice>& choices) const;
+                               const std::vector<DialogueChoice>& choices,
+                               const std::vector<DialogueAction>& actions) const;
 };
