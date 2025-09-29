@@ -36,3 +36,11 @@ void DialogueManager::choose(int index) {
     mCurrentDialogue.applyChoice(index);
 }
 
+std::vector<DialogueAction> DialogueManager::chooseWithActions(int index) {
+    return mCurrentDialogue.applyChoiceWithActions(index);
+}
+
+std::vector<DialogueAction> DialogueManager::getCurrentActions() const {
+    return mCurrentDialogue.getCurrentSegmentActions();
+}
+

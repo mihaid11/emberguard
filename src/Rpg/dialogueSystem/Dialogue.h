@@ -17,6 +17,13 @@ public:
     const std::vector<DialogueChoice>& getCurrentChoices() const;
     void applyChoice(int choiceIndex);
 
+    std::vector<DialogueAction> getCurrentSegmentActions() const;
+    std::vector<DialogueAction> getChoiceActions(int choiceIndex) const;
+    std::vector<DialogueAction> applyChoiceWithActions(int choiceIndex);
+
+    int getSegmentCount() const;
+    bool isLastSegment() const;
+
 private:
     std::vector<DialogueSegment> mSegments;
     size_t mCurrentSegmentIndex;

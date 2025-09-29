@@ -50,8 +50,25 @@ void Dialogue::applyChoice(int choiceIndex) {
     const auto& selectedChoice = choices[choiceIndex];
     addChoiceSegments(selectedChoice);
 
-    if (!mSegments.empty() && mCurrentSegmentIndex < mSegments.size() - 1)
+    if (!mSegments.empty())
         ++mCurrentSegmentIndex;
+}
+
+std::vector<DialogueAction> Dialogue::applyChoiceWithActions(int choiceIndex) {
+    if (!currentSegmentHasChoices()) return std::vector<DialogueAction>();
+
+    const auto& choices = mSegments[mCurrentSegmentIndex].getChoices();
+    if (choiceIndex < 0 || choiceIndex >= choices.size())
+        return std::vector<DialogueAction>();
+
+    const auto& selectedChoice = choices[choiceIndex];
+    std::vector<DialogueAction> actions = selectedChoice.actions;
+    addChoiceSegments(selectedChoice);
+
+    if (!mSegments.empty())
+        ++mCurrentSegmentIndex;
+
+    return actions;
 }
 
 void Dialogue::addChoiceSegments(const DialogueChoice& choice) {
@@ -67,5 +84,37 @@ void Dialogue::addChoiceSegments(const DialogueChoice& choice) {
 
         mSegments.push_back(segment);
     }
+}
+
+std::vector<DialogueAction> Dialogue::getCurrentSegmentActions() const {
+    if (mSegments.empty()):
+        return std::vector<DialogueAction>();
+
+    if (mCurrentSegmentIndex >= mSegments.size() && !mSegments.empty())
+        return mSegments.back().getActions();
+
+    if (mCurrentSegmentIndex < mSegments.size())
+        return mSegments[mCurrentSegmentIndex].getActions();
+
+    return std::vector<DialogueAction>();
+}
+
+std::vector<DialogueAction> Dialogue::getChoiceActions(int choiceIndex) const {
+    if (!currentSegmentHasChoices()) return std::vector<DialogueAction>();
+
+    const auto& choices = mSegments[mCurrentSegmentIndex].getChoices();
+    if (choiceIndex < 0 || choiceIndex >= choices.size())
+        return std::vector<DialogueAction>();
+
+    return choices[choiceIndex].actions;
+}
+
+int Dialogue::getSegmentCount() const {
+    return (int)mSegments.size();
+}
+
+bool Dialogue::isLastSegment() const {
+    if (mSegments.empty()) return true;
+    return mCurrentSegmentIndex == mSegments.size() - 1;
 }
 
