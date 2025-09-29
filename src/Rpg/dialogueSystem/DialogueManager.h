@@ -18,6 +18,9 @@ public:
     std::vector<DialogueChoice> getChoices() const;
     void choose(int index);
 
+    std::vector<DialogueAction> getCurrentActions() const;
+    std::vector<DialogueAction> chooseWithActions(int index);
+
 private:
     Dialogue mCurrentDialogue;
 };

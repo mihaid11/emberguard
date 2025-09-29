@@ -20,3 +20,15 @@ bool DialogueSegment::hasChoices() const {
     return !mChoices.empty();
 }
 
+void DialogueSegment::addAction(const DialogueAction& action) {
+    mActions.push_back(action);
+}
+
+const std::vector<DialogueAction>& DialogueSegment::getActions() const {
+    return mActions;
+}
+
+bool DialogueSegment::hasActions() const {
+    return !mActions.empty();
+}
+
