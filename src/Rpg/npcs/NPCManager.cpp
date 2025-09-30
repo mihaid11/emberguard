@@ -1,10 +1,15 @@
 #include "NPCManager.h"
+#include "../gamengine/RPGEngine.h"
 #include <iostream>
 
-NPCManager::NPCManager(StoryManager& storyManager, DialogueDatabase& dialogueDatabase)
+NPCManager::NPCManager(StoryManager& storyManager, DialogueDatabase& dialogueDatabase, RPGEngine& rpgEngine, Inventory& inventory)
     : mCurrentNPC(nullptr), mShowDialogue(false),
     mStoryManager(storyManager), mDialogueDatabase(dialogueDatabase) {
+    mActionExecutor = new DialogueActionExecutor(storyManager, rpgEngine, inventory);
+}
 
+NPCManager::~NPCManager() {
+    delete mActionExecutor;
 }
 
 void NPCManager::addNPC(std::unique_ptr<NPC> npc) {
@@ -149,10 +154,14 @@ std::vector<DialogueChoice> NPCManager::getCurrentNPCChoices() const {
 
 void NPCManager::selectChoiceForCurrentNPC(int choiceIndex, bool& showDialogue, sf::Text& dialogueText) {
     if (mCurrentNPC && mCurrentNPC->hasChoices()) {
-        mCurrentNPC->selectChoice(choiceIndex);
-        dialogueText.setString(mCurrentNPC->getCurrentDialogue());
+        auto actions = mCurrentNPC->selectChoiceWithActions(choiceIndex);
+        if (mActionExecutor && !actions.empty())
+            mActionExecutor->executeActions(actions);
 
-        if (!mCurrentNPC->hasMoreDialogue()) {
+        if (mCurrentNPC->hasMoreDialogue()) {
+            dialogueText.setString(mCurrentNPC->getCurrentDialogue());
+            stopCurrentNPC();
+        } else {
             mShowDialogue = false;
             showDialogue = false;
             mCurrentNPC->resetDialogue();
@@ -170,12 +179,20 @@ void NPCManager::interactWithCurrentNPC(bool& showDialogue, sf::Text& dialogueTe
         return;
     }
 
+    bool wasLastSegment = mCurrentNPC->getDialogueManager().getCurrentDialogue().isLastSegment();
+
     mCurrentNPC->advanceDialogue();
 
     if (mCurrentNPC->hasMoreDialogue()) {
         stopCurrentNPC();
         dialogueText.setString(mCurrentNPC->getCurrentDialogue());
     } else {
+        if (wasLastSegment) {
+            auto actions = mCurrentNPC->getCurrentDialogueActions();
+            if (mActionExecutor && !actions.empty())
+                mActionExecutor->executeActions(actions);
+        }
+
         mShowDialogue = false;
         showDialogue = false;
         mCurrentNPC->resetDialogue();
