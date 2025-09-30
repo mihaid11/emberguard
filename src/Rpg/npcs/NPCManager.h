@@ -4,11 +4,16 @@
 #include "NPC.h"
 #include "../dialogueSystem/DialogueDatabase.h"
 #include "../story/StoryManager.h"
+#include "../dialogueSystem/DialogueActionExecutor.h"
 #include "../mainCharacter/MainCharacter.h"
+#include "../inventory/Inventory.h"
+
+class RPGEngine;
 
 class NPCManager {
 public:
-    NPCManager(StoryManager& storyManager, DialogueDatabase& dialogueDatabase);
+    NPCManager(StoryManager& storyManager, DialogueDatabase& dialogueDatabase, RPGEngine& rpgEngine, Inventory& inventory);
+    ~NPCManager();
 
     void addNPC(std::unique_ptr<NPC> npc);
     void refreshNPCDialogues();
@@ -37,6 +42,7 @@ private:
     NPC* mCurrentNPC;
     StoryManager& mStoryManager;
     DialogueDatabase& mDialogueDatabase;
+    DialogueActionExecutor* mActionExecutor;
     bool mShowDialogue;
 };
 

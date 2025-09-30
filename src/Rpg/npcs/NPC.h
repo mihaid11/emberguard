@@ -49,6 +49,9 @@ public:
     void setAnimationOpposing(int animationIndex);
     void setInteract(bool showInteract);
 
+    std::vector<DialogueAction> selectChoiceWithActions(int choiceIndex);
+    std::vector<DialogueAction> getCurrentDialogueActions() const;
+
     std::string getID() const { return mId; }
     sf::Sprite& getSprite();
 

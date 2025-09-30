@@ -260,6 +260,15 @@ void NPC::selectChoice(int choiceIndex) {
     mDialogueManager.choose(choiceIndex);
 }
 
+std::vector<DialogueAction> NPC::selectChoiceWithActions(int choiceIndex) {
+    return mDialogueManager.chooseWithActions(choiceIndex);
+}
+
 DialogueManager& NPC::getDialogueManager() {
     return mDialogueManager;
 }
+
+std::vector<DialogueAction> NPC::getCurrentDialogueActions() const {
+    return mDialogueManager.getCurrentActions();
+}
+
