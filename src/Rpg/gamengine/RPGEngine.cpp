@@ -61,7 +61,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mGarrickStone(sf::Vector2f(-100.0f, 0.0f), "garrick_stone",gameManager),
     mVincentHale(sf::Vector2f(600.0f, 400.0f), "vincent_hale"),
     mSeraphinaLumeris(sf::Vector2f(-20.0f, 980.0f), "seraphina_lumeris"),
-    mNPCManager(mStoryManager, mDialogueDatabase),
+    mNPCManager(mStoryManager, mDialogueDatabase, *this, mInventory),
     mChestInventory(2, 2),
     mCurrentInteractingNPC(nullptr),
     mSkillTree(),
@@ -1115,6 +1115,25 @@ void RPGEngine::setSaveNumber(int saveNumber) {
         mCharacter.setPosition(sf::Vector2f(340.f, 560.f));
         mCharacter.setAnimation(4);
     }
+}
+
+void RPGEngine::setFlag(std::string name, bool value) {
+    if (name == "mShowMenu")
+        mShowMenu = value;
+    else if (name == "mShowStartMenu")
+        mShowStartMenu = value;
+    else if (name == "mShowBankMenu")
+        mShowBankMenu = value;
+    else if (name == "mShowShopMenu")
+        mShowShopMenu = value;
+    else if (name == "mShowAnalyzeMenu")
+        mShowAnalyzeMenu = value;
+    else if (name == "mShowChestMenu")
+        mShowChestMenu = value;
+}
+
+void RPGEngine::changeCrystals(int value) {
+    mCrystals += value;
 }
 
 SaveSystem& RPGEngine::getSaveSystem() {

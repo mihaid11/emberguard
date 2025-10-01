@@ -56,6 +56,8 @@ public:
     bool saveExists(int saveNumber) const;
     void newGame();
     void setSaveNumber(int saveNumber);
+    void setFlag(std::string name, bool value);
+    void changeCrystals(int value);
 
     SaveSystem& getSaveSystem();
 
