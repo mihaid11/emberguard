@@ -87,7 +87,7 @@ void Dialogue::addChoiceSegments(const DialogueChoice& choice) {
 }
 
 std::vector<DialogueAction> Dialogue::getCurrentSegmentActions() const {
-    if (mSegments.empty()):
+    if (mSegments.empty())
         return std::vector<DialogueAction>();
 
     if (mCurrentSegmentIndex >= mSegments.size() && !mSegments.empty())
