@@ -53,6 +53,15 @@ void Inventory::removeItemAt(int slotIndex) {
     mSlots[slotIndex].quantity = 0;
 }
 
+void Inventory::removeItemById(int id, int quantity) {
+    int slot = findSlotWithItem(id);
+    if (slot != -1) {
+        mSlots[slot].quantity -= quantity;
+        if (mSlots[slot].quantity <= 0)
+            removeItemAt(slot);
+    }
+}
+
 int Inventory::getFirstEmptySlot() const {
     for (int i = 0; i < mSlots.size(); ++i) {
         if (!mSlots[i].item)
