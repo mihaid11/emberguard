@@ -36,7 +36,7 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mShowText2(false),
     mGameManager(gameManager),
     mSmallMenu(mWindow, this, gameManager, mCurrentLevel, mCrystals, mSpentCrystals, mAvailableTowers),
-    mLevelCompleteMenu(mWindow, this, gameManager, mCurrentLevel, mCrystals),
+    mLevelCompleteMenu(mWindow, this, gameManager, mCurrentLevel),
     mGameOverMenu(mWindow, this, gameManager, mCurrentLevel, mCrystals, mAvailableTowers) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
@@ -378,7 +378,6 @@ void GameEngine::handleKeyPress(sf::Keyboard::Key keyCode) {
             }
         }
     }
-    mLevelCompleteMenu.updateCrystals(mCrystals);
 }
 
 void GameEngine::update() {
@@ -523,69 +522,67 @@ void GameEngine::update() {
 void GameEngine::render() {
     mWindow.clear();
 
-    if (!mLevelCompleted) {
+    mMap.render(mWindow);
 
-        mMap.render(mWindow);
+    mPlayer.render(mWindow);
 
-        mPlayer.render(mWindow);
+    mWindow.draw(mBorderDown);
+    mWindow.draw(mBorderUp);
+    mWindow.draw(mBorderLeft);
+    mWindow.draw(mBorderRight);
 
-        mWindow.draw(mBorderDown);
-        mWindow.draw(mBorderUp);
-        mWindow.draw(mBorderLeft);
-        mWindow.draw(mBorderRight);
+    for (const auto& tower : mTowers)
+        tower->render(mWindow);
+    for (auto& projectile : mProjectiles)
+        projectile.render(mWindow);
+    for (auto& enemy : mEnemies)
+        enemy.render(mWindow);
 
-        for (const auto& tower : mTowers)
-            tower->render(mWindow);
-        for (auto& projectile : mProjectiles)
-            projectile.render(mWindow);
-        for (auto& enemy : mEnemies)
-            enemy.render(mWindow);
+    mWindow.draw(mHealthBarBackground);
+    mWindow.draw(mHealthBar);
+    mWindow.draw(mCrystalText);
 
-        mWindow.draw(mHealthBarBackground);
-        mWindow.draw(mHealthBar);
-        mWindow.draw(mCrystalText);
+    if (mTowerSelectionMenu.isVisible())
+        mTowerSelectionMenu.render(mWindow);
 
-        if (mTowerSelectionMenu.isVisible())
-            mTowerSelectionMenu.render(mWindow);
+    if (mTowerMenu.isVisible() && mSelectedTower)
+        mTowerMenu.render(mWindow);
 
-        if (mTowerMenu.isVisible() && mSelectedTower)
-            mTowerMenu.render(mWindow);
+    mPlayerMenu.render(mWindow, mPlayer);
 
-        mPlayerMenu.render(mWindow, mPlayer);
-
-        if (!gameStarted) {
-            mWindow.draw(startGameButton);
-            mWindow.draw(startGameButtonText);
-        }
-
-        if (mShowText2)
-            mWindow.draw(mOutOfRangeSelection);
-
-        if (mShowText1)
-            mWindow.draw(mOutOfRangePlacement);
-
-        // If the error text is visible gradually make it dissapear and render it
-        if (mShowNotEnoughCrystalsText) {
-            float elapsedTime = mNotEnoughCrystalsClock.getElapsedTime().asSeconds();
-            if (elapsedTime > 1.8f) {
-                mShowNotEnoughCrystalsText = false;
-                mNotEnoughCrystalsText.setString("");
-            }
-            else {
-                int alpha = static_cast<int>(255 * (1.0f - (elapsedTime / 1.8f)));
-                mNotEnoughCrystalsText.setFillColor(sf::Color(255, 255, 255, alpha));
-            }
-            mWindow.draw(mNotEnoughCrystalsText);
-        }
-
-        if (mGameOver)
-            mGameOverMenu.render(mWindow);
-
-        if (mIsPaused)
-            mSmallMenu.render(mWindow);
-    } else {
-        mLevelCompleteMenu.render(mWindow);
+    if (!gameStarted) {
+        mWindow.draw(startGameButton);
+        mWindow.draw(startGameButtonText);
     }
+
+    if (mShowText2)
+        mWindow.draw(mOutOfRangeSelection);
+
+    if (mShowText1)
+        mWindow.draw(mOutOfRangePlacement);
+
+    // If the error text is visible gradually make it dissapear and render it
+    if (mShowNotEnoughCrystalsText) {
+        float elapsedTime = mNotEnoughCrystalsClock.getElapsedTime().asSeconds();
+        if (elapsedTime > 1.8f) {
+            mShowNotEnoughCrystalsText = false;
+            mNotEnoughCrystalsText.setString("");
+        }
+        else {
+            int alpha = static_cast<int>(255 * (1.0f - (elapsedTime / 1.8f)));
+            mNotEnoughCrystalsText.setFillColor(sf::Color(255, 255, 255, alpha));
+        }
+        mWindow.draw(mNotEnoughCrystalsText);
+    }
+
+    if (mGameOver)
+        mGameOverMenu.render(mWindow);
+
+    if (mIsPaused)
+        mSmallMenu.render(mWindow);
+
+    if (mLevelCompleted)
+        mLevelCompleteMenu.render(mWindow);
 
     mWindow.display();
 }
@@ -638,5 +635,9 @@ bool GameEngine::isLevelCompleted(int level) const {
         });
 
     return wavesComplete && noEnemiesLeft;
+}
+
+int GameEngine::getCrystals() const {
+    return mCrystals;
 }
 

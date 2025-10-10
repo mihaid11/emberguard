@@ -31,6 +31,7 @@ public:
     bool isGameOver() const;
     void init(int level, int crytals, const std::vector<int>& availableTowers);
     bool isLevelCompleted(int level) const;
+    int getCrystals() const;
 
 private:
 
