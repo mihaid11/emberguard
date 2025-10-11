@@ -1140,3 +1140,7 @@ SaveSystem& RPGEngine::getSaveSystem() {
     return mSaveSystem;
 }
 
+Inventory& RPGEngine::getInventory() {
+    return mInventory;
+}
+
