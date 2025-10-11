@@ -60,6 +60,7 @@ public:
     void changeCrystals(int value);
 
     SaveSystem& getSaveSystem();
+    Inventory& getInventory();
 
 private:
     sf::RenderWindow& mWindow;
