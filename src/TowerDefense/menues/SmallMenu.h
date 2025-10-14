@@ -8,8 +8,8 @@ class GameManager;
 
 class SmallMenu {
 public:
-    SmallMenu(sf::RenderWindow& window, GameEngine* game, GameManager* gameManager, int level,
-              int& crystals, int& spentCrystals, std::vector<int>& availableTowers);
+    SmallMenu(sf::RenderWindow& window, GameEngine* game, GameManager* gameManager,
+              int level, std::vector<int>& availableTowers);
 
     void render(sf::RenderWindow& window);
     void handleMouseClick(const sf::Vector2f& mousePos);
@@ -21,6 +21,7 @@ public:
 
 private:
     sf::RectangleShape mMenuBackground;
+    sf::RectangleShape mBackground;
 
     std::vector<Button> mButtons;
     Button quitButton;
@@ -29,8 +30,6 @@ private:
     GameEngine* mGame;
     GameManager* mGameManager;
     int mLevel;
-    int& mCrystals;
-    int& mSpentCrystals;
     bool mIsVisible;
 
     std::vector<int>& mAvailableTowers;
