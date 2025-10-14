@@ -24,7 +24,7 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mTowerMenu(),
     mTowerSelectionMenu(mAvailableTowers),
     mCrystals(100),
-    mSpentCrystals(0),
+    mInitialCrystals(0),
     mPlayer(sf::Vector2f(100, 100), mProjectiles),
     mPlayerMenu(),
     gameStarted(false),
@@ -35,7 +35,7 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mShowText1(false),
     mShowText2(false),
     mGameManager(gameManager),
-    mSmallMenu(mWindow, this, gameManager, mCurrentLevel, mCrystals, mSpentCrystals, mAvailableTowers),
+    mSmallMenu(mWindow, this, gameManager, mCurrentLevel, mAvailableTowers),
     mLevelCompleteMenu(mWindow, this, gameManager, mCurrentLevel),
     mGameOverMenu(mWindow, this, gameManager, mCurrentLevel, mCrystals, mAvailableTowers) {
 
@@ -196,7 +196,6 @@ void GameEngine::processEvents() {
                                             if (mCrystals >= newTower->getCost()) {
                                                 mTowers.push_back(newTower);
                                                 mCrystals -= newTower->getCost();
-                                                mSpentCrystals += newTower->getCost();
                                                 mTowerSelectionMenu.hide();
                                                 mSelectedTowerType = -1;
                                             } else {
@@ -318,7 +317,6 @@ void GameEngine::handleNonTowerClick(const sf::Vector2f& worldPos) {
                     std::cout << "Placing tower at: " << worldPos.x << ", " << worldPos.y << std::endl;
                     mTowers.push_back(newTower);
                     mCrystals -= newTower->getCost();
-                    mSpentCrystals += newTower->getCost();
                     mTowerSelectionMenu.hide();
                 } else {
                     mNotEnoughCrystalsText.setPosition(sf::Vector2f(position.x - 104.35f, position.y - 81.f));
@@ -605,11 +603,12 @@ void GameEngine::init(int level, int crystals, const std::vector<int>& available
 
     // Reset all variables and states to their initial values for the specified level
     mCrystals = crystals;
-    mSpentCrystals = 0;
+    mInitialCrystals = crystals;
     mTowers.clear();
     mEnemies.clear();
     mProjectiles.clear();
     mCurrentWaveNumber = 1;
+    mCurrentWave = Wave(level, mCurrentWaveNumber, { 0 });
     mTowerHealth = 100;
     gameStarted = false;
     mGameOver = false;
@@ -625,6 +624,7 @@ void GameEngine::init(int level, int crystals, const std::vector<int>& available
     mWindow.setView(mWindow.getDefaultView());
 
     mPlayer.setPosition(sf::Vector2f(100, 100));
+    mPlayer.setAnimation(4);
 }
 
 bool GameEngine::isLevelCompleted(int level) const {
@@ -641,3 +641,6 @@ int GameEngine::getCrystals() const {
     return mCrystals;
 }
 
+int GameEngine::getInitialCrystals() {
+    return mInitialCrystals;
+}

@@ -32,6 +32,7 @@ public:
     void init(int level, int crytals, const std::vector<int>& availableTowers);
     bool isLevelCompleted(int level) const;
     int getCrystals() const;
+    int getInitialCrystals();
 
 private:
 
@@ -61,7 +62,7 @@ private:
     sf::Text mCrystalText;
     sf::Font mFont;
     int mCrystals;
-    int mSpentCrystals;
+    int mInitialCrystals;
 
     Tower* mSelectedTower;
 
