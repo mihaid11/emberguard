@@ -229,3 +229,22 @@ void Player::setHealth(float health) {
     mHealth = health;
 }
 
+
+void Player::setAnimation(int animation) {
+    if (animation == 4) {
+        mLastDirection = sf::Keyboard::S;
+        mCurrentAnimation = AnimationIndex::IdleDown;
+    } else if (animation == 3) {
+        mLastDirection = sf::Keyboard::W;
+        mCurrentAnimation = AnimationIndex::IdleUp;
+    } else if (animation == 2) {
+        mLastDirection = sf::Keyboard::D;
+        mCurrentAnimation = AnimationIndex::IdleRight;
+    } else if (animation == 1) {
+        mLastDirection = sf::Keyboard::A;
+        mCurrentAnimation = AnimationIndex::IdleLeft;
+    }
+
+    mAnimations[int(mCurrentAnimation)].applyToSprite(mSprite);
+}
+

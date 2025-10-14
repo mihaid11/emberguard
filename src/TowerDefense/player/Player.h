@@ -24,6 +24,7 @@ public:
     void takeDamage(float amount);
     float getHealth() const;
     void setHealth(float health);
+    void setAnimation(int animation);
 
     sf::FloatRect getBounds() const;
     void setPosition(const sf::Vector2f& position);
