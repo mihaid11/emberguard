@@ -21,6 +21,15 @@ void Inventory::swapItems(int slot1, int slot2) {
         std::swap(mSlots[slot1], mSlots[slot2]);
 }
 
+std::unique_ptr<Item> Inventory::extractItemAt(int slotIndex) {
+    if (slotIndex < 0 || slotIndex >= mSlots.size() || !mSlots[slotIndex].item)
+        return nullptr;
+
+    auto extracted = std::move(mSlots[slotIndex].item);
+    mSlots[slotIndex].quantity = 0;
+    return extracted;
+}
+
 const Item* Inventory::getItemAt(int slot) const {
     if (slot >= 0 && slot < mSlots.size())
         return mSlots[slot].item.get();
@@ -76,5 +85,10 @@ int Inventory::findSlotWithItem(int id) const {
             return i;
     }
     return -1;
+}
+
+void Inventory::clear() {
+    mSlots.clear();
+    mSlots.resize(mRows * mCols);
 }
 
