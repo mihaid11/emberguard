@@ -5,7 +5,7 @@
 
 class DroppedItem : public DrawableEntity {
 public:
-    DroppedItem(const Item* item, const sf::Vector2f& position, int quantity);
+    DroppedItem(std::shared_ptr<const Item> item, const sf::Vector2f& position, int quantity);
 
     void render(sf::RenderWindow& window) override;
     bool isPickedUp(const sf::FloatRect& playerBounds) const;
@@ -19,7 +19,7 @@ public:
     void setPickUpCap(bool can);
 
 private:
-    const Item* mItem;
+    std::shared_ptr<const Item> mItem;
     sf::CircleShape mItemShape;
     sf::Vector2f mPosition;
     int mQuantity;
