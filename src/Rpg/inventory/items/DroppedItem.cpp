@@ -1,7 +1,7 @@
 #include "DroppedItem.h"
 
-DroppedItem::DroppedItem(const Item* item, const sf::Vector2f& position, int quantity)
-    : mItem(item), mPosition(position), mQuantity(quantity), mCanPickUp(false) {
+DroppedItem::DroppedItem(std::shared_ptr<const Item> item, const sf::Vector2f& position, int quantity)
+    : mItem(std::move(item)), mPosition(position), mQuantity(quantity), mCanPickUp(false) {
     mItemShape.setRadius(11.5f);
     mItemShape.setFillColor(sf::Color(100, 100, 100, 50));
     mItemShape.setOutlineColor(sf::Color::White);
@@ -29,7 +29,7 @@ int DroppedItem::getQuantity() const {
 }
 
 const Item* DroppedItem::getItem() {
-    return mItem;
+    return mItem.get();
 }
 
 sf::Vector2f DroppedItem::getPosition() const {
