@@ -127,7 +127,7 @@ void Menu::update(int crystals, const Inventory& inventory, const SkillTree& ski
     });
 
     if(mCurrentMenu == "Inventory")
-        mInventoryMenu->update(inventory);
+        mInventoryMenu->update();
     else if(mCurrentMenu == "SkillTree")
         mSkillTreeMenu->update(skillTree);
 }
