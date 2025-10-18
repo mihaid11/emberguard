@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <math.h>
 #include "../../GameManager.h"
+#include "../inventory/ItemFactory.h"
 
 // TODO : make the wrapText method work in order to show the NPC dialogue lines
 std::vector<sf::String> wrapText(const sf::String& text, const sf::Font& font, unsigned int characterSize, float boxWidth) {
@@ -343,7 +344,9 @@ void RPGEngine::processEvents() {
                     int slotIndex = mMenu.getInventoryMenu().getHoveredSlot();
                     if (slotIndex != -1) {
                         if (mInventory.getItemAt(slotIndex)) {
-                            const Item* item = mInventory.getItemAt(slotIndex);
+                            int quantity = mInventory.getItemQuantityAt(slotIndex);
+                            std::unique_ptr<Item> uniqueItem = mInventory.extractItemAt(slotIndex);
+                            std::shared_ptr<const Item> sharedItem(std::move(uniqueItem));
                             sf::Vector2f droppedItemPos;
                             if (mCharacter.getAnimation() == 1)
                                 droppedItemPos = {-35.5f, 2.f};
@@ -353,12 +356,11 @@ void RPGEngine::processEvents() {
                                 droppedItemPos = {-11.5f, -mCharacter.getHeight() / 1.1f};
                             else if (mCharacter.getAnimation() == 4)
                                 droppedItemPos = {-11.5f, mCharacter.getHeight() / 2.f};
-                            const DroppedItem dropItem = DroppedItem(item,
+                            const DroppedItem dropItem(sharedItem,
                                 mCharacter.getCenterPosition() + droppedItemPos,
-                                mInventory.getItemQuantityAt(slotIndex));
+                                quantity);
 
-                            mInventory.removeItemAt(slotIndex);
-                            mDroppedItems.push_back(dropItem);
+                            mDroppedItems.push_back(std::move(dropItem));
                         }
                     }
                 }
@@ -367,7 +369,9 @@ void RPGEngine::processEvents() {
                     int slotIndex = mHotbar.getHoveredSlot();
                     if (slotIndex != -1) {
                         if (mInventory.getItemAt(slotIndex)) {
-                            const Item* item = mInventory.getItemAt(slotIndex);
+                            int quantity = mInventory.getItemQuantityAt(slotIndex);
+                            std::unique_ptr<Item> uniqueItem = mInventory.extractItemAt(slotIndex);
+                            std::shared_ptr<const Item> sharedItem(std::move(uniqueItem));
                             sf::Vector2f droppedItemPos;
                             if (mCharacter.getAnimation() == 1)
                                 droppedItemPos = {-35.5f, 2.f};
@@ -377,12 +381,11 @@ void RPGEngine::processEvents() {
                                 droppedItemPos = {-11.5f, -mCharacter.getHeight() / 1.1f};
                             else if (mCharacter.getAnimation() == 4)
                                 droppedItemPos = {-11.5f, mCharacter.getHeight() / 2.f};
-                            const DroppedItem dropItem = DroppedItem(item,
+                            const DroppedItem dropItem(sharedItem,
                                 mCharacter.getCenterPosition() + droppedItemPos,
-                                mInventory.getItemQuantityAt(slotIndex));
+                                quantity);
 
-                            mInventory.removeItemAt(slotIndex);
-                            mDroppedItems.push_back(dropItem);
+                            mDroppedItems.push_back(std::move(dropItem));
                         }
                     }
                 }
@@ -517,18 +520,8 @@ void RPGEngine::update() {
 
                                 if (it->getPickUpCap()) {
                                     if (distance < 35.f) {
-                                        const Item* item = it->getItem();
-                                        if (item->getId() == 1)
-                                            mInventory.addItem(std::make_unique<Wood>(), it->getQuantity());
-                                        else if (item->getId() == 2)
-                                            mInventory.addItem(std::make_unique<TowerBlueprint>(), it->getQuantity());
-                                        else if (item->getId() == 3)
-                                            mInventory.addItem(std::make_unique<TowerBlueprintRare>(), it->getQuantity());
-                                        else if (item->getId() == 4)
-                                            mInventory.addItem(std::make_unique<TowerBlueprintEpic>(), it->getQuantity());
-                                        else if(item->getId() == 5)
-                                            mInventory.addItem(std::make_unique<TowerBlueprintMythic>(), it->getQuantity());
-
+                                        auto itemClone = it->getItem()->clone();
+                                        mInventory.addItem(std::move(itemClone), it->getQuantity());
                                         it = mDroppedItems.erase(it);
                                         continue;
                                     }
@@ -875,10 +868,12 @@ void RPGEngine::saveGame() {
     }
 
     for (auto& droppedItem : mDroppedItems) {
-        droppedItemId.push_back(droppedItem.getItem()->getId());
-        droppedItemXPos.push_back(droppedItem.getPosition().x);
-        droppedItemYPos.push_back(droppedItem.getPosition().y);
-        droppedItemQuantity.push_back(droppedItem.getQuantity());
+        if (const Item* item = droppedItem.getItem()) {
+            droppedItemId.push_back(droppedItem.getItem()->getId());
+            droppedItemXPos.push_back(droppedItem.getPosition().x);
+            droppedItemYPos.push_back(droppedItem.getPosition().y);
+            droppedItemQuantity.push_back(droppedItem.getQuantity());
+        }
     }
 
     int chapter = mStoryManager.getChapter();
@@ -937,6 +932,10 @@ void RPGEngine::loadGame() {
                          startMinute1, slotItemId, insideStructure,
                          mCameraFixedPosition, chapter, flagKeys, flagValues)) {
 
+        mInventory.clear();
+        mChestInventory.clear();
+        mDroppedItems.clear();
+
         mCharacter.setPosition(playerPosition);
         mIsInsideAStructure = insideStructure;
         mNPCManager.loadNPCStates(npcPositions, npcWaypoints);
@@ -966,62 +965,35 @@ void RPGEngine::loadGame() {
         mAnalyzeMenu.setInfo(extracting, inSlot, completed, timerActive, startYear1, startDay1, startHour1, startMinute1, slotItemId);
 
         for (size_t i = 0; i < droppedItemId.size(); ++i) {
-            const Item* item = nullptr;
+            auto uniqueItem = ItemFactory::createItemById(droppedItemId[i]);
+            if (!uniqueItem) {
+                std::cerr << "Error: unknown dropped item ID " << droppedItemId[i] << std::endl;
+                continue;
+            }
 
-            if (droppedItemId[i] == 1)
-                item = new Wood();
-            else if (droppedItemId[i] == 2)
-                item = new TowerBlueprint();
-            else if (droppedItemId[i] == 3)
-                item = new TowerBlueprintRare();
-            else if (droppedItemId[i] == 4)
-                item = new TowerBlueprintEpic();
-            else if (droppedItemId[i] == 5)
-                item = new TowerBlueprintMythic();
+            std::shared_ptr<const Item> sharedItem(std::move(uniqueItem));
 
-            if (item != nullptr) {
-                DroppedItem droppedItem(item, sf::Vector2f(droppedItemXPos[i], droppedItemYPos[i]), droppedItemQuantity[i]);
-                mDroppedItems.push_back(droppedItem);
-            } else
-                std::cout << "Error : unknown drop item!" << std::endl;
+            DroppedItem dropped(sharedItem,
+                { droppedItemXPos[i], droppedItemYPos[i] },
+                droppedItemQuantity[i]);
+
+            mDroppedItems.push_back(std::move(dropped));
         }
 
         for (size_t i = 0; i < inventoryItemId.size(); ++i) {
-            if (inventoryItemId[i] == 1) {
-                std::unique_ptr<Wood> woodItem = std::make_unique<Wood>();
-                mInventory.addItem(std::move(woodItem), inventoryItemQuantity[i]);
-            } else if (inventoryItemId[i] == 2) {
-                std::unique_ptr<TowerBlueprint> towerBlueprint = std::make_unique<TowerBlueprint>();
-                mInventory.addItem(std::move(towerBlueprint), inventoryItemQuantity[i]);
-            } else if (inventoryItemId[i] == 3) {
-                std::unique_ptr<TowerBlueprintRare> towerBlueprintRare = std::make_unique<TowerBlueprintRare>();
-                mInventory.addItem(std::move(towerBlueprintRare), inventoryItemQuantity[i]);
-            } else if (inventoryItemId[i] == 4) {
-                std::unique_ptr<TowerBlueprintEpic> towerBlueprintEpic = std::make_unique<TowerBlueprintEpic>();
-                mInventory.addItem(std::move(towerBlueprintEpic), inventoryItemQuantity[i]);
-            } else if (inventoryItemId[i] == 5) {
-                std::unique_ptr<TowerBlueprintMythic> towerBlueprintMythic = std::make_unique<TowerBlueprintMythic>();
-                mInventory.addItem(std::move(towerBlueprintMythic), inventoryItemQuantity[i]);
-            }
+            auto item = ItemFactory::createItemById(inventoryItemId[i]);
+            if (item)
+                mInventory.addItem(std::move(item), inventoryItemQuantity[i]);
+            else
+                std::cerr << "Unknown inventory item ID " << inventoryItemId[i] << std::endl;
         }
 
         for (size_t i = 0; i < chestItemId.size(); ++i) {
-            if (chestItemId[i] == 1) {
-                std::unique_ptr<Wood> woodItem = std::make_unique<Wood>();
-                mChestInventory.addItem(std::move(woodItem), chestItemQuantity[i]);
-            } else if (chestItemId[i] == 2) {
-                std::unique_ptr<TowerBlueprint> towerBlueprint = std::make_unique<TowerBlueprint>();
-                mChestInventory.addItem(std::move(towerBlueprint), chestItemQuantity[i]);
-            } else if (chestItemId[i] == 3) {
-                std::unique_ptr<TowerBlueprintRare> towerBlueprintRare = std::make_unique<TowerBlueprintRare>();
-                mChestInventory.addItem(std::move(towerBlueprintRare), chestItemQuantity[i]);
-            } else if (chestItemId[i] == 4) {
-                std::unique_ptr<TowerBlueprintEpic> towerBlueprintEpic = std::make_unique<TowerBlueprintEpic>();
-                mChestInventory.addItem(std::move(towerBlueprintEpic), chestItemQuantity[i]);
-            } else if (chestItemId[i] == 5) {
-                std::unique_ptr<TowerBlueprintMythic> towerBlueprintMythic = std::make_unique<TowerBlueprintMythic>();
-                mChestInventory.addItem(std::move(towerBlueprintMythic), chestItemQuantity[i]);
-            }
+            auto item = ItemFactory::createItemById(chestItemId[i]);
+            if (item)
+                mChestInventory.addItem(std::move(item), chestItemQuantity[i]);
+            else
+                std::cerr << "Unknown chest item ID " << chestItemId[i] << std::endl;
         }
 
         /*
