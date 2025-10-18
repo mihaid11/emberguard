@@ -80,15 +80,16 @@ void InventoryMenu::handleDragAndDrop(const sf::Vector2f& mousePos) {
     }
 }
 
-void InventoryMenu::update(const Inventory& inventory) {
-    mInventory = inventory;
+void InventoryMenu::update() {
     int totalSlots = mInventory.getSlotCount();
+    if (static_cast<int>(mSlots.size()) != totalSlots)
+        mSlots.resize(totalSlots);
 
-    mSlots.resize(totalSlots);
     for (int i = 0; i < totalSlots; ++i) {
         int row = i / 3;
         int col = i % 3;
-        mSlots[i].setPosition(mPosition.x + col * mSlotSize.x, mPosition.y + row * mSlotSize.y);
+        mSlots[i].setPosition(mPosition.x + col * mSlotSize.x,
+                              mPosition.y + row * mSlotSize.y);
     }
 }
 
