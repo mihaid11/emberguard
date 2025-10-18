@@ -5,15 +5,16 @@
 
 class InventoryMenu {
 public:
-    InventoryMenu(Inventory& inventory, const sf::Vector2f& position, const sf::Vector2f& slotSize,
-        const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems);
+    InventoryMenu(Inventory& inventory, const sf::Vector2f& position,
+                  const sf::Vector2f& slotSize, const sf::Vector2f& playerPos,
+                  std::vector<DroppedItem>& droppedItems);
 
     void render(sf::RenderWindow& window);
     void handleMouseClick(const sf::Vector2f& mousePos);
     void updateHover(const sf::Vector2f& mousePos);
     void handleDragAndDrop(const sf::Vector2f& mousePos);
 
-    void update(const Inventory& inventory);
+    void update();
     int getHoveredSlot() const;
 
     void restart();
