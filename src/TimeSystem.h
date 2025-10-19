@@ -23,6 +23,7 @@ public:
     void setMinute(int minute);
 
     void setTimeScale(float timeScale);
+    void reset();
 
 private:
     int mYear;

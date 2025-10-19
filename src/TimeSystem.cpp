@@ -83,3 +83,11 @@ void TimeSystem::setTimeScale(float timeScale) {
     mTimeScale = timeScale;
 }
 
+void TimeSystem::reset() {
+    mYear = 1;
+    mDay = 1;
+    mHour = 6;
+    mMinute = 0;
+    mTimeAccumulator = 0.f;
+}
+
