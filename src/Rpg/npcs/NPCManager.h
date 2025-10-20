@@ -32,6 +32,7 @@ public:
     void resumeAllNPC();
 
     NPC* getCurrentNPC();
+    void clearAllNPCs();
 
     bool currentNPCHasChoices() const;
     std::vector<DialogueChoice> getCurrentNPCChoices() const;
