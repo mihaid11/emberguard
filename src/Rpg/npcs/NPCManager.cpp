@@ -138,6 +138,11 @@ NPC* NPCManager::getCurrentNPC() {
     return mCurrentNPC;
 }
 
+void NPCManager::clearAllNPCs() {
+    mNPCs.clear();
+    mCurrentNPC = nullptr;
+}
+
 bool NPCManager::currentNPCHasChoices() const {
     if (mCurrentNPC)
         return mCurrentNPC->hasChoices();
