@@ -7,7 +7,8 @@ SaveSystem::SaveSystem() : mSaveFilePath("") {
 
 }
 
-void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::Vector2f>& npcPositions, const std::vector<int>& npcWaypoints,
+void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnimation,
+                      const std::vector<sf::Vector2f>& npcPositions, const std::vector<int>& npcWaypoints,
                       const int& crystals, const int& year, const int& day, const int& hour,
                       const int& minute, const int& bankBalance, const int& hasBorrowActive,
                       const int& penalty, const int& interest, const int& amountToRepay, const int& daysToRepayment,
@@ -28,7 +29,7 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
         return;
     }
 
-    outFile << playerPosition.x << " " << playerPosition.y << std::endl;
+    outFile << playerPosition.x << " " << playerPosition.y << " " << playerAnimation << std::endl;
     outFile << npcPositions.size() << std::endl;
 
     for (size_t i = 0; i < npcPositions.size(); ++i)
@@ -72,7 +73,8 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const std::vector<sf::
     outFile.close();
 }
 
-bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& npcPositions, std::vector<int>& npcWaypoints,
+bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation,
+                      std::vector<sf::Vector2f>& npcPositions, std::vector<int>& npcWaypoints,
                       int& crystals, int& year, int& day, int& hour, int& minute, int& bankBalance,
                       int& hasBorrowActive, int& penalty, int& interest, int& amountToRepay, int& daysToRepayment,
                       int& startYear, int& startDay, int& startHour, int& startMinute,
@@ -92,7 +94,7 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
     }
 
     // Load player position
-    if (!(inFile >> playerPosition.x >> playerPosition.y)) {
+    if (!(inFile >> playerPosition.x >> playerPosition.y >> playerAnimation)) {
         std::cerr << "Error reading player position from save file." << std::endl;
         return false;
     }
@@ -289,6 +291,7 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, std::vector<sf::Vector2f>& n
 
 bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int& day, int& hour, int& minute) {
     sf::Vector2f playerPosition;
+    int playerAnimation;
     std::vector<sf::Vector2f> npcPositions;
     std::vector<int> npcWaypoints;
     int bankBalance, penalty, interest, amountToRepay, daysToRepayment,
@@ -309,7 +312,8 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
 
     std::string tmp = mSaveFilePath;
     mSaveFilePath = saveFile;
-    bool success = load(playerPosition, npcPositions, npcWaypoints, crystals, year, day,
+    bool success = load(playerPosition, playerAnimation, npcPositions,
+                        npcWaypoints, crystals, year, day,
                         hour, minute, bankBalance, hasBorrowActive, penalty, interest,
                         amountToRepay, daysToRepayment, startYear, startDay, startHour,
                         startMinute, inventoryItemId, inventoryItemQuantity,
