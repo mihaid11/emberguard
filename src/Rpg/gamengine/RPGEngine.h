@@ -53,11 +53,18 @@ public:
     void saveGame();
     void loadGame();
     void resetSaveGame();
+    void resetToDefault();
     bool saveExists(int saveNumber) const;
     void newGame();
     void setSaveNumber(int saveNumber);
     void setFlag(std::string name, bool value);
     void changeCrystals(int value);
+    void setCrystals(int crystals);
+
+    void initialize();
+    void uninitialize();
+    void enterRPG();
+    void exitRPG();
 
     SaveSystem& getSaveSystem();
     Inventory& getInventory();
@@ -127,6 +134,8 @@ private:
     sf::Text mInteractText;
     bool mShowInteract;
     sf::Vector2f mInteractPos;
+    bool mPaused;
+    bool mIsInitialized;
 
     sf::CircleShape mDialogueInteractCircle;
     sf::Text mDialogueInteractText;

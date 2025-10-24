@@ -81,6 +81,8 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mCurrentLevel(1),
     mChapter(1),
     mSelectedChoice(0),
+    mPaused(true),
+    mIsInitialized(false),
     //mZoneManager(),
     mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
@@ -163,39 +165,6 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mDialogueDatabase.loadDialogueFromFile("dialogues/garrick_stone.json");
     mDialogueDatabase.loadDialogueFromFile("dialogues/vincent_hale.json");
     mDialogueDatabase.loadDialogueFromFile("dialogues/elliot_marlowe.json");
-
-    // Add NPCs
-    mNPCManager.addNPC(std::make_unique<GarrickStone>(sf::Vector2f(650.0f, 400.0f), "garrick_stone", gameManager));
-    mNPCManager.addNPC(std::make_unique<MiraStanton>(sf::Vector2f(1000.0f, 900.0f), "mira_stanton"));
-    mNPCManager.addNPC(std::make_unique<ElliotMarlowe>(sf::Vector2f(100.0f, 0.0f), "elliot_marlowe"));
-    mNPCManager.addNPC(std::make_unique<VincentHale>(sf::Vector2f(-100.0f, 0.0f), "vincent_hale"));
-    mNPCManager.addNPC(std::make_unique<SeraphinaLumeris>(sf::Vector2f(-20.0f, 980.0f), "seraphina_lumeris"));
-    mStoryManager.bindNPCManager(&mNPCManager);
-    mStoryManager.setChapter(1);
-
-    mAvailableTowers.push_back(2);
-    mAvailableTowers.push_back(1);
-    mAvailableTowers.push_back(3);
-
-    // Testing
-    std::unique_ptr<Wood> woodItem = std::make_unique<Wood>();
-    mInventory.addItem(std::move(woodItem), 1);
-
-    std::unique_ptr<TowerBlueprint> towerB = std::make_unique<TowerBlueprint>();
-    mInventory.addItem(std::move(towerB), 5);
-
-    std::unique_ptr<TowerBlueprintEpic> towerBE = std::make_unique<TowerBlueprintEpic>();
-    mInventory.addItem(std::move(towerBE), 2);
-
-    if(mSaveNumber != 0) {
-        if (saveExists(mSaveNumber)) {
-            loadGame();
-        } else {
-            newGame();
-            mCharacter.setPosition(sf::Vector2f(340.f, 560.f));
-            mCharacter.setAnimation(4);
-        }
-    }
 }
 
 void RPGEngine::processEvents() {
@@ -286,7 +255,6 @@ void RPGEngine::processEvents() {
                 mShowStartMenu = !mShowStartMenu;
 
                 if (mShowStartMenu) {
-                    saveGame();
                     mShowMenu = false;
                     mShowBankMenu = false;
                     mShowShopMenu = false;
@@ -454,6 +422,9 @@ void RPGEngine::processEvents() {
 }
 
 void RPGEngine::update() {
+    if (mPaused)
+        return;
+
     float dt = mClock.restart().asSeconds();
 
     if (!mShowMenu) {
@@ -792,6 +763,37 @@ void RPGEngine::renderDateTime(sf::RenderWindow& window, sf::Font& font, const s
 void RPGEngine::resume(int crystals) {
     mCrystals = crystals;
     closeMenues();
+    mPaused = false;
+
+    mClock.restart();
+
+    if (mIsInsideAStructure) {
+        mFixedCamera.setCenter(mCameraFixedPosition);
+        mWindow.setView(mFixedCamera);
+    } else {
+        mView.setCenter(mCharacter.getPosition());
+        mWindow.setView(mView);
+    }
+}
+
+void RPGEngine::enterRPG() {
+    closeMenues();
+    mPaused = false;
+
+    mClock.restart();
+
+    if (mIsInsideAStructure) {
+        mFixedCamera.setCenter(mCameraFixedPosition);
+        mWindow.setView(mFixedCamera);
+    } else {
+        mView.setCenter(mCharacter.getPosition());
+        mWindow.setView(mView);
+    }
+}
+
+void RPGEngine::exitRPG() {
+    saveGame();
+    mPaused = true;
 }
 
 void RPGEngine::closeMenues() {
@@ -892,7 +894,8 @@ void RPGEngine::saveGame() {
     for (int i = 0; i < droppedItemId.size(); ++i)
         std::cout << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;*/
 
-    mSaveSystem.save(mCharacter.getPosition(), npcPositions, npcWaypoints, mCrystals,
+    mSaveSystem.save(mCharacter.getPosition(), mCharacter.getAnimation(),
+                     npcPositions, npcWaypoints, mCrystals,
                      year, day, hour, minute, bankBalance, hasBorrowActive, penalty,
                      interest, amountToRepay, daysToRepayment, startYear, startDay,
                      startHour, startMinute, inventoryItemId, inventoryItemQuantity,
@@ -905,6 +908,7 @@ void RPGEngine::saveGame() {
 
 void RPGEngine::loadGame() {
     sf::Vector2f playerPosition;
+    int playerAnimation;
     std::vector<sf::Vector2f> npcPositions;
     std::vector<int> npcWaypoints;
     int crystals, year, day, hour, minute, bankBalance, penalty, interest,
@@ -922,7 +926,8 @@ void RPGEngine::loadGame() {
     std::vector<std::string> flagKeys;
     std::vector<int> flagValues;
 
-    if (mSaveSystem.load(playerPosition, npcPositions, npcWaypoints, crystals, year,
+    if (mSaveSystem.load(playerPosition, playerAnimation,
+                         npcPositions, npcWaypoints, crystals, year,
                          day, hour, minute, bankBalance, hasBorrowActive, penalty,
                          interest, amountToRepay, daysToRepayment, startYear, startDay,
                          startHour, startMinute, inventoryItemId, inventoryItemQuantity,
@@ -937,6 +942,7 @@ void RPGEngine::loadGame() {
         mDroppedItems.clear();
 
         mCharacter.setPosition(playerPosition);
+        mCharacter.setAnimation(playerAnimation);
         mIsInsideAStructure = insideStructure;
         mNPCManager.loadNPCStates(npcPositions, npcWaypoints);
         mCrystals = crystals;
@@ -1013,22 +1019,29 @@ void RPGEngine::loadGame() {
 }
 
 void RPGEngine::resetSaveGame() {
-    std::ofstream saveFile;
+    std::string filename;
     if (mSaveNumber == 1)
-        std::ofstream saveFile("save1.txt", std::ofstream::trunc);
+        filename = "save1.txt";
     else if (mSaveNumber == 2)
-        std::ofstream saveFile("save2.txt", std::ofstream::trunc);
+        filename = "save2.txt";
     else if (mSaveNumber == 3)
-        std::ofstream saveFile("save3.txt", std::ofstream::trunc);
-
-    if (saveFile.is_open())
-        std::cout << "Save file cleared. Game will start from initial positions." << std::endl;
+        filename = "save3.txt";
     else
+        return;
+
+    std::ofstream saveFile(filename, std::ofstream::trunc);
+    if (saveFile.is_open()) {
+        std::cout << "Save file cleared. Game will start from initial positions." << std::endl;
+        saveFile.close();
+    } else
         std::cerr << "Failed to clear save file." << std::endl;
+    
+    resetToDefault();
+}
 
-    saveFile.close();
-
-    mCharacter.setPosition(sf::Vector2f(400.f, 300.f));
+void RPGEngine::resetToDefault() {
+    mCharacter.setPosition(sf::Vector2f(340.f, 560.f));
+    mCharacter.setAnimation(4);
     mNPCManager.loadNPCStates({}, {});
     mCrystals = 100;
     mChapter = 1;
@@ -1043,15 +1056,10 @@ void RPGEngine::resetSaveGame() {
     mBankMenu.setBankBalance(0);
     mBankMenu.resetBorrowStats();
 
-    mDroppedItems.erase(mDroppedItems.begin(), mDroppedItems.end());
-
-    for (int i = 0; i < mInventory.getSlotCount(); ++i) {
-        if (mInventory.getItemAt(i))
-            mInventory.removeItemAt(i);
-    }
     mAnalyzeMenu.reset();
     mShopMenu.regenerateIds();
     mIsInsideAStructure = false;
+    mCameraFixedPosition = sf::Vector2f(0.f, 0.f);
 }
 
 bool RPGEngine::saveExists(int saveNumber) const {
@@ -1064,29 +1072,46 @@ bool RPGEngine::saveExists(int saveNumber) const {
     return false;
 }
 
+
 void RPGEngine::newGame() {
-    if (mSaveNumber == 1) {
-        std::ofstream file("save1.txt");
-        file.close();
-    } else if (mSaveNumber == 2) {
-        std::ofstream file("save2.txt");
-        file.close();
-    } else if (mSaveNumber == 3) {
-        std::ofstream file("save3.txt");
-        file.close();
-    }
+    std::string filename;
+    if (mSaveNumber == 1)
+        filename = "save1.txt";
+    else if (mSaveNumber == 2)
+        filename = "save2.txt";
+    else if (mSaveNumber == 3)
+        filename = "save3.txt";
+    else
+        return;
+    
+    std::ofstream file(filename);
+    file.close();
+    
+    resetToDefault();
+    
+    mInventory.addItem(std::make_unique<Wood>(), 1);
+    mInventory.addItem(std::make_unique<TowerBlueprint>(), 5);
+    mInventory.addItem(std::make_unique<TowerBlueprintEpic>(), 2);
+    
+    saveGame();
 }
 
 void RPGEngine::setSaveNumber(int saveNumber) {
+    if (mSaveNumber != 0 && mSaveNumber != saveNumber && mIsInitialized) {
+        saveGame();
+        uninitialize();
+    }
+
     mSaveNumber = saveNumber;
     mSaveSystem.setSaveFilePath(mSaveNumber);
-    if (saveExists(saveNumber)) {
+    
+    if (!mIsInitialized)
+        initialize();
+    
+    if (saveExists(saveNumber))
         loadGame();
-    } else {
+    else
         newGame();
-        mCharacter.setPosition(sf::Vector2f(340.f, 560.f));
-        mCharacter.setAnimation(4);
-    }
 }
 
 void RPGEngine::setFlag(std::string name, bool value) {
@@ -1106,6 +1131,47 @@ void RPGEngine::setFlag(std::string name, bool value) {
 
 void RPGEngine::changeCrystals(int value) {
     mCrystals += value;
+}
+
+void RPGEngine::setCrystals(int crystals) {
+    mCrystals = crystals;
+}
+
+void RPGEngine::initialize() {
+    if (mIsInitialized)
+        return;
+
+    mNPCManager.clearAllNPCs();
+    mNPCManager.addNPC(std::make_unique<GarrickStone>(sf::Vector2f(650.0f, 400.0f), "garrick_stone", mGameManager));
+    mNPCManager.addNPC(std::make_unique<MiraStanton>(sf::Vector2f(1000.0f, 900.0f), "mira_stanton"));
+    mNPCManager.addNPC(std::make_unique<ElliotMarlowe>(sf::Vector2f(100.0f, 0.0f), "elliot_marlowe"));
+    mNPCManager.addNPC(std::make_unique<VincentHale>(sf::Vector2f(-100.0f, 0.0f), "vincent_hale"));
+    mNPCManager.addNPC(std::make_unique<SeraphinaLumeris>(sf::Vector2f(-20.0f, 980.0f), "seraphina_lumeris"));
+    mStoryManager.bindNPCManager(&mNPCManager);
+
+    mAvailableTowers.clear();
+    mAvailableTowers.push_back(2);
+    mAvailableTowers.push_back(1);
+    mAvailableTowers.push_back(3);
+
+    mIsInitialized = true;
+}
+
+void RPGEngine::uninitialize() {
+    if (!mIsInitialized)
+        return;
+
+    mNPCManager.clearAllNPCs();
+    mAvailableTowers.clear();
+
+    mInventory.clear();
+    mChestInventory.clear();
+    mDroppedItems.clear();
+
+    mTimeSystem.reset();
+    mIsInsideAStructure = false;
+
+    mIsInitialized = false;
 }
 
 SaveSystem& RPGEngine::getSaveSystem() {
