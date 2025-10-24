@@ -53,23 +53,26 @@ void GameManager::render() {
 
 // Used for transition between TowerDefense and RPG
 void GameManager::switchToRPG(int crystals) {
+    mRpgEngine.setCrystals(crystals);
+    mRpgEngine.enterRPG();
     mCurrentState = GameState::RPG;
-    mRpgEngine.resume(crystals);
 }
 
 // Used for transition between MainMenu and RPG
 void GameManager::enterRPG(int saveNumber) {
     mRpgEngine.setSaveNumber(saveNumber);
-    mRpgEngine.closeMenues();
+    mRpgEngine.enterRPG();
     mCurrentState = GameState::RPG;
 }
 
 void GameManager::switchToTowerDefense(int crystals, int level, const std::vector<int>& availableTowers) {
+    mRpgEngine.exitRPG();
     mCurrentState = GameState::TowerDefense;
     mTowerDefenseEngine.init(level, crystals, availableTowers);
 }
 
 void GameManager::switchToMainMenu() {
+    mRpgEngine.exitRPG();
     mMainMenu.reset();
     mCurrentState = GameState::MainMenu;
 }
