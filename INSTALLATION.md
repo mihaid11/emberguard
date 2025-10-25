@@ -1,44 +1,51 @@
-# Installation Guide for Emberguard
+# Installation Guide
 
 ## Requirements:
-- **CMake**: Version 3.10 or higher
-- **Make**: (for Linux/macOS builds) or **Visual Studio** (for Windows builds)
-- **SFML**: Version 2.6.2
+- **CMake**: >= 3.10
+- **Make**: (Linux/macOS) or **Visual Studio** (Windows)
+- **SFML**: 2.6.2
 
-1. Clone the repository:
+## Build Instructions
+1. **Clone the repository**
    ```bash
    git clone https://github.com/mihaid11/Emberguard.git
+   ```
 
-2. Navigate to the project folder:
+2. **Navigate to the project folder**
    ```bash
    cd Emberguard
+   ```
 
-3. Create a build directory:
+3. **Create a build directory**
    ```bash
    mkdir build
    cd build
+   ```
 
-4. Run CMake to configure the project:
+4. **Configure the project with CMake**
    ```bash
    cmake ..
+   ```
 
-5. Build the project:
+5. **Build the project**
    ```bash
    cmake --build .
    ```
 
-   Or
+   **Or alternatively**
    ```bash
    make
    ```
 
-6. Run the project:
-   On Linux
+6. **Run the executable**
+
+   On **Linux/macOS**:
    ```bash
    ./Emberguard
    ```
 
-   On Windows:
+   On **Windows**:
    ```bash
    cd Debug
    Emberguard.exe
+   ```
