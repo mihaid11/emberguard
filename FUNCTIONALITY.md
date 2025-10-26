@@ -36,3 +36,9 @@ The game consists of two main modules: **RPG** and **Tower Defense**, each with 
 | **L** | Open Start Menu |
 | **Escape** | Close menus / pause the game |
 | **1 / 2 / 3** | Switch hotbar slot |
+
+## Screenshots
+![Game Screenshot](assets/screenshots/screenshot1.png)
+![Game Screenshot](assets/screenshots/screenshot2.png)
+![Game Screenshot](assets/screenshots/screenshot3.png)
+![Game Screenshot](assets/screenshots/screenshot4.png)
