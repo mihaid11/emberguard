@@ -12,10 +12,9 @@ ChestMenu::ChestMenu(sf::RenderWindow& window, Inventory& inventory, Inventory& 
     mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2.f,
                            (window.getSize().y - mMenuShape.getSize().y) / 2.f);
 
-    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, 40));
+    mHoveredZoneShape.setSize(sf::Vector2f(mMenuShape.getSize().x, 40));
     mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
-    mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
-                                               (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
+    mHoveredZoneShape.setPosition(mMenuShape.getPosition());
 
     sf::Vector2f mInventoryPosition(mMenuShape.getPosition().x + 90.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 90.f);
     int totalSlots = mInventory.getSlotCount();
