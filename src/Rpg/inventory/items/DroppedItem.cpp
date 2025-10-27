@@ -3,7 +3,7 @@
 DroppedItem::DroppedItem(std::shared_ptr<const Item> item, const sf::Vector2f& position, int quantity)
     : mItem(std::move(item)), mPosition(position), mQuantity(quantity), mCanPickUp(false) {
     mItemShape.setRadius(11.5f);
-    mItemShape.setFillColor(sf::Color(100, 100, 100, 50));
+    mItemShape.setFillColor(sf::Color(20, 20, 20, 100));
     mItemShape.setOutlineColor(sf::Color::White);
     mItemShape.setOutlineThickness(1.5f);
     mItemShape.setPosition(mPosition);
@@ -12,12 +12,22 @@ DroppedItem::DroppedItem(std::shared_ptr<const Item> item, const sf::Vector2f& p
 void DroppedItem::render(sf::RenderWindow& window) {
     window.draw(mItemShape);
 
-    //Draw the icon
-    // TODO : Implement item icon drawing
-    //sf::RectangleShape icon = mItem->getIcon();
-    //icon.setScale(sf::Vector2f(0.35f, 0.35f));
-    //icon.setPosition(mPosition.x + mItemShape.getRadius() - icon.getSize().x / 2.f, mPosition.y + mItemShape.getRadius() - icon.getSize().y / 2.f);
-    //window.draw(icon);
+    if (mItem) {
+        sf::RectangleShape icon = mItem->getIcon();
+        icon.setScale(0.25f, 0.25f);
+
+        sf::Vector2f iconSize = icon.getSize();
+        iconSize.x *= icon.getScale().x;
+        iconSize.y *= icon.getScale().y;
+
+        sf::Vector2f iconPos(
+            mItemShape.getPosition().x + mItemShape.getRadius() - iconSize.x / 2.f,
+            mItemShape.getPosition().y + mItemShape.getRadius() - iconSize.y / 2.f
+        );
+
+        icon.setPosition(iconPos);
+        window.draw(icon);
+    }
 }
 
 bool DroppedItem::isPickedUp(const sf::FloatRect& playerBounds) const {
