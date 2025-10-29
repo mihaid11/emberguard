@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "../inventory/Inventory.h"
+#include "../../TimeSystem.h"
 #include <vector>
 #include "../../TowerDefense/menues/Button.h"
 #include "../inventory/items/TowerBlueprint.h"
@@ -11,15 +12,18 @@
 
 class ShopMenu {
 public:
-    ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems, int& crystals);
+    ShopMenu(sf::RenderWindow& window, Inventory& inventory, TimeSystem& timeSystem,
+             int numItems, int& crystals);
 
     void render(sf::RenderWindow& window);
+    void update();
     void handleMouseClick(const sf::Vector2f& mousePos);
     void updateHover(const sf::Vector2f& mousePos);
     void regenerateIds();
 
 private:
     Inventory& mInventory;
+    TimeSystem& mTimeSystem;
     sf::RectangleShape mMenuShape;
     sf::RectangleShape mHoveredZoneShape;
 

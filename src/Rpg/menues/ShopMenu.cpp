@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <sstream>
 
-ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems, int& crystals)
-    : mInventory(inventory), mItem1Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "1"),
+ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, TimeSystem& timeSystem,
+                   int numItems, int& crystals)
+    : mInventory(inventory), mTimeSystem(timeSystem),
+    mItem1Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "1"),
     mItem2Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "2"),
     mItem3Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "3"),
     mCrystals(crystals), mNumItems(numItems) {
@@ -16,8 +19,7 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
 
     mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, 40));
     mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
-    mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
-                                               (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
+    mHoveredZoneShape.setPosition(mMenuShape.getPosition());
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Failed to load font in the shop menu!";
@@ -31,34 +33,36 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
     mTooltipBackground.setOutlineThickness(1.0f);
 
     mShopText.setFont(mFont);
-    mShopText.setCharacterSize(20);
+    mShopText.setCharacterSize(19);
     mShopText.setFillColor(sf::Color::White);
     mShopText.setString("Shop");
-    mShopText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f - 50.f, mMenuShape.getPosition().y + 8.f));
+    mShopText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mShopText.getLocalBounds().width) / 2.f,
+                                       mHoveredZoneShape.getPosition().y + (mHoveredZoneShape.getSize().y - mShopText.getLocalBounds().height) / 2.f));
 
     mCrystalsText.setFont(mFont);
     mCrystalsText.setCharacterSize(18);
     mCrystalsText.setFillColor(sf::Color::White);
     mCrystalsText.setString("Crystals: ");
-    mCrystalsText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f - 75.f,
-                                           mMenuShape.getPosition().y + mMenuShape.getSize().y - 55.f));
+    mCrystalsText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mCrystalsText.getLocalBounds().width) / 2.f,
+                                           mMenuShape.getPosition().y + (mMenuShape.getSize().y - mCrystalsText.getLocalBounds().height) / 1.23f));
 
     mErrorText.setFillColor(sf::Color::White);
     mErrorText.setFont(mFont);
     mErrorText.setCharacterSize(18);
     mErrorText.setString("Not enought crystals");
     mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.1f,
-                                        mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
+                                        mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.64f));
 
-    mItem1Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f - 225.f,
+    int gap = 77.5f;
+    mItem1Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - 3 * mItem1Button.getSize().x) / 2.f - gap,
                                           mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y) / 2.f - 75.f));
-    mItem2Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f - 55.f,
+                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mItem1Button.getSize().y) / 2.4f));
+    mItem2Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mItem2Button.getSize().x) / 2.f,
                                           mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y) / 2.f - 75.f));
-    mItem3Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f + 105.f,
+                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mItem2Button.getSize().y) / 2.4f));
+    mItem3Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x + mItem3Button.getSize().x) / 2.f + gap,
                                           mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y) / 2.f - 75.f));
+                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mItem3Button.getSize().y) / 2.4f));
 
     int item1Id = rand() % (numItems + 1);
     mItemsId.push_back(item1Id);
@@ -74,10 +78,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= woodItem->getPrice();
                 mInventory.addItem(std::move(woodItem), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.08f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f - mItem1Button.getSize().x - 77.5f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -87,10 +91,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintItem->getPrice();
                 mInventory.addItem(std::move(towerBlueprintItem), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.08f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f - mItem1Button.getSize().x - 77.5f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -100,10 +104,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintRareItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintRareItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.08f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f - mItem1Button.getSize().x - 77.5f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -113,10 +117,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintEpicItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintEpicItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.08f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f - mItem1Button.getSize().x - 77.5f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -126,10 +130,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintMythicItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintMythicItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.08f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f - mItem1Button.getSize().x - 77.5f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -143,10 +147,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= woodItem->getPrice();
                 mInventory.addItem(std::move(woodItem), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.34f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -156,10 +160,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintItem->getPrice();
                 mInventory.addItem(std::move(towerBlueprintItem), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.34f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -169,10 +173,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintRareItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintRareItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.34f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -182,10 +186,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintEpicItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintEpicItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.34f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -195,10 +199,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintMythicItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintMythicItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.34f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -211,10 +215,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= woodItem->getPrice();
                 mInventory.addItem(std::move(woodItem), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.595f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f + mItem1Button.getSize().x + 77.5,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -224,10 +228,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintItem->getPrice();
                 mInventory.addItem(std::move(towerBlueprintItem), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.595f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f + mItem1Button.getSize().x + 77.5,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -237,10 +241,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintRareItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintRareItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.595f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f + mItem1Button.getSize().x + 77.5,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -250,10 +254,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintEpicItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintEpicItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.595f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f + mItem1Button.getSize().x + 77.5,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -263,10 +267,10 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, int numItems,
                 crystals -= towerBlueprintMythicItem->getPrice();
                 mInventory.addItem((std::move(towerBlueprintMythicItem)), 1);
             } else {
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.595f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.665f));
                 mErrorText.setString("Not enought crystals!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f + mItem1Button.getSize().x + 77.5,
+                                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
                 mClock.restart();
                 mShowText = true;
             }
@@ -292,6 +296,22 @@ void ShopMenu::render(sf::RenderWindow& window) {
         window.draw(mTooltipText);
     }
 
+    int remainingHours = 23 - mTimeSystem.getHour();
+    int remainingMinutes = 59 - mTimeSystem.getMinute();
+
+    std::ostringstream timerText;
+    timerText << "Refreshes in: " << remainingHours << "h " << remainingMinutes << "m";
+
+    sf::Text timerDisplay;
+    timerDisplay.setFont(mFont);
+    timerDisplay.setCharacterSize(16);
+    timerDisplay.setFillColor(sf::Color::White);
+    timerDisplay.setString(timerText.str());
+    timerDisplay.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - timerDisplay.getLocalBounds().width) / 2.f,
+                                           mMenuShape.getPosition().y + (mMenuShape.getSize().y - timerDisplay.getLocalBounds().height) / 1.08f));
+
+    window.draw(timerDisplay);
+
     // If the error text is visible gradually make it dissapear and render it
     if (mShowText) {
         float elapsedTime = mClock.getElapsedTime().asSeconds();
@@ -305,6 +325,10 @@ void ShopMenu::render(sf::RenderWindow& window) {
         }
         window.draw(mErrorText);
     }
+}
+
+void ShopMenu::update() {
+
 }
 
 void ShopMenu::handleMouseClick(const sf::Vector2f& mousePos) {
@@ -328,6 +352,8 @@ void ShopMenu::updateHover(const sf::Vector2f& mousePos) {
     if (!hovered)
         mTooltipText.setString("");
     mCrystalsText.setString("Crystals: " + std::to_string(mCrystals));
+    mCrystalsText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mCrystalsText.getLocalBounds().width) / 2.f,
+                                           mMenuShape.getPosition().y + (mMenuShape.getSize().y - mCrystalsText.getLocalBounds().height) / 1.23f));
 }
 
 void ShopMenu::regenerateIds() {
