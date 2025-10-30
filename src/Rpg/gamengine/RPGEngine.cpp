@@ -86,7 +86,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     //mZoneManager(),
     mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
-    mShopMenu(window, mInventory, 5, mCrystals),
+    mShopMenu(window, mInventory, mTimeSystem, 5, mCrystals),
     mAnalyzeMenu(window, mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals),
     mChestMenu(window, mInventory, mChestInventory, sf::Vector2f(70.f, 70.f)),
     mTransitionSystem(sf::Vector2f(window.getSize().x, window.getSize().y)) {
@@ -442,6 +442,9 @@ void RPGEngine::update() {
                             mTransitionSystem.update(dt);
 
                             mTimeSystem.update(dt);
+
+                            if (mTimeSystem.getHour() == 0 && mTimeSystem.getMinute() == 0)
+                                mShopMenu.regenerateIds();
 
                             if (mTransitionSystem.isTransitioning())
                                 return;
