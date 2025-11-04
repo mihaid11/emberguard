@@ -4,6 +4,8 @@
 #include "../enemy/Enemy.h"
 #include "../tower/Tower.h"
 #include "../waves/Wave.h"
+#include "../waves/WaveDatabase.h"
+#include "../waves/WaveManager.h"
 #include "../projectiles/Projectile.h"
 #include "../tower/TowerSelectionMenu.h"
 #include "../tower/TowerMenu.h"
@@ -30,7 +32,6 @@ public:
 
     bool isGameOver() const;
     void init(int level, int crytals, const std::vector<int>& availableTowers);
-    bool isLevelCompleted(int level) const;
     int getCrystals() const;
     int getInitialCrystals();
 
@@ -55,9 +56,9 @@ private:
     sf::RectangleShape mHealthBar;
     sf::RectangleShape mHealthBarBackground;
 
-    Wave mCurrentWave;
-    unsigned int mCurrentWaveNumber;
     unsigned int mCurrentLevel;
+    WaveDatabase mWaveDatabase;
+    std::unique_ptr<WaveManager> mWaveManager;
 
     sf::Text mCrystalText;
     sf::Font mFont;
