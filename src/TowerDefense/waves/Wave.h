@@ -12,26 +12,28 @@ using Path = std::vector<sf::Vector2f>;
 
 class Wave {
 public:
-    Wave(int level, int waveNumber, const std::vector<int>& pathIndices);
+    struct EnemyTypeInfo {
+        std::string type;
+        int count;
+        float spawnInterval;
+        int pathNumber;
+    };
+
+    Wave(int level, int waveNumber, const std::vector<Path>& paths,
+         const std::vector<EnemyTypeInfo>& enemyTypes);
 
     void update(float dt, std::vector<Enemy>& enemies);
     bool isComplete() const;
-
     int getEnemyCount() const;
 
 private:
-    struct EnemyInfo {
-        int count;
-        std::function<Enemy(const Path&)> createEnemy;
-    };
-
     int mTotalEnemies;
     int mEnemiesSpawned;
-    float mSpawnTimer;
+    float mGlobalSpawnTimer;
     std::vector<Path> mPaths;
-    std::vector<EnemyInfo> mEnemyTypes;
-    int mCurrentEnemyType;
+    std::vector<EnemyTypeInfo> mEnemyTypes;
+    std::vector<int> mEnemiesSpawnedPerType;
 
-    void setupWave(int level, int waveNumber);
+    Enemy createEnemy(const std::string& type, const Path& path) const;
 };
 

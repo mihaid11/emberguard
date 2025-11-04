@@ -4,50 +4,29 @@
 #include <iostream>
 #include "PathsConfig.h"
 
-
-Wave::Wave(int level, int waveNumber, const std::vector<int>& pathIndices)
-    : mTotalEnemies(0), mEnemiesSpawned(0), mSpawnTimer(0.0f), mCurrentEnemyType(0) {
-
-    if (level > 0 && level <= getPaths().size()) {
-        const auto& levelPaths = getPaths()[level - 1];
-        for (int index : pathIndices) {
-            if (index >= 0 && index < levelPaths.size())
-                mPaths.push_back(levelPaths[index]);
-        }
-    }
-
-    setupWave(level, waveNumber);
-
-    for (const auto& enemyInfo : mEnemyTypes)
-        mTotalEnemies += enemyInfo.count;
-}
-
-void Wave::setupWave(int level, int waveNumber) {
-    // TODO : setup waves for new levels
-    if (level == 1) {
-        if (waveNumber == 1)
-            mEnemyTypes.push_back({ 15, [](const Path& path) { return WastelandMarauder(path); } });
-        if (waveNumber == 2)
-            mEnemyTypes.push_back({ 10, [](const Path& path) { return RadiationBerserker(path); } });
-        if (waveNumber == 3)
-            mEnemyTypes.push_back({ 40, [](const Path& path) { return EmpireScout(path); } });
+Wave::Wave(int level, int waveNumber, const std::vector<Path>& paths,
+           const std::vector<EnemyTypeInfo>& enemyTypes)
+    : mTotalEnemies(0), mEnemiesSpawned(0), mPaths(paths), mGlobalSpawnTimer(0.0f) {
+    mEnemyTypes = enemyTypes;
+    for (const auto& info : mEnemyTypes) {
+        mEnemiesSpawnedPerType.push_back(0);
+        mTotalEnemies += info.count;
     }
 }
 
 void Wave::update(float dt, std::vector<Enemy>& enemies) {
-    mSpawnTimer += dt;
+    mGlobalSpawnTimer += dt;
+    for (size_t i = 0; i < mEnemyTypes.size(); ++i) {
+        const auto& info = mEnemyTypes[i];
 
-    while (mCurrentEnemyType < mEnemyTypes.size() &&
-           mSpawnTimer >= mEnemyTypes[mCurrentEnemyType].createEnemy(mPaths[0]).getSpawnTime() &&
-           mEnemiesSpawned < mTotalEnemies) {
+        if (mEnemiesSpawnedPerType[i] < info.count &&
+            mGlobalSpawnTimer >= info.spawnInterval * (mEnemiesSpawnedPerType[i] + 1)) {
 
-        mSpawnTimer = 0.0f;
-        if (mEnemiesSpawned < mEnemyTypes[mCurrentEnemyType].count) {
-            const Path& path = mPaths[rand() % mPaths.size()];
-            enemies.push_back(mEnemyTypes[mCurrentEnemyType].createEnemy(path));
+            const Path& path = mPaths[info.pathNumber % mPaths.size()];
+            enemies.push_back(createEnemy(info.type, path));
+
+            mEnemiesSpawnedPerType[i]++;
             mEnemiesSpawned++;
-        } else {
-            mCurrentEnemyType++;
         }
     }
 }
@@ -58,5 +37,17 @@ bool Wave::isComplete() const {
 
 int Wave::getEnemyCount() const {
     return mTotalEnemies;
+}
+
+Enemy Wave::createEnemy(const std::string& type, const Path& path) const {
+    if (type == "WastelandMarauder")
+        return WastelandMarauder(path);
+    else if (type == "RadiationBerserker")
+        return RadiationBerserker(path);
+    else if (type == "EmpireScout")
+        return EmpireScout(path);
+
+    // Default fallback
+    return WastelandMarauder(path);
 }
 
