@@ -77,10 +77,6 @@ void GameManager::switchToMainMenu() {
     mCurrentState = GameState::MainMenu;
 }
 
-bool GameManager::isLevelCompleted(int level) const {
-    return mTowerDefenseEngine.isLevelCompleted(level);
-}
-
 GameEngine& GameManager::getGame(){
     return mTowerDefenseEngine;
 }
