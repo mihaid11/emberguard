@@ -14,8 +14,6 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mWindow(window),
     mSpawnTimer(0.0f),
     mTowerHealth(100),
-    mCurrentWave(1, 1, { 0 }),
-    mCurrentWaveNumber(1),
     mCurrentLevel(1),
     mMap(mCurrentLevel),
     mSelectedTower(nullptr),
@@ -216,6 +214,7 @@ void GameEngine::processEvents() {
                                 if (!gameStarted) {
                                     if (startGameButton.getGlobalBounds().contains(mousePos)) {
                                         gameStarted = true;
+                                        mWaveManager->startNextWave();
                                         continue;
                                     }
                                 }
@@ -398,27 +397,17 @@ void GameEngine::update() {
 
         if (gameStarted) {
             // Update current wave
-            mCurrentWave.update(dt, mEnemies);
+            mWaveManager->update(dt, mEnemies);
 
             bool enemiesLeft = std::any_of(mEnemies.begin(), mEnemies.end(), [](const Enemy& enemy) {
                 return !enemy.isDead(); // Check if there are any living enemies
                 });
 
-            if (mCurrentWave.isComplete() && !enemiesLeft) {
-                // 3 is the max number of waves for now
-                if (mCurrentWaveNumber < 3) {
-                    mCurrentWaveNumber++;
-                    switch (mCurrentWaveNumber) {
-                    case 2:
-                        mCurrentWave = Wave(mCurrentLevel, mCurrentWaveNumber, { 1 });
-                        break;
-                    case 3:
-                        mCurrentWave = Wave(mCurrentLevel, mCurrentWaveNumber, { 0, 1 });
-                        break;
-                    }
-                } else {
+            if (mWaveManager->isWaveComplete() && !enemiesLeft) {
+                if (!mWaveManager->isLevelComplete())
+                    mWaveManager->startNextWave();
+                else
                     mLevelCompleted = true;
-                }
             }
 
             // Update towers
@@ -607,8 +596,6 @@ void GameEngine::init(int level, int crystals, const std::vector<int>& available
     mTowers.clear();
     mEnemies.clear();
     mProjectiles.clear();
-    mCurrentWaveNumber = 1;
-    mCurrentWave = Wave(level, mCurrentWaveNumber, { 0 });
     mTowerHealth = 100;
     gameStarted = false;
     mGameOver = false;
@@ -625,16 +612,8 @@ void GameEngine::init(int level, int crystals, const std::vector<int>& available
 
     mPlayer.setPosition(sf::Vector2f(100, 100));
     mPlayer.setAnimation(4);
-}
-
-bool GameEngine::isLevelCompleted(int level) const {
-    // Check if all waves are complete and there are no remaining enemies
-    bool wavesComplete = !gameStarted || (mCurrentWaveNumber >= 3);
-    bool noEnemiesLeft = std::none_of(mEnemies.begin(), mEnemies.end(), [](const Enemy& enemy) {
-        return !enemy.isDead(); // There are no living enemies
-        });
-
-    return wavesComplete && noEnemiesLeft;
+    mWaveDatabase.loadFromFile("assets/waves/waves.json");
+    mWaveManager = std::make_unique<WaveManager>(mWaveDatabase, level);
 }
 
 int GameEngine::getCrystals() const {
@@ -644,3 +623,4 @@ int GameEngine::getCrystals() const {
 int GameEngine::getInitialCrystals() {
     return mInitialCrystals;
 }
+
