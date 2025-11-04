@@ -20,7 +20,6 @@ public:
     void switchToRPG(int crystals);
     void enterRPG(int saveNumber);
     void switchToMainMenu();
-    bool isLevelCompleted(int level) const;
 
     GameEngine& getGame();
     RPGEngine& getGameEngine();
