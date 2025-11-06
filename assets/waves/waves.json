@@ -1,0 +1,35 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "waves": [
+        {
+          "waveNumber": 1,
+          "enemyGroups": [
+            { "type": "WastelandMarauder", "count": 4, "interval": 1.5, "path": 0 },
+            { "type": "EmpireScout", "count": 2, "interval": 2.0, "path": 1 }
+          ]
+        },
+        {
+          "waveNumber": 2,
+          "enemyGroups": [
+            { "type": "RadiationBerserker", "count": 3, "interval": 1.2, "path": 0 },
+            { "type": "EmpireScout", "count": 10, "interval": 1.8, "path": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "waves": [
+        {
+          "waveNumber": 1,
+          "enemyGroups": [
+            { "type": "EmpireScout", "count": 8, "interval": 1.2, "path": 0 }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
