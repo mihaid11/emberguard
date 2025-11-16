@@ -8,11 +8,10 @@
 #include "../../GameManager.h"
 #include "../inventory/ItemFactory.h"
 
-// TODO : make the wrapText method work in order to show the NPC dialogue lines
 std::vector<sf::String> wrapText(const sf::String& text, const sf::Font& font, unsigned int characterSize, float boxWidth) {
     std::vector<sf::String> lines;
     sf::String currentLine;
-    std::istringstream wordStream(text.toAnsiString());  // Convert to ANSI string for stream processing
+    std::istringstream wordStream(text.toAnsiString());
     std::string word;
 
     while (wordStream >> word) {
@@ -95,7 +94,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
         std::cout << "Couldn't load font from file" << std::endl;
 
     mDialogueText.setFont(mFont);
-    mDialogueText.setCharacterSize(10);
+    mDialogueText.setCharacterSize(13);
     mDialogueText.setFillColor(sf::Color::White);
     mDialogueText.setPosition(400.f, 500.f);
 
@@ -646,17 +645,18 @@ void RPGEngine::render() {
         mWindow.draw(separationLine);
 
         float textWidth = dialogueBox.getSize().x - 170.f  - 40.0f;
-        std::vector<sf::String> lines = wrapText(mDialogueText.getString(), mFont, mDialogueText.getCharacterSize(), textWidth);
+        auto lines = wrapText(mDialogueText.getString(), mFont, mDialogueText.getCharacterSize(), textWidth);
 
         float lineHeight = mDialogueText.getCharacterSize() * 1.35f;
         float yOffset = dialogueBox.getPosition().y + 10.0f;
         mDialogueText.setPosition(dialogueBox.getPosition().x + 158.f, yOffset);
 
+        sf::Text lineText = mDialogueText;
         for (const auto& line : lines) {
-            mDialogueText.setString(line);
-            mWindow.draw(mDialogueText);
+            lineText.setPosition(dialogueBox.getPosition().x + 158.f, yOffset);
+            lineText.setString(line);
+            mWindow.draw(lineText);
             yOffset += lineHeight;
-            mDialogueText.setPosition(dialogueBox.getPosition().x + 158.f, yOffset);
         }
 
         if (mNPCManager.currentNPCHasChoices())
