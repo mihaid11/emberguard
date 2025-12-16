@@ -14,14 +14,19 @@ public:
     int contains(const sf::Vector2f& mousePos);
 
 private:
-    Inventory& mInventory;
     sf::Vector2f mPosition;
+
+    Inventory& mInventory;
     sf::Vector2f mSlotSize;
     int mSlotCount;
     std::vector<sf::RectangleShape> mSlots;
     int mHoveredSlot;
+
     sf::Font mFont;
     sf::Text mQuantityText;
+    sf::Text mItemNameText;
+    bool mShowText;
+    sf::Clock mClock;
 
     void updateSlotColors();
 };
