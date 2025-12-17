@@ -3,8 +3,8 @@
  <editorsettings>
   <export target="house_interior.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" source="../sprites/gameMap/Furniture.tsx"/>
- <tileset firstgid="3" source="../sprites/gameMap/Buildings.tsx"/>
+ <tileset firstgid="1" source="tilesets/Furniture.tsx"/>
+ <tileset firstgid="3" source="tilesets/Buildings.tsx"/>
  <layer id="1" name="Tile Layer 1" width="15" height="12">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
