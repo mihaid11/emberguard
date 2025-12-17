@@ -2,7 +2,7 @@
 #include <nlohmann/json.hpp>
 
 Zone::Zone(sf::Vector2i coords, const std::string& jsonPath, GameContext& gameContext)
-    : mCoords(coords) {
+    : mCoords(coords), mHasCameraTarget(false) {
     loadFromJson(jsonPath, gameContext);
 }
 
@@ -62,11 +62,25 @@ void Zone::loadFromJson(const std::string& jsonPath, GameContext& gameContext) {
                 sf::Vector2f worldPos(x + (mCoords.x * 1024.f), y + (mCoords.y * 1024.f));
                 sf::Vector2f size(width, height);
 
+                if (entityType == "CameraTarget") {
+                    mHasCameraTarget = true;
+                    mCameraTarget = worldPos;
+                    continue;
+                }
+
                 auto entity = EntityFactory::createEntity(entityType, worldPos, size, gameContext);
                 if (entity)
                     mEntities.push_back(std::move(entity));
             }
         }
     }
+}
+
+sf::Vector2f Zone::getCameraTarget() const {
+    return mCameraTarget;
+}
+
+bool Zone::hasCameraTarget() const {
+    return mHasCameraTarget;
 }
 

@@ -11,6 +11,7 @@ public:
     void render(sf::RenderWindow& window) override;
 
     void setPosition(const sf::Vector2f& position);
+    void setCenterPosition(const sf::Vector2f& position);
     sf::Vector2f getPosition() const override;
 
     sf::Vector2f getCenterPosition() const;

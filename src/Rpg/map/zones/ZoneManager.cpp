@@ -51,6 +51,10 @@ void ZoneManager::loadInterior(const std::string& path) {
     mZones.clear();
 
     auto zone = std::make_unique<Zone>(sf::Vector2i(-1, -1), path, mGameContext);
+    if (zone->hasCameraTarget())
+        mGameContext.cameraFixedPosition = zone->getCameraTarget();
+    else
+        mGameContext.cameraFixedPosition = {0.f, 0.f};
     mZones[{-1, -1}] = std::move(zone);
 }
 
@@ -99,3 +103,4 @@ std::vector<Entity*> ZoneManager::getEntities() {
     }
     return entities;
 }
+
