@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "../entities/Entity.h"
 #include <SFML/Graphics.hpp>
 #include "../../../TimeSystem.h"
 #include "../../../TransitionSystem.h"
@@ -22,8 +22,8 @@ private:
     TransitionSystem& mTransitionSystem;
     GameManager* mGameManager;
 
-    sf::Vector2f mCollPosition;
-    sf::Vector2f mCollSize;
+    sf::Vector2f mInteractPosition;
+    sf::Vector2f mInteractSize;
 
     // Rendering of the error message variables
     sf::Font mFont;

@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "../../Animation.h"
-#include "../entities/DrawableEntity.h"
+#include "../map/entities/DrawableEntity.h"
 
 class MainCharacter : public DrawableEntity {
 public:

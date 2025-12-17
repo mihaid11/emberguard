@@ -16,8 +16,8 @@ Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
 
     mMenuShape.setSize(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f));
     mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
-    mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2,
-                           (window.getSize().y - mMenuShape.getSize().y) / 2);
+    mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
+                           (window.getSize().y - mMenuShape.getSize().y) / 2.0f);
 
     mSkillTreeMenu = std::make_unique<SkillTreeMenu>(sf::Vector2f(mMenuShape.getPosition().x + 10.0f, mMenuShape.getPosition().y + 100.0f),
                                                      sf::Vector2f(mMenuShape.getSize().x - 20.0f, mMenuShape.getSize().y - 110.0f), skillTree);
@@ -26,7 +26,7 @@ Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
                                                                   mMenuShape.getPosition().y + mMenuShape.getSize().y / 3),
                                                      sf::Vector2f(70.0f, 70.0f), playerPos, droppedItems);
 
-    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, 58));
+    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x / 2.0f, 58));
     mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
     mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
                                                (window.getSize().y - mMenuShape.getSize().y) / 2.0f));

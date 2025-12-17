@@ -8,8 +8,8 @@ Bed::Bed(const sf::Vector2f& position, float sizeIncrement, const std::string fi
          TimeSystem& timeSystem, TransitionSystem& transitionSystem,
          GameManager* gameManager)
          : Entity(position, filename, collPosition, collSize, 1, interactPosition, interactSize),
-        mTimeSystem(timeSystem), mGameManager(gameManager), mCollSize(collSize),
-        mTransitionSystem(transitionSystem), mCollPosition(collPosition) {
+        mTimeSystem(timeSystem), mGameManager(gameManager), mInteractSize(interactSize),
+        mTransitionSystem(transitionSystem), mInteractPosition(interactPosition) {
     mSprite.setScale(sf::Vector2f(sizeIncrement, sizeIncrement));
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
@@ -17,25 +17,25 @@ Bed::Bed(const sf::Vector2f& position, float sizeIncrement, const std::string fi
 
     mErrorText.setFillColor(sf::Color::White);
     mErrorText.setFont(mFont);
-    mErrorText.setCharacterSize(12);
+    mErrorText.setCharacterSize(11);
     mErrorText.setString("Too early to sleep!");
-    mErrorText.setPosition(sf::Vector2f(collPosition.x + collSize.x / 2.f - 58.f,
-                                        collPosition.y - 30.f));
+    mErrorText.setPosition(sf::Vector2f(interactPosition.x + interactSize.x / 2.f - mErrorText.getGlobalBounds().width / 2.f,
+                                        interactPosition.y - 40.f));
 }
 
 void Bed::interact() {
     if (mTimeSystem.getHour() < 6 || mTimeSystem.getHour() >= 21) {
         mTransitionSystem.startSleepTransition(
-        sf::Vector2f(930.f, 300.f),
-        1.25f,
-        [this]() { return (mTimeSystem.getHour() >= 21 || mTimeSystem.getHour() < 6); },
-        [this]() { mTimeSystem.setTimeScale(0.37f); }
+            sf::Vector2f(930.f, 300.f),
+            1.25f,
+            [this]() { return (mTimeSystem.getHour() >= 21 || mTimeSystem.getHour() < 6); },
+            [this]() { mTimeSystem.setTimeScale(0.37f); }
         );
 
         mTimeSystem.setTimeScale(0.000004f);
     } else {
-        mErrorText.setPosition(sf::Vector2f(mCollPosition.x + mCollSize.x / 2.f - 58.f,
-                                            mCollPosition.y - 30.f));
+        mErrorText.setPosition(sf::Vector2f(mInteractPosition.x + mInteractSize.x / 2.f - mErrorText.getGlobalBounds().width / 2.f,
+                                            mInteractPosition.y - 40.f));
         mErrorText.setString("Too early to sleep!");
         mErrorText.setFillColor(sf::Color::White);
         mClock.restart();
@@ -59,5 +59,7 @@ void Bed::render(sf::RenderWindow& window) {
     }
 
     window.draw(mSprite);
+    //window.draw(mCollisionZone);
+    //window.draw(mInteractableZone);
 }
 

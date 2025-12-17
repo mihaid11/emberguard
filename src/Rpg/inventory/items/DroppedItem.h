@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Item.h"
-#include "../../entities/DrawableEntity.h"
+#include "../../map/entities/DrawableEntity.h"
 
 class DroppedItem : public DrawableEntity {
 public:

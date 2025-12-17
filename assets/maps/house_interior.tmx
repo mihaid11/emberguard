@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="19">
+ <editorsettings>
+  <export target="house_interior.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="../sprites/gameMap/Furniture.tsx"/>
+ <tileset firstgid="3" source="../sprites/gameMap/Buildings.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="15" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="4" name="Background">
+  <object id="18" type="MCHouseInt" gid="4" x="-0.0416667" y="383.833" width="480" height="384"/>
+ </objectgroup>
+ <objectgroup id="3" name="Entities">
+  <object id="1" type="Bed" gid="2" x="358.293" y="175.521" width="82" height="34"/>
+  <object id="2" type="Chest" gid="2" x="260.05" y="176.161" width="82" height="34"/>
+  <object id="3" type="Barrier" x="90.7351" y="380.119" width="35.159" height="3.96589"/>
+  <object id="4" type="Barrier" x="129.212" y="359.794" width="89.4703" height="24.2911"/>
+  <object id="5" type="Barrier" x="191.89" y="253.53" width="26.9588" height="109.408"/>
+  <object id="6" type="Barrier" x="219.046" y="253.598" width="260.748" height="26.08"/>
+  <object id="7" type="Barrier" x="0.347397" y="359.967" width="90.4345" height="24.1176"/>
+  <object id="8" type="Barrier" x="0.521096" y="91.0289" width="28.3755" height="271.924"/>
+  <object id="13" type="Barrier" x="22.4545" y="91.2045" width="435" height="39.6667"/>
+  <object id="14" type="Barrier" x="452.742" y="91.25" width="26.8939" height="166"/>
+  <object id="15" type="Barrier" x="257.928" y="143.602" width="86.0038" height="31.5227"/>
+  <object id="16" type="Barrier" x="356.193" y="142.33" width="85.3939" height="32.1136"/>
+ </objectgroup>
+</map>
