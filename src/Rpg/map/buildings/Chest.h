@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "../entities/Entity.h"
 #include <SFML/Graphics.hpp>
 
 class Chest : public Entity {
