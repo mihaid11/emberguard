@@ -108,6 +108,11 @@ void MainCharacter::setPosition(const sf::Vector2f& position) {
     mPosition = position;
 }
 
+void MainCharacter::setCenterPosition(const sf::Vector2f& position) {
+    sf::FloatRect bounds = mSprite.getGlobalBounds();
+    setPosition(sf::Vector2f(position.x - bounds.width / 2.f, position.y - bounds.height / 2.f));
+}
+
 sf::Vector2f MainCharacter::getPosition() const {
     return mSprite.getPosition();
 }

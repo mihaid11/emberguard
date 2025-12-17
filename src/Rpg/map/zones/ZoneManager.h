@@ -21,6 +21,8 @@ public:
     void loadInterior(const std::string& path);
     void returnToOpenWorld();
 
+    void movePlayerToWaypoint(const std::string& name);
+
 private:
     void loadNearbyZones();
     void unloadFarZones();
