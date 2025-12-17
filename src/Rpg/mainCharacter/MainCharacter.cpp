@@ -2,11 +2,15 @@
 #include <iostream>
 #include <math.h>
 
-MainCharacter::MainCharacter(const sf::Vector2f& position, GameMap& map)
-    : mPosition(position), mSpeed(142.0f), mMap(map), mPriority(0) {
-    mCollisionZone.setSize(sf::Vector2f(37.f, 62.f));
-    mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 14.5f, mPosition.y + 1.f));
+MainCharacter::MainCharacter(const sf::Vector2f& position)
+    : mPosition(position), mSpeed(142.0f), mPriority(0) {
+    mCollisionZone.setSize(sf::Vector2f(24.f, 16.f));
+    mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 21.f, mPosition.y + 47.f));
     mCollisionZone.setFillColor(sf::Color::Red);
+
+    mInteractZone.setSize(sf::Vector2f(30.f, 61.f));
+    mInteractZone.setPosition(sf::Vector2f(mPosition.x + 18.f, mPosition.y + 1.f));
+    mInteractZone.setFillColor(sf::Color::Blue);
 
     mSprite.setTextureRect({ 0, 0, 64, 64 });
     mAnimations[int(AnimationIndex::IdleUp)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/idleUp.png", 4, 2.5f);
@@ -28,7 +32,7 @@ void MainCharacter::update(float dt, bool inDialogue) {
             if (std::find(keyOrder.begin(), keyOrder.end(), key) == keyOrder.end()) {
                 keyOrder.push_back(key);
             }
-            };
+        };
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { direction.x -= 1.165f; addKey(sf::Keyboard::A); }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { direction.x += 1.165f; addKey(sf::Keyboard::D); }
@@ -86,25 +90,21 @@ void MainCharacter::update(float dt, bool inDialogue) {
     mPosition += direction * mSpeed * dt;
 
     mSprite.setPosition(mPosition);
-    mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 14.5f, mPosition.y + 1.f));
-
-    // Check for collision and revert if necessary
-    if (mMap.checkCollision(mCollisionZone.getGlobalBounds())) {
-        mPosition = originalPosition;
-        mSprite.setPosition(mPosition);
-        mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 14.5f, mPosition.y + 1.f));
-    }
+    mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 21.f, mPosition.y + 47.f));
+    mInteractZone.setPosition(sf::Vector2f(mPosition.x + 18.f, mPosition.y + 1.f));
 }
 
 
 void MainCharacter::render(sf::RenderWindow& window) {
-    window.draw(mSprite);
+    //window.draw(mInteractZone);
     //window.draw(mCollisionZone);
+    window.draw(mSprite);
 }
 
 void MainCharacter::setPosition(const sf::Vector2f& position) {
     mSprite.setPosition(position);
-    mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 14.5f, mPosition.y + 1.f));
+    mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 21.f, mPosition.y + 47.f));
+    mInteractZone.setPosition(sf::Vector2f(mPosition.x + 18.f, mPosition.y + 1.f));
     mPosition = position;
 }
 
@@ -123,6 +123,10 @@ float MainCharacter::getHeight() const {
 
 sf::FloatRect MainCharacter::getBounds() const {
     return mCollisionZone.getGlobalBounds();
+}
+
+sf::FloatRect MainCharacter::getInteractBounds() const {
+    return mInteractZone.getGlobalBounds();
 }
 
 void MainCharacter::setAnimation(int animation) {
