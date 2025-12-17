@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <string.h>
 #include "../mainCharacter/MainCharacter.h"
-#include "../map/GameMap.h"
 #include "../npcs/NPC.h"
 #include "../npcs/NPCManager.h"
 #include "../dialogueSystem/DialogueManager.h"
@@ -27,14 +26,15 @@
 #include "../menues/ShopMenu.h"
 #include "../menues/AnalyzeMenu.h"
 #include "../menues/ChestMenu.h"
-#include "../entities/DrawableEntity.h"
+#include "../map/entities/DrawableEntity.h"
 #include "../map/buildings/MCHouse.h"
 #include "../map/buildings/MCHouseInt.h"
 #include "../map/buildings/Barrier.h"
 #include "../map/buildings/Bed.h"
 #include "../map/buildings/Chest.h"
 #include "../../TransitionSystem.h"
-//#include "../map/zones/ZoneManager.h"
+#include "../map/entities/EntityFactory.h"
+#include "../map/zones/ZoneManager.h"
 
 class GameManager;
 
@@ -72,7 +72,6 @@ public:
 private:
     sf::RenderWindow& mWindow;
     MainCharacter mCharacter;
-    GameMap mMap;
 
     //NPCs
     VincentHale mVincentHale;
@@ -150,7 +149,7 @@ private:
 
     TransitionSystem mTransitionSystem;
 
-    // TODO : Implement method for efficient tile rendering
-    //ZoneManager mZoneManager;
+    GameContext mGameContext;
+    ZoneManager mZoneManager;
 };
 

@@ -1,25 +1,27 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <fstream>
-#include <sstream>
 #include <iostream>
+#include <fstream>
+#include <memory>
+#include "../entities/Entity.h"
+#include "../entities/EntityFactory.h"
 
 class Zone {
 public:
-    Zone(sf::Vector2i coords, const sf::Texture& tileset, const std::string& csvPath);
+    Zone(sf::Vector2i coords, const std::string& jsonPath, GameContext& gameContext);
 
-    void loadFromCSV(const std::string& csvPath);
-    void buildLayer();
-    void draw(sf::RenderTarget& target);
+    void update();
+    void render(sf::RenderWindow& window);
+
+    const std::vector<std::unique_ptr<Entity>>& getEntities();
 
 private:
-    sf::Vector2i mZoneCoords;
-    std::vector<std::vector<int>> mTileIDs;
-    std::vector<sf::VertexArray> mLayers;
-    const sf::Texture* mTilesetTexture;
-    int mTileSize;
-    int mZoneWidth;
-    int mZoneHeight;
+    void loadFromJson(const std::string& jsonPath, GameContext& gameContext);
+
+    sf::Vector2i mCoords;
+    sf::Texture mBackgroundTexture;
+    sf::Sprite mBackgroundSprite;
+    std::vector<std::unique_ptr<Entity>> mEntities;
 };
 
