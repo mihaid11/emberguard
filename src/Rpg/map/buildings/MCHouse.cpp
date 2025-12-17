@@ -11,11 +11,9 @@ MCHouse::MCHouse(const sf::Vector2f& position, const std::string filename, const
 }
 
 void MCHouse::interact() {
-    mMainCharacter.setPosition(sf::Vector2f(77.f - 1024.f, 290.f - 1024.f));
     mMainCharacter.setAnimation(3);
     mIsInsideAStructure = true;
-    mCameraFixedPosition = { 240.f - 1024.f, 192.5f - 1024.f };
 
-    mChangeMap("assets/maps/house_interior.json");
+    mChangeMap("MCHouse_Interior");
 }
 

@@ -35,6 +35,7 @@
 #include "../../TransitionSystem.h"
 #include "../map/entities/EntityFactory.h"
 #include "../map/zones/ZoneManager.h"
+#include "../map/entities/WaypointManager.h"
 
 class GameManager;
 
@@ -151,5 +152,6 @@ private:
 
     GameContext mGameContext;
     ZoneManager mZoneManager;
+    WaypointManager mWaypointManager;
 };
 
