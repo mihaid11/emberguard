@@ -10,11 +10,9 @@ MCHouseInt::MCHouseInt(const sf::Vector2f& position, const std::string filename,
 }
 
 void MCHouseInt::interact() {
-    mMainCharacter.setPosition(sf::Vector2f(295.f, 262.f));
     mMainCharacter.setAnimation(4);
     mIsInsideAStructure = false;
-    mCameraFixedPosition = { 0.f, 0.f };
 
-    mChangeMap("open_world");
+    mChangeMap("MCHouse_Exterior");
 }
 

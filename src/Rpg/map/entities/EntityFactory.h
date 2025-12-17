@@ -1,7 +1,9 @@
 #pragma once
+#include <map>
 #include <memory>
 #include <functional>
 #include "Entity.h"
+#include "WaypointManager.h"
 
 class MainCharacter;
 class TimeSystem;
@@ -18,6 +20,7 @@ struct GameContext {
     GameManager* gameManager;
 
     std::function<void(const std::string&)> changeMap;
+    WaypointManager& waypointManager;
 };
 
 class EntityFactory {

@@ -84,9 +84,21 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mTransitionSystem(sf::Vector2f(window.getSize().x, window.getSize().y)),
     mChestMenu(window, mInventory, mChestInventory, sf::Vector2f(70.f, 70.f)),
     mGameContext{ mCharacter, mIsInsideAStructure, mCameraFixedPosition, mShowChestMenu, mTimeSystem,  mTransitionSystem, gameManager,
-                  [this](const std::string& path) {
-                      if (path == "open_world") mZoneManager.returnToOpenWorld(); else mZoneManager.loadInterior(path);
-                  }},
+                  [this](const std::string& name) {
+                    const Waypoint* waypoint = mWaypointManager.getWaypoint(name);
+
+                    if (waypoint) {
+                        mCharacter.setCenterPosition(waypoint->pos);
+
+                        if (waypoint->isInterior) {
+                            mIsInsideAStructure = true;
+                            mZoneManager.loadInterior(waypoint->mapPath);
+                        } else {
+                            mIsInsideAStructure = false;
+                            mZoneManager.returnToOpenWorld();
+                        }
+                    }
+                  }, mWaypointManager},
     mZoneManager(mGameContext, 2),
     mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
@@ -127,6 +139,15 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mDialogueDatabase.loadDialogueFromFile("dialogues/garrick_stone.json");
     mDialogueDatabase.loadDialogueFromFile("dialogues/vincent_hale.json");
     mDialogueDatabase.loadDialogueFromFile("dialogues/elliot_marlowe.json");
+
+    mWaypointManager.loadWaypoints("assets/maps");
+
+    const Waypoint* spawn = mWaypointManager.getWaypoint("SpawnPoint");
+
+    if (spawn) {
+        mCharacter.setCenterPosition(spawn->pos);
+        mZoneManager.update(mCharacter.getPosition());
+    }
 }
 
 void RPGEngine::processEvents() {
@@ -430,7 +451,11 @@ void RPGEngine::update() {
 
                             mNPCManager.update(dt);
                             mView.setCenter(mCharacter.getCenterPosition());
-                            mFixedCamera.setCenter(mCameraFixedPosition);
+
+                            if (mCameraFixedPosition.x != 0.f || mCameraFixedPosition.y != 0.f)
+                                mFixedCamera.setCenter(mCameraFixedPosition);
+                            else
+                                mFixedCamera.setCenter(mCharacter.getCenterPosition());
 
                             if (!mNPCManager.playerClose(mCharacter.getPosition())) {
                                 mShowDialogue = false;
@@ -899,7 +924,7 @@ void RPGEngine::loadGame() {
 
         mIsInsideAStructure = insideStructure;
         if (mIsInsideAStructure == true)
-            mGameContext.changeMap("assets/maps/house_interior.json");
+            mGameContext.changeMap("assets/maps/interiors/house_interior.json");
         else
             mGameContext.changeMap("open_world");
 
@@ -1000,7 +1025,13 @@ void RPGEngine::resetSaveGame() {
 }
 
 void RPGEngine::resetToDefault() {
-    mCharacter.setPosition(sf::Vector2f(295.f, 290.f));
+    const Waypoint* spawn = mWaypointManager.getWaypoint("SpawnPoint");
+
+    if (spawn) {
+        mCharacter.setCenterPosition(spawn->pos);
+        mZoneManager.update(mCharacter.getPosition());
+    }
+
     mCharacter.setAnimation(4);
     mNPCManager.loadNPCStates({}, {});
     mCrystals = 100;

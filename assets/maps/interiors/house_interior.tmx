@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="19">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="23">
  <editorsettings>
   <export target="house_interior.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" source="tilesets/Furniture.tsx"/>
- <tileset firstgid="3" source="tilesets/Buildings.tsx"/>
+ <tileset firstgid="1" source="../tilesets/Furniture.tsx"/>
+ <tileset firstgid="3" source="../tilesets/Buildings.tsx"/>
  <layer id="1" name="Tile Layer 1" width="15" height="12">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -37,5 +37,11 @@
   <object id="14" type="Barrier" x="452.742" y="91.25" width="26.8939" height="166"/>
   <object id="15" type="Barrier" x="257.928" y="143.602" width="86.0038" height="31.5227"/>
   <object id="16" type="Barrier" x="356.193" y="142.33" width="85.3939" height="32.1136"/>
+  <object id="20" name="MCHouse_Interior" type="Waypoint" x="109.818" y="326">
+   <point/>
+  </object>
+  <object id="21" type="CameraTarget" x="239.188" y="192.063">
+   <point/>
+  </object>
  </objectgroup>
 </map>

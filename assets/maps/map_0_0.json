@@ -75,37 +75,61 @@
                  "y":307
                 }, 
                 {
-                 "height":46.4999966666666,
+                 "height":46.5,
                  "id":6,
                  "name":"",
                  "rotation":0,
                  "type":"Barrier",
                  "visible":true,
-                 "width":153.250333333333,
-                 "x":264.250333333333,
-                 "y":247.416666666667
+                 "width":153.25,
+                 "x":264.25,
+                 "y":247.417
                 }, 
                 {
-                 "height":1024.12121212121,
+                 "height":1024.12,
                  "id":7,
                  "name":"",
                  "rotation":0,
                  "type":"Barrier",
                  "visible":true,
-                 "width":6.83333333333333,
-                 "x":0.136363636363637,
-                 "y":0.0909090909091219
+                 "width":6.83333,
+                 "x":0.136364,
+                 "y":0.0909091
                 }, 
                 {
-                 "height":6.08333333333333,
+                 "height":6.08333,
                  "id":8,
                  "name":"",
                  "rotation":0,
                  "type":"Barrier",
                  "visible":true,
-                 "width":1016.66666666667,
+                 "width":1016.67,
                  "x":7.125,
                  "y":0
+                }, 
+                {
+                 "height":0,
+                 "id":10,
+                 "name":"MCHouse_Exterior",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Waypoint",
+                 "visible":true,
+                 "width":0,
+                 "x":329.75,
+                 "y":327.5
+                }, 
+                {
+                 "height":0,
+                 "id":11,
+                 "name":"SpawnPoint",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Waypoint",
+                 "visible":true,
+                 "width":0,
+                 "x":164.424242424242,
+                 "y":315.151515151515
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -114,7 +138,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":10,
+ "nextobjectid":12,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -122,7 +146,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/sprites\/gameMap\/Buildings.tsx"
+         "source":"tilesets\/Buildings.tsx"
         }],
  "tilewidth":32,
  "type":"map",
