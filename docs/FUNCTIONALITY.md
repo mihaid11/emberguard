@@ -37,8 +37,11 @@ The game consists of two main modules: **RPG** and **Tower Defense**, each with 
 | **Escape** | Close menus / pause the game |
 | **1 / 2 / 3** | Switch hotbar slot |
 
+## Game Map Building
+- [Map Creation Guide](./MAP_CREATION.md)
+
 ## Screenshots
-![Game Screenshot](assets/screenshots/screenshot1.png)
-![Game Screenshot](assets/screenshots/screenshot2.png)
-![Game Screenshot](assets/screenshots/screenshot3.png)
-![Game Screenshot](assets/screenshots/screenshot4.png)
+![Game Screenshot](../assets/screenshots/screenshot1.png)
+![Game Screenshot](../assets/screenshots/screenshot2.png)
+![Game Screenshot](../assets/screenshots/screenshot3.png)
+![Game Screenshot](../assets/screenshots/screenshot4.png)
