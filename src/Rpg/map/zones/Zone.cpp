@@ -1,84 +1,72 @@
 #include "Zone.h"
-#include <exception>
+#include <nlohmann/json.hpp>
 
-Zone::Zone(sf::Vector2i coords, const sf::Texture& tileset, const std::string& csvPath)
-    : mZoneCoords(coords), mTilesetTexture(&tileset),
-    mTileSize(32), mZoneWidth(16), mZoneHeight(16) {
-    loadFromCSV(csvPath);
-    buildLayer();
+Zone::Zone(sf::Vector2i coords, const std::string& jsonPath, GameContext& gameContext)
+    : mCoords(coords) {
+    loadFromJson(jsonPath, gameContext);
 }
 
-void Zone::loadFromCSV(const std::string& csvPath) {
-    std::ifstream file(csvPath);
-    if (!file.is_open()) {
-        std::cerr << "Failed to open CSV file: " << csvPath << std::endl;
+void Zone::update() {
+    for (auto& entity: mEntities)
+        entity->update();
+}
+
+const std::vector<std::unique_ptr<Entity>>& Zone::getEntities() {
+    return mEntities;
+}
+
+void Zone::render(sf::RenderWindow& window) {
+    window.draw(mBackgroundSprite);
+}
+
+void Zone::loadFromJson(const std::string& jsonPath, GameContext& gameContext) {
+    std::ifstream file(jsonPath);
+    if (!file.is_open())
+        return;
+
+    if (file.peek() == std::ifstream::traits_type::eof()) {
+        std::cerr << "File exists but is empty: " << jsonPath << std::endl;
         return;
     }
 
-    mTileIDs.resize(mZoneHeight, std::vector<int>(mZoneWidth, 0));
-    std::string line;
-    int row = 0;
+    nlohmann::json j;
+    file >> j;
 
-    while (std::getline(file, line)) {
-        std::stringstream ss(line);
-        int col = 0;
-        std::string tileIDStr;
-        while (std::getline(ss, tileIDStr, ',') && col < mZoneWidth) {
-            try {
-                mTileIDs[row][col] = std::stoi(tileIDStr);
+    for (const auto& layer: j["layers"]) {
+        std::string type = layer["type"];
+
+        if (type == "imagelayer") {
+            std::string backgroundPath = layer["image"];
+
+            if (backgroundPath.find("..") != std::string::npos)
+                backgroundPath = "assets" + backgroundPath.substr(2);
+
+            if (mBackgroundTexture.loadFromFile(backgroundPath)) {
+                mBackgroundSprite.setTexture(mBackgroundTexture);
+                mBackgroundSprite.setPosition(mCoords.x * 1024.f, mCoords.y * 1024.f);
+            } else {
+                std::cerr << "Failed to load zone background: " << backgroundPath << std::endl;
             }
-            catch (const std::exception e) {
-                std::cerr << "Invalid tile ID in CSV file at [" << row << "][" << col << "]: " << tileIDStr << std::endl;
+        } else if (type == "objectgroup") {
+            for (const auto& object: layer["objects"]) {
+                std::string entityType = object.value("type", "");
+
+                float x = object["x"];
+                float y = object["y"];
+                float width = object["width"];
+                float height = object["height"];
+
+                if (object.contains("gid"))
+                    y -= height;
+
+                sf::Vector2f worldPos(x + (mCoords.x * 1024.f), y + (mCoords.y * 1024.f));
+                sf::Vector2f size(width, height);
+
+                auto entity = EntityFactory::createEntity(entityType, worldPos, size, gameContext);
+                if (entity)
+                    mEntities.push_back(std::move(entity));
             }
-            col++;
         }
-        row++;
-        if (row >= mZoneHeight) break;
-    }
-
-    file.close();
-}
-
-void Zone::buildLayer() {
-    mLayers.clear();
-
-    sf::VertexArray layer(sf::Quads, mZoneWidth * mZoneHeight * 4);
-
-    for (int y = 0; y < mZoneHeight; y++) {
-        for (int x = 0; x < mZoneWidth; x++) {
-            if (y >= mTileIDs.size() || x >= mTileIDs[y].size()) {
-                std::cerr << "Out of bounds access at [" << y << "][" << x << "]" << std::endl;
-                continue;
-            }
-
-            int tileID = mTileIDs[y][x];
-
-            float tileX = (float)(x * mTileSize);
-            float tileY = (float)(y * mTileSize);
-
-            int tilesPerRow = mTilesetTexture->getSize().x / mTileSize;
-            float tileXInTexture = (float)((tileID % tilesPerRow) * mTileSize);
-            float tileYInTexture = (float)((tileID / tilesPerRow) * mTileSize);
-
-            sf::Vertex* quad = &layer[(x + y * mZoneWidth) * 4];
-            quad[0].position = sf::Vector2f(tileX, tileY);
-            quad[1].position = sf::Vector2f(tileX + mTileSize, tileY);
-            quad[2].position = sf::Vector2f(tileX + mTileSize, tileY + mTileSize);
-            quad[3].position = sf::Vector2f(tileX, tileY + mTileSize);
-
-            quad[0].texCoords = sf::Vector2f(tileXInTexture, tileYInTexture);
-            quad[1].texCoords = sf::Vector2f(tileXInTexture + mTileSize, tileYInTexture);
-            quad[2].texCoords = sf::Vector2f(tileXInTexture + mTileSize, tileYInTexture + mTileSize);
-            quad[3].texCoords = sf::Vector2f(tileXInTexture, tileYInTexture + mTileSize);
-        }
-    }
-
-    mLayers.push_back(layer);
-}
-
-void Zone::draw(sf::RenderTarget& target) {
-    for (auto& layer : mLayers) {
-        target.draw(layer, mTilesetTexture);
     }
 }
 

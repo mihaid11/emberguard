@@ -46,9 +46,8 @@ static bool intersects(const sf::FloatRect& rect1, const sf::FloatRect& rect2) {
 
 RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     : mWindow(window),
-    mMap(),
     mTimeSystem(0.36f),
-    mCharacter(sf::Vector2f(400.f, 300.f), mMap),
+    mCharacter(sf::Vector2f(295.f, 290.f)),
     mView(sf::Vector2f(400.f, 300.f), sf::Vector2f(740.f, 420.f)),
     mFixedCamera(sf::Vector2f(0.f, 0.f), sf::Vector2f(740.f, 420.f)),
     mCameraFixedPosition(sf::Vector2f(0.f, 0.f)),
@@ -82,13 +81,17 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mSelectedChoice(0),
     mPaused(true),
     mIsInitialized(false),
-    //mZoneManager(),
+    mTransitionSystem(sf::Vector2f(window.getSize().x, window.getSize().y)),
+    mChestMenu(window, mInventory, mChestInventory, sf::Vector2f(70.f, 70.f)),
+    mGameContext{ mCharacter, mIsInsideAStructure, mCameraFixedPosition, mShowChestMenu, mTimeSystem,  mTransitionSystem, gameManager,
+                  [this](const std::string& path) {
+                      if (path == "open_world") mZoneManager.returnToOpenWorld(); else mZoneManager.loadInterior(path);
+                  }},
+    mZoneManager(mGameContext, 2),
     mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
     mShopMenu(window, mInventory, mTimeSystem, 5, mCrystals),
-    mAnalyzeMenu(window, mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals),
-    mChestMenu(window, mInventory, mChestInventory, sf::Vector2f(70.f, 70.f)),
-    mTransitionSystem(sf::Vector2f(window.getSize().x, window.getSize().y)) {
+    mAnalyzeMenu(window, mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;
@@ -117,46 +120,6 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mDialogueInteractText.setCharacterSize(10);
     mDialogueInteractText.setFillColor(sf::Color::White);
     mDialogueInteractText.setString("E");
-
-    // Map barriers
-    mMap.addEntity<Barrier>(sf::Vector2f(-10.f, -10.f), sf::Vector2f(mMap.getSize().x + 20.f, 10.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(-10.f, -10.f), sf::Vector2f(10.f, mMap.getSize().y + 20.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(mMap.getSize().x, -10.f), sf::Vector2f(10.f, mMap.getSize().y + 20.f));
-    mMap.addEntity<Barrier>(sf::Vector2f(-10.f, mMap.getSize().y), sf::Vector2f(mMap.getSize().y + 20.f, 10.f));
-
-    // MCHouseInt barriers
-    // Left
-    mMap.addEntity<Barrier>(sf::Vector2f(-991.75f, -935.f), sf::Vector2f(30.f, 420.f));
-    // Right
-    mMap.addEntity<Barrier>(sf::Vector2f(-534.5f, -920.f), sf::Vector2f(30.f, 260.f));
-    // Bottom Left
-    mMap.addEntity<Barrier>(sf::Vector2f(-1007.f, -586.3f), sf::Vector2f(105.f, 25.f));
-    // Bottom Right
-    mMap.addEntity<Barrier>(sf::Vector2f(-858.f, -586.3f), sf::Vector2f(107.f, 25.f));
-    // Middle Right
-    mMap.addEntity<Barrier>(sf::Vector2f(-791.f, -696.5f), sf::Vector2f(325.f, 25.f));
-    // Middle Up
-    mMap.addEntity<Barrier>(sf::Vector2f(-794.f, -685.f), sf::Vector2f(30.f, 130.f));
-    // Bottom Middle
-    mMap.addEntity<Barrier>(sf::Vector2f(-903.f, -561.f), sf::Vector2f(60.f, 20.f));
-
-    // MCHouseInt bed
-    mMap.addEntity<Bed>(sf::Vector2f(-639.f, -810.f), 1.8f, "assets/sprites/buildings/bed.png",
-                        sf::Vector2f(-634.f, -815.f), sf::Vector2f(75.2f, 1.f),
-                        sf::Vector2f(-640.f, -816.f), sf::Vector2f(90.f, 41.f),
-                        mTimeSystem, mTransitionSystem, gameManager);
-    // TODO: Add chest sprite
-    mMap.addEntity<Chest>(sf::Vector2f(-750.f, -810.f), 1.8f, "assets/sprites/buildings/bed.png",
-                          sf::Vector2f(-745.f, -815.f), sf::Vector2f(75.2f, 1.f),
-                          sf::Vector2f(-751.f, -816.f), sf::Vector2f(90.f, 41.f), mShowChestMenu);
-    mMap.addEntity<MCHouse>(sf::Vector2f(300.f, 300.f), "assets/sprites/buildings/mcHouseExt.png",
-                            sf::Vector2f(313.f, 481.f), sf::Vector2f(143.f, 30.f), 1, sf::Vector2f(340.f, 505.f),
-                            sf::Vector2f(60.f, 30.f), mCharacter, mIsInsideAStructure, mCameraFixedPosition);
-    mMap.addEntity<MCHouseInt>(sf::Vector2f(-990.f, -954.f), "assets/sprites/buildings/mcHouseInt.png",
-                               sf::Vector2f(-980.f, -898.f), sf::Vector2f(580.f, 40.f), 1, sf::Vector2f(-903.f, -565.f),
-                               sf::Vector2f(48.f, 18.f), mCharacter, mIsInsideAStructure, mCameraFixedPosition);
-
-    //mZoneManager.loadTileset("assets/sprites/tiles/Tileset.png");
 
     //Add NPCs dialogues
     mDialogueDatabase.loadDialogueFromFile("dialogues/mira_stanton.json");
@@ -198,13 +161,9 @@ void RPGEngine::processEvents() {
                     if (mShowDialogue) {
                         mCurrentInteractingNPC = mNPCManager.getCurrentNPC();
                     } else {
-                        for (auto& entity : mMap.getEntities()) {
-                            if (entity->isInteractable())
-                                if (entity->getInteractBounds().intersects(mCharacter.getBounds())) {
-                                    entity->interact();
-                                    break;
-                                }
-                        }
+                        Entity* interactable = mZoneManager.checkInteraction(mCharacter.getInteractBounds());
+                        if (interactable)
+                            interactable->interact();
                     }
                 } else if (mCurrentInteractingNPC && mShowDialogue) {
                     if (!mNPCManager.currentNPCHasChoices())
@@ -241,14 +200,6 @@ void RPGEngine::processEvents() {
                     mShowMenu = !mShowMenu;
                     if (!mShowMenu)
                         mMenu.restart();
-                }
-            } else if (event.key.code == sf::Keyboard::O) {
-                sf::String original = mDialogueText.getString();
-                std::string text1 = original.toAnsiString();
-                std::cout << text1 << std::endl;
-                std::vector<sf::String> lines = wrapText(text1, mFont, 10, 425.0f);
-                for (const auto& line : lines) {
-                    std::cout << line.toAnsiString() << std::endl;
                 }
             } else if (event.key.code == sf::Keyboard::L) {
                 mShowStartMenu = !mShowStartMenu;
@@ -449,9 +400,9 @@ void RPGEngine::update() {
                                 return;
 
                             mCharacter.update(dt, mShowDialogue);
-                            //mZoneManager.update(mCharacter.getPosition());
+                            mZoneManager.update(mCharacter.getPosition());
 
-                            if (mMap.checkCollision(mCharacter.getBounds()))
+                            if (mZoneManager.checkCollision(mCharacter.getBounds()))
                                 mCharacter.setPosition(previousPosition);
 
                             for (auto& npc : mNPCManager.getNPCs()) {
@@ -504,21 +455,20 @@ void RPGEngine::update() {
                                 }
                                 ++it;
                             }
-                            mMap.update();
 
                             mShowInteract = false;
 
-                            for (auto& entity : mMap.getEntities()) {
+                            for (auto& entity : mZoneManager.getEntities()) {
                                 if (!entity->isInteractable())
                                     continue;
 
-                                if (entity->getInteractBounds().intersects(mCharacter.getBounds())) {
+                                if (entity->getInteractBounds().intersects(mCharacter.getInteractBounds())) {
                                     mShowInteract = true;
 
                                     mInteractPos = entity->getInteractPosition();
 
                                     mInteractCircle.setPosition({mInteractPos.x +
-                                        entity->getInteractBounds().width + 1.5f, mInteractPos.y});
+                                        entity->getInteractBounds().width + 1.5f, mInteractPos.y - 12.f});
 
                                     mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
                                         mInteractCircle.getPosition().y + 2.8f});
@@ -577,19 +527,19 @@ void RPGEngine::render() {
     else
         mWindow.setView(mFixedCamera);
 
-    //mZoneManager.draw(mWindow);
+    mZoneManager.render(mWindow);
 
     std::vector<std::pair<float, DrawableEntity*>> renderQueue;
 
-    for (auto& entity : mMap.getEntities()) {
+    for (auto* entity : mZoneManager.getEntities()) {
         float depth = entity->getPosition().y + entity->getHeight();
 
-        if (dynamic_cast<MCHouseInt*>(entity.get()))
+        if (dynamic_cast<MCHouseInt*>(entity))
             depth = -9999.f;
-        else if (dynamic_cast<Bed*>(entity.get()))
+        else if (dynamic_cast<Bed*>(entity))
             depth = -8888.f;
 
-        renderQueue.emplace_back(depth, entity.get());
+        renderQueue.emplace_back(depth, entity);
     }
 
     renderQueue.emplace_back(mCharacter.getPosition().y + mCharacter.getHeight(), &mCharacter);
@@ -946,14 +896,21 @@ void RPGEngine::loadGame() {
 
         mCharacter.setPosition(playerPosition);
         mCharacter.setAnimation(playerAnimation);
+
         mIsInsideAStructure = insideStructure;
+        if (mIsInsideAStructure == true)
+            mGameContext.changeMap("assets/maps/house_interior.json");
+        else
+            mGameContext.changeMap("open_world");
+
         mNPCManager.loadNPCStates(npcPositions, npcWaypoints);
         mCrystals = crystals;
+
         mChapter = chapter;
         std::unordered_map<std::string, bool> flags;
-        for (size_t i = 0; i < flagKeys.size(); ++i) {
+        for (size_t i = 0; i < flagKeys.size(); ++i)
             flags[flagKeys[i]] = (flagValues[i] == 1);
-        }
+
         mStoryManager.setAllFlags(flags);
         mStoryManager.setChapter(chapter);
 
@@ -1043,7 +1000,7 @@ void RPGEngine::resetSaveGame() {
 }
 
 void RPGEngine::resetToDefault() {
-    mCharacter.setPosition(sf::Vector2f(340.f, 560.f));
+    mCharacter.setPosition(sf::Vector2f(295.f, 290.f));
     mCharacter.setAnimation(4);
     mNPCManager.loadNPCStates({}, {});
     mCrystals = 100;
