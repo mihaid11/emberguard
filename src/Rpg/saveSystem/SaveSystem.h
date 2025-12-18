@@ -21,8 +21,8 @@ public:
               const std::vector<float>& droppedItemYPos, const std::vector<int>& droppedItemQuantity,
               const int& extracting, const int& inSlot, const int& completed, const int& timerActive,
               const int& startYear1, const int& startDay1, const int& startHour1, const int& startMinute1,
-              const int& slotItemid, const int& insideStructure, const sf::Vector2f& fixedCameraPos,
-              const int& chapter, const std::vector<std::string>& flagKeys,
+              const int& slotItemid, const int& insideStructure, const int& structureIndex,
+              const sf::Vector2f& fixedCameraPos, const int& chapter, const std::vector<std::string>& flagKeys,
               const std::vector<int>& flagValues);
 
     bool load(sf::Vector2f& playerPosition, int& playerAnimation,
@@ -36,8 +36,8 @@ public:
               std::vector<float>& droppedItemYPos, std::vector<int>& droppedItemQuantity,
               int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear1,
               int& startDay1, int& startHour1, int& startMinute1, int& slotItemId,
-              int& insideStructure, sf::Vector2f& fixedCameraPos, int& chapter,
-              std::vector<std::string>& flagKeys, std::vector<int>& flagValues);
+              int& insideStructure, int& structureIndex, sf::Vector2f& fixedCameraPos,
+              int& chapter, std::vector<std::string>& flagKeys, std::vector<int>& flagValues);
 
     // Method used for the extraction of some fields for MainMenu
     bool loadPartial(std::string saveFile, int& crystals, int& year, int &day, int& hour, int& minute);

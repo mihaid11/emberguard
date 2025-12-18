@@ -74,6 +74,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mShowAnalyzeMenu(false),
     mShowInteract(false),
     mIsInsideAStructure(false),
+    mStructureIndex(-1),
     mCrystals(100),
     mStorageCapacity(500),
     mCurrentLevel(1),
@@ -83,7 +84,8 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mIsInitialized(false),
     mTransitionSystem(sf::Vector2f(window.getSize().x, window.getSize().y)),
     mChestMenu(window, mInventory, mChestInventory, sf::Vector2f(70.f, 70.f)),
-    mGameContext{ mCharacter, mIsInsideAStructure, mCameraFixedPosition, mShowChestMenu, mTimeSystem,  mTransitionSystem, gameManager,
+    mGameContext{ mCharacter, mIsInsideAStructure, mStructureIndex, mCameraFixedPosition,
+                  mShowChestMenu, mTimeSystem,  mTransitionSystem, gameManager,
                   [this](const std::string& name) {
                     const Waypoint* waypoint = mWaypointManager.getWaypoint(name);
 
@@ -99,7 +101,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
                         }
                     }
                   }, mWaypointManager},
-    mZoneManager(mGameContext, 2),
+    mZoneManager(mGameContext, 1),
     mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
     mShopMenu(window, mInventory, mTimeSystem, 5, mCrystals),
@@ -664,8 +666,7 @@ void RPGEngine::render() {
 
     mTransitionSystem.render(mWindow);
 
-    if (!mShowBankMenu && !mShowMenu && !mShowStartMenu && !mShowShopMenu && !mShowAnalyzeMenu && !mShowChestMenu)
-        renderDateTime(mWindow, mFont, currentDate, currentTime);
+    renderDateTime(mWindow, mFont, currentDate, currentTime);
 
     mWindow.display();
 }
@@ -880,8 +881,8 @@ void RPGEngine::saveGame() {
                      chestItemId, chestItemQuantity, droppedItemId, droppedItemXPos,
                      droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed,
                      timerActive, startYear1, startDay1, startHour1, startMinute1,
-                     slotItemId, mIsInsideAStructure, mCameraFixedPosition, chapter,
-                     flagKeys, flagValues);
+                     slotItemId, mIsInsideAStructure, mStructureIndex, mCameraFixedPosition,
+                     chapter, flagKeys, flagValues);
 }
 
 void RPGEngine::loadGame() {
@@ -892,7 +893,7 @@ void RPGEngine::loadGame() {
     int crystals, year, day, hour, minute, bankBalance, penalty, interest,
         amountToRepay, daysToRepayment, startYear, startDay, startHour, startMinute,
         hasBorrowActive, extracting, inSlot, completed, timerActive, startYear1,
-        startDay1, startHour1, startMinute1, slotItemId, insideStructure, chapter;
+        startDay1, startHour1, startMinute1, slotItemId, insideStructure, structureIndex, chapter;
     std::vector<int> droppedItemId;
     std::vector<float> droppedItemXPos;
     std::vector<float> droppedItemYPos;
@@ -912,21 +913,25 @@ void RPGEngine::loadGame() {
                          chestItemId, chestItemQuantity, droppedItemId, droppedItemXPos,
                          droppedItemYPos, droppedItemQuantity, extracting, inSlot,
                          completed, timerActive, startYear1, startDay1, startHour1,
-                         startMinute1, slotItemId, insideStructure,
+                         startMinute1, slotItemId, insideStructure, structureIndex,
                          mCameraFixedPosition, chapter, flagKeys, flagValues)) {
 
         mInventory.clear();
         mChestInventory.clear();
         mDroppedItems.clear();
 
-        mCharacter.setPosition(playerPosition);
         mCharacter.setAnimation(playerAnimation);
 
         mIsInsideAStructure = insideStructure;
-        if (mIsInsideAStructure == true)
-            mGameContext.changeMap("assets/maps/interiors/house_interior.json");
-        else
+        mStructureIndex = structureIndex;
+        if (mIsInsideAStructure == true) {
+            if (mStructureIndex == 0)
+                mGameContext.changeMap("MCHouse_Interior");
+            mCharacter.setPosition(playerPosition);
+        } else {
             mGameContext.changeMap("open_world");
+            mStructureIndex = -1;
+        }
 
         mNPCManager.loadNPCStates(npcPositions, npcWaypoints);
         mCrystals = crystals;

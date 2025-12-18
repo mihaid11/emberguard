@@ -19,8 +19,8 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnima
                       const std::vector<float>& droppedItemYPos, const std::vector<int>& droppedItemQuantity,
                       const int& extracting, const int& inSlot, const int& completed, const int& timerActive,
                       const int& startYear1, const int& startDay1, const int& startHour1, const int& startMinute1,
-                      const int& slotItemId, const int& insideStructure, const sf::Vector2f& fixedCameraPos,
-                      const int& chapter, const std::vector<std::string>& flagKeys,
+                      const int& slotItemId, const int& insideStructure, const int& structureIndex,
+                      const sf::Vector2f& fixedCameraPos, const int& chapter, const std::vector<std::string>& flagKeys,
                       const std::vector<int>& flagValues) {
 
     std::ofstream outFile(mSaveFilePath);
@@ -62,7 +62,7 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnima
         // std::cout << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;
     }
 
-    outFile << insideStructure << " " << fixedCameraPos.x << " " << fixedCameraPos.y
+    outFile << insideStructure << " " << structureIndex << " " << fixedCameraPos.x << " " << fixedCameraPos.y
         << " " << chapter << std::endl;
 
     outFile << flagValues.size() << std::endl;
@@ -84,8 +84,8 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation,
                       std::vector<float>& droppedItemYPos, std::vector<int>& droppedItemQuantity,
                       int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear1,
                       int& startDay1, int& startHour1, int& startMinute1, int& slotItemId,
-                      int& insideStructure, sf::Vector2f& fixedCameraPos, int& chapter,
-                      std::vector<std::string>& flagKeys, std::vector<int>& flagValues) {
+                      int& insideStructure, int& structureIndex, sf::Vector2f& fixedCameraPos,
+                      int& chapter, std::vector<std::string>& flagKeys, std::vector<int>& flagValues) {
 
     std::ifstream inFile(mSaveFilePath);
     if (!inFile) {
@@ -255,6 +255,10 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation,
         std::cerr << "Error reading inside structure from save file." << std::endl;
         return false;
     }
+    if (!(inFile >> structureIndex)) {
+        std::cerr << "Error reading structure index from save file." << std::endl;
+        return false;
+    }
     if (!(inFile >> fixedCameraPos.x)) {
         std::cerr << "Error reading fixed camera pos X from save file." << std::endl;
         return false;
@@ -297,7 +301,7 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
     int bankBalance, penalty, interest, amountToRepay, daysToRepayment,
         startYear, startDay, startHour, startMinute, hasBorrowActive, extracting,
         inSlot, completed, timerActive, startYear1, startDay1, startHour1,
-        startMinute1, slotItemId, insideStructure, chapter;
+        startMinute1, slotItemId, insideStructure, structureIndex, chapter;
     std::vector<int> droppedItemId;
     std::vector<float> droppedItemXPos;
     std::vector<float> droppedItemYPos;
@@ -321,8 +325,8 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
                         droppedItemId, droppedItemXPos, droppedItemYPos,
                         droppedItemQuantity, extracting, inSlot, completed, timerActive,
                         startYear1, startDay1, startHour1, startMinute1, slotItemId,
-                        insideStructure, cameraFixedPosition, chapter, flagKeys,
-                        flagValues);
+                        insideStructure, structureIndex, cameraFixedPosition, chapter,
+                        flagKeys, flagValues);
 
     mSaveFilePath = tmp;
     return success;

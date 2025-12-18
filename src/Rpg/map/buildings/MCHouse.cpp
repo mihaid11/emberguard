@@ -4,9 +4,10 @@
 MCHouse::MCHouse(const sf::Vector2f& position, const std::string filename, const sf::Vector2f& collPosition,
                  const sf::Vector2f& collSize, int canInteract, const sf::Vector2f& interactPos,
                  const sf::Vector2f& interactSize, MainCharacter& mainCharacter, bool& isInsideAStructure,
-                 sf::Vector2f& cameraFixedPosition, std::function<void(const std::string&)> changeMap)
+                 sf::Vector2f& cameraFixedPosition, std::function<void(const std::string&)> changeMap,
+                 int& structureIndex)
     : Entity(position, filename, collPosition, collSize, canInteract, interactPos, interactSize), mMainCharacter(mainCharacter),
-    mIsInsideAStructure(isInsideAStructure), mCameraFixedPosition(cameraFixedPosition), mChangeMap(changeMap) {
+    mIsInsideAStructure(isInsideAStructure), mCameraFixedPosition(cameraFixedPosition), mChangeMap(changeMap), mStructureIndex(structureIndex) {
 
 }
 
@@ -14,6 +15,7 @@ void MCHouse::interact() {
     mMainCharacter.setAnimation(3);
     mIsInsideAStructure = true;
 
+    mStructureIndex = 0;
     mChangeMap("MCHouse_Interior");
 }
 
