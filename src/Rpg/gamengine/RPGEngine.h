@@ -145,6 +145,7 @@ private:
     std::vector<sf::Text> mChoiceTexts;
 
     bool mIsInsideAStructure;
+    int mStructureIndex;
     sf::Vector2f mCameraFixedPosition;
     sf::View mFixedCamera;
 

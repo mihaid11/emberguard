@@ -13,6 +13,7 @@ class GameManager;
 struct GameContext {
     MainCharacter& mainCharacter;
     bool& isInsideStructure;
+    int &structureIndex;
     sf::Vector2f& cameraFixedPosition;
     bool& showChestMenu;
     TimeSystem& timeSystem;

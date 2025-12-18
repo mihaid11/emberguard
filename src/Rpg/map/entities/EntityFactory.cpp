@@ -24,7 +24,8 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
             gameContext.mainCharacter,
             gameContext.isInsideStructure,
             gameContext.cameraFixedPosition,
-            gameContext.changeMap
+            gameContext.changeMap,
+            gameContext.structureIndex
         );
     } else if (type == "MCHouseInt") {
         sf::Vector2f interactSize = sf::Vector2f(43.f, 15.f);
