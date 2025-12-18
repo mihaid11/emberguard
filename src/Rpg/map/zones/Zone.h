@@ -7,6 +7,7 @@
 #include <map>
 #include "../entities/Entity.h"
 #include "../entities/EntityFactory.h"
+#include "../../../ResourceManager.h"
 
 class Zone {
 public:
@@ -24,7 +25,6 @@ private:
     void loadFromJson(const std::string& jsonPath, GameContext& gameContext);
 
     sf::Vector2i mCoords;
-    sf::Texture mBackgroundTexture;
     sf::Sprite mBackgroundSprite;
     std::vector<std::unique_ptr<Entity>> mEntities;
 

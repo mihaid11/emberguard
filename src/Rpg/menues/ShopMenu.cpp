@@ -12,12 +12,12 @@ ShopMenu::ShopMenu(sf::RenderWindow& window, Inventory& inventory, TimeSystem& t
     mItem3Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "3"),
     mCrystals(crystals), mNumItems(numItems) {
 
-    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.f));
+    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 2.f, window.getSize().y / 2.f));
     mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
     mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2.f,
                            (window.getSize().y - mMenuShape.getSize().y) / 2.f);
 
-    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, 40));
+    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x / 2.f, 40));
     mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
     mHoveredZoneShape.setPosition(mMenuShape.getPosition());
 

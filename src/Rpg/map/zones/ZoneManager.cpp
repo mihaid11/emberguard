@@ -5,11 +5,11 @@
 const int CHUNK_SIZE = 1024;
 
 ZoneManager::ZoneManager(GameContext& gameContext, int viewRange)
-    : mGameContext(gameContext), mViewRange(viewRange), mCurrentZoneCoords(0, 0), mIsInsideAStructure(gameContext.isInsideStructure) {
+    : mGameContext(gameContext), mViewRange(viewRange), mCurrentZoneCoords(0, 0) {
 }
 
 void ZoneManager::update(const sf::Vector2f& playerWorldPos) {
-    if (mIsInsideAStructure)
+    if (mGameContext.isInsideStructure)
         return;
 
     int zoneX = static_cast<int>(playerWorldPos.x / (CHUNK_SIZE));

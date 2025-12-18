@@ -5,14 +5,12 @@ Entity::Entity(const sf::Vector2f& position, const std::string filename,
                const sf::Vector2f& collPosition, const sf::Vector2f& collSize, int canInteract,
                const sf::Vector2f& interactPos, const sf::Vector2f& interactSize)
     : mCanInteract(canInteract) {
-    mTexture = new sf::Texture;
     // If filename is empty than the entity is not drawable => dont load texture from file
-    if(filename != "")
-        if (!mTexture->loadFromFile(filename)) {
-            std::cerr << "Couldn't load texture for an entity!" << std::endl;
-        }
+    if(filename != "") {
+        sf::Texture& texture = ResourceManager::getInstance().getTexture(filename);
+        mSprite.setTexture(texture);
+    }
     mSprite.setPosition(position);
-    mSprite.setTexture(*mTexture);
 
     mCollisionZone.setSize(collSize);
     mCollisionZone.setPosition(collPosition);
