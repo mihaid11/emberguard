@@ -41,12 +41,9 @@ void Zone::loadFromJson(const std::string& jsonPath, GameContext& gameContext) {
             if (backgroundPath.find("..") != std::string::npos)
                 backgroundPath = "assets" + backgroundPath.substr(2);
 
-            if (mBackgroundTexture.loadFromFile(backgroundPath)) {
-                mBackgroundSprite.setTexture(mBackgroundTexture);
-                mBackgroundSprite.setPosition(mCoords.x * 1024.f, mCoords.y * 1024.f);
-            } else {
-                std::cerr << "Failed to load zone background: " << backgroundPath << std::endl;
-            }
+            sf::Texture& texture = ResourceManager::getInstance().getTexture(backgroundPath);
+            mBackgroundSprite.setTexture(texture);
+            mBackgroundSprite.setPosition(mCoords.x * 1024.f, mCoords.y * 1024.f);
         } else if (type == "objectgroup") {
             for (const auto& object: layer["objects"]) {
                 std::string entityType = object.value("type", "");

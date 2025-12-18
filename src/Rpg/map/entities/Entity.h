@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../../../ResourceManager.h"
 #include "DrawableEntity.h"
 
 class Entity : public DrawableEntity {
@@ -21,7 +22,7 @@ public:
 
 protected:
     sf::Sprite mSprite;
-    sf::Texture *mTexture;
+
     sf::RectangleShape mCollisionZone;
     sf::RectangleShape mInteractableZone;
     int mCanInteract;

@@ -31,7 +31,5 @@ private:
     std::map<std::pair<int, int>, std::unique_ptr<Zone>> mZones;
     sf::Vector2i mCurrentZoneCoords;
     int mViewRange;
-
-    bool mIsInsideAStructure;
 };
 

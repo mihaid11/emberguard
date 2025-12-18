@@ -18,15 +18,15 @@ AnalyzeMenu::AnalyzeMenu(sf::RenderWindow& window, Inventory& inventory, TimeSys
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for AnalyzeMenu!" << std::endl;
 
-    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f));
+    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 2.f, window.getSize().y / 2.f));
     mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
     mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2.f,
                            (window.getSize().y - mMenuShape.getSize().y) / 2.f);
 
-    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, 40));
+    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x / 2.f, 40));
     mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
-    mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
-                                               (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
+    mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.f,
+                                               (window.getSize().y - mMenuShape.getSize().y) / 2.f));
 
     mMenuText.setFont(mFont);
     mMenuText.setCharacterSize(20);
