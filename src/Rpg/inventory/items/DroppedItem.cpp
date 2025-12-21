@@ -2,7 +2,7 @@
 
 DroppedItem::DroppedItem(std::shared_ptr<const Item> item, const sf::Vector2f& position, int quantity)
     : mItem(std::move(item)), mPosition(position), mQuantity(quantity), mCanPickUp(false) {
-    mItemShape.setRadius(11.5f);
+    mItemShape.setRadius(8.f);
     mItemShape.setFillColor(sf::Color(20, 20, 20, 100));
     mItemShape.setOutlineColor(sf::Color::White);
     mItemShape.setOutlineThickness(1.5f);
@@ -14,7 +14,7 @@ void DroppedItem::render(sf::RenderWindow& window) {
 
     if (mItem) {
         sf::RectangleShape icon = mItem->getIcon();
-        icon.setScale(0.25f, 0.25f);
+        icon.setScale(0.2f, 0.2f);
 
         sf::Vector2f iconSize = icon.getSize();
         iconSize.x *= icon.getScale().x;
@@ -44,6 +44,10 @@ const Item* DroppedItem::getItem() {
 
 sf::Vector2f DroppedItem::getPosition() const {
     return mPosition;
+}
+
+sf::Vector2f DroppedItem::getCenterPosition() const {
+    return mPosition + sf::Vector2f(mItemShape.getRadius(), mItemShape.getRadius());
 }
 
 float DroppedItem::getHeight() const {

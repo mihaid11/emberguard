@@ -13,6 +13,8 @@ public:
     int getQuantity() const;
     const Item* getItem();
     sf::Vector2f getPosition() const override;
+    sf::Vector2f getCenterPosition() const;
+
     float getHeight() const override;
     sf::CircleShape getItemShape() const { return mItemShape; }
     bool getPickUpCap();
