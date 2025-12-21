@@ -288,19 +288,8 @@ void RPGEngine::processEvents() {
                             int quantity = mInventory.getItemQuantityAt(slotIndex);
                             std::unique_ptr<Item> uniqueItem = mInventory.extractItemAt(slotIndex);
                             std::shared_ptr<const Item> sharedItem(std::move(uniqueItem));
-                            sf::Vector2f droppedItemPos;
-                            if (mCharacter.getAnimation() == 1)
-                                droppedItemPos = {-35.5f, 2.f};
-                            else if (mCharacter.getAnimation() == 2)
-                                droppedItemPos = {13.f, 2.f};
-                            else if (mCharacter.getAnimation() == 3)
-                                droppedItemPos = {-11.5f, -mCharacter.getHeight() / 1.1f};
-                            else if (mCharacter.getAnimation() == 4)
-                                droppedItemPos = {-11.5f, mCharacter.getHeight() / 2.f};
-                            const DroppedItem dropItem(sharedItem,
-                                mCharacter.getCenterPosition() + droppedItemPos,
-                                quantity);
 
+                            const DroppedItem dropItem(sharedItem, calculateDropPosition(), quantity);
                             mDroppedItems.push_back(std::move(dropItem));
                         }
                     }
@@ -313,19 +302,8 @@ void RPGEngine::processEvents() {
                             int quantity = mInventory.getItemQuantityAt(slotIndex);
                             std::unique_ptr<Item> uniqueItem = mInventory.extractItemAt(slotIndex);
                             std::shared_ptr<const Item> sharedItem(std::move(uniqueItem));
-                            sf::Vector2f droppedItemPos;
-                            if (mCharacter.getAnimation() == 1)
-                                droppedItemPos = {-35.5f, 2.f};
-                            else if (mCharacter.getAnimation() == 2)
-                                droppedItemPos = {13.f, 2.f};
-                            else if (mCharacter.getAnimation() == 3)
-                                droppedItemPos = {-11.5f, -mCharacter.getHeight() / 1.1f};
-                            else if (mCharacter.getAnimation() == 4)
-                                droppedItemPos = {-11.5f, mCharacter.getHeight() / 2.f};
-                            const DroppedItem dropItem(sharedItem,
-                                mCharacter.getCenterPosition() + droppedItemPos,
-                                quantity);
 
+                            const DroppedItem dropItem(sharedItem, calculateDropPosition(), quantity);
                             mDroppedItems.push_back(std::move(dropItem));
                         }
                     }
@@ -463,21 +441,25 @@ void RPGEngine::update() {
                                 mShowDialogue = false;
                             }
 
+                            sf::FloatRect playerBounds = mCharacter.getBounds();
+                            sf::Vector2f playerCenter = {playerBounds.left + playerBounds.width / 2.f, playerBounds.top + playerBounds.height / 2.f};
+
                             for (auto it = mDroppedItems.begin(); it != mDroppedItems.end();) {
+                                sf::Vector2f itemCenter = it->getCenterPosition();
                                 float distance = std::sqrt(
-                                    std::pow(mCharacter.getPosition().x - it->getPosition().x, 2.f) +
-                                    std::pow(mCharacter.getPosition().y - it->getPosition().y, 2.f)
+                                    std::pow(playerCenter.x - itemCenter.x, 2.f) +
+                                    std::pow(playerCenter.y - itemCenter.y, 2.f)
                                 );
 
                                 if (it->getPickUpCap()) {
-                                    if (distance < 35.f) {
+                                    if (distance < 28.f) {
                                         auto itemClone = it->getItem()->clone();
                                         mInventory.addItem(std::move(itemClone), it->getQuantity());
                                         it = mDroppedItems.erase(it);
                                         continue;
                                     }
                                 } else {
-                                    if (distance > 35.f)
+                                    if (distance > 28.f)
                                         it->setPickUpCap(true);
                                 }
                                 ++it;
@@ -569,13 +551,14 @@ void RPGEngine::render() {
         renderQueue.emplace_back(depth, entity);
     }
 
-    renderQueue.emplace_back(mCharacter.getPosition().y + mCharacter.getHeight(), &mCharacter);
 
     for (auto& npc : mNPCManager.getNPCs())
         renderQueue.emplace_back(npc->getPosition().y + npc->getHeight(), static_cast<DrawableEntity*>(npc.get()));
 
     for (auto& droppedItem : mDroppedItems)
         renderQueue.emplace_back(droppedItem.getPosition().y + droppedItem.getHeight(), &droppedItem);
+
+    renderQueue.emplace_back(mCharacter.getBounds().top + mCharacter.getBounds().height, &mCharacter);
 
     std::sort(renderQueue.begin(), renderQueue.end(),
         [](const std::pair<float, DrawableEntity*>& a, const std::pair<float, DrawableEntity*>& b) {
@@ -585,9 +568,6 @@ void RPGEngine::render() {
     // Render in order
     for (auto& entity : renderQueue)
         entity.second->render(mWindow);
-
-    for (auto& droppedItem : mDroppedItems)
-        droppedItem.render(mWindow);
 
     if (mShowInteract) {
         mWindow.draw(mInteractCircle);
@@ -1176,5 +1156,50 @@ SaveSystem& RPGEngine::getSaveSystem() {
 
 Inventory& RPGEngine::getInventory() {
     return mInventory;
+}
+
+sf::Vector2f RPGEngine::calculateDropPosition() {
+    sf::FloatRect playerBounds = mCharacter.getBounds();
+    sf::Vector2f startPos = {playerBounds.left + playerBounds.width / 2.f, playerBounds.top + playerBounds.height / 2.f};
+
+    sf::Vector2f dir(0.f, 0.f);
+    int playerAnimation = mCharacter.getAnimation();
+    if (playerAnimation == 1) {
+        dir = {-1.f, 0.f};
+        startPos.x += 5.f;
+        startPos.y -= 4.f;
+    } else if (playerAnimation == 2) {
+        dir = {1.f, 0.f};
+        startPos.x -= 6.f;
+        startPos.y -= 5.f;
+    } else if (playerAnimation == 3) {
+        dir = {0.f, -1.f};
+    } else if (playerAnimation == 4) {
+        dir = {0.f, 1.f};
+        startPos.y -= 7.f;
+    }
+
+    float maxDist = 28.f;
+    float step = 2.f;
+    float itemSize = 22.f;
+    sf::Vector2f validPos = startPos;
+
+    for (float dist = itemSize; dist <= maxDist; dist += step) {
+        sf::Vector2f nextPos = startPos + (dir * dist);
+
+        sf::FloatRect itemBounds(
+            nextPos.x - itemSize / 2.f,
+            nextPos.y - itemSize / 2.f,
+            itemSize,
+            itemSize
+        );
+
+        if (mZoneManager.checkCollision(itemBounds))
+            break;
+
+        validPos = nextPos;
+    }
+
+    return validPos - sf::Vector2f(8.f, 8.f);
 }
 

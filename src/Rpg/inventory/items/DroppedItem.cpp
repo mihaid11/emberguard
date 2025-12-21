@@ -5,7 +5,7 @@ DroppedItem::DroppedItem(std::shared_ptr<const Item> item, const sf::Vector2f& p
     mItemShape.setRadius(8.f);
     mItemShape.setFillColor(sf::Color(20, 20, 20, 100));
     mItemShape.setOutlineColor(sf::Color::White);
-    mItemShape.setOutlineThickness(1.5f);
+    mItemShape.setOutlineThickness(1.4f);
     mItemShape.setPosition(mPosition);
 }
 
