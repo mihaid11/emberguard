@@ -154,5 +154,7 @@ private:
     GameContext mGameContext;
     ZoneManager mZoneManager;
     WaypointManager mWaypointManager;
+
+    sf::Vector2f calculateDropPosition();
 };
 
