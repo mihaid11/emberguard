@@ -31,7 +31,7 @@
          "name":"Background",
          "objects":[
                 {
-                 "gid":4,
+                 "gid":5,
                  "height":384,
                  "id":18,
                  "name":"",
@@ -64,18 +64,6 @@
                  "width":82,
                  "x":358.293,
                  "y":175.521
-                }, 
-                {
-                 "gid":2,
-                 "height":34,
-                 "id":2,
-                 "name":"",
-                 "rotation":0,
-                 "type":"Chest",
-                 "visible":true,
-                 "width":82,
-                 "x":260.05,
-                 "y":176.161
                 }, 
                 {
                  "height":3.96589,
@@ -166,17 +154,6 @@
                  "y":91.25
                 }, 
                 {
-                 "height":31.5227,
-                 "id":15,
-                 "name":"",
-                 "rotation":0,
-                 "type":"Barrier",
-                 "visible":true,
-                 "width":86.0038,
-                 "x":257.928,
-                 "y":143.602
-                }, 
-                {
                  "height":32.1136,
                  "id":16,
                  "name":"",
@@ -196,7 +173,7 @@
                  "type":"Waypoint",
                  "visible":true,
                  "width":0,
-                 "x":109.818181818182,
+                 "x":109.818,
                  "y":326
                 }, 
                 {
@@ -208,8 +185,31 @@
                  "type":"CameraTarget",
                  "visible":true,
                  "width":0,
-                 "x":239.1875,
-                 "y":192.0625
+                 "x":239.188,
+                 "y":192.063
+                }, 
+                {
+                 "gid":3,
+                 "height":43,
+                 "id":23,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Chest",
+                 "visible":true,
+                 "width":60,
+                 "x":273.483702973155,
+                 "y":178.039317328971
+                }, 
+                {
+                 "height":37.2386363636364,
+                 "id":24,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Barrier",
+                 "visible":true,
+                 "width":47.9659090909091,
+                 "x":279.545454545455,
+                 "y":137.102272727273
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -218,7 +218,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":23,
+ "nextobjectid":25,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -229,7 +229,7 @@
          "source":"..\/tilesets\/Furniture.tsx"
         }, 
         {
-         "firstgid":3,
+         "firstgid":4,
          "source":"..\/tilesets\/Buildings.tsx"
         }],
  "tilewidth":32,
