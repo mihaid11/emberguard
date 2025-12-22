@@ -61,13 +61,13 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
             gameContext.gameManager
         );
     } else if (type == "Chest") {
-        sf::Vector2f interactSize = sf::Vector2f(72.5f, 25.f);
+        sf::Vector2f interactSize = sf::Vector2f(50.f, 33.f);
         sf::Vector2f interactPos = pos + sf::Vector2f(5.f, 5.f);
 
         return std::make_unique<Chest> (
             pos,
             1,
-            "assets/sprites/buildings/bed.png",
+            "assets/sprites/buildings/chest.png",
             sf::Vector2f(0.f, 0.f),
             sf::Vector2f(0.f, 0.f),
             interactPos,
