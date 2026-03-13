@@ -1,0 +1,27 @@
+#pragma once
+#include <functional>
+#include <math.h>
+#include "../inventory/Inventory.h"
+
+class LevelSystem {
+public:
+    LevelSystem(Inventory* inventory, int maxLevel = 50);
+
+    void addXp(int xp);
+    
+    int getLevel() const;
+    int getCurrentXp() const;
+    int getXpForNextLevel() const;
+    float getXpPercentage() const;
+
+    void grantRewards(int level);
+
+private:
+    void checkLevelUp();
+
+    int mCurrentLevel;
+    int mCurrentXp;
+    int mMaxLevel;
+
+    Inventory* mInventory;
+};
