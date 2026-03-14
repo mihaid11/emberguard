@@ -2,10 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include "../../Animation.h"
 #include "../map/entities/DrawableEntity.h"
+#include "../inventory/Inventory.h"
+#include "LevelSystem.h"
 
 class MainCharacter : public DrawableEntity {
 public:
-    MainCharacter(const sf::Vector2f& position);
+    MainCharacter(const sf::Vector2f& position, Inventory* inventory);
 
     void update(float dt, bool inDialogue);
     void render(sf::RenderWindow& window) override;
@@ -23,6 +25,8 @@ public:
     void setAnimation(int animation);
     int getAnimation();
 
+    LevelSystem& getLevelSystem();
+
 private:
     enum class AnimationIndex {
         IdleUp,
@@ -38,6 +42,8 @@ private:
     sf::Vector2f mPosition;
     float mSpeed;
     int mPriority;
+
+    LevelSystem mLevelSystem;
 
     sf::Keyboard::Key mLastDirection = sf::Keyboard::A;
     sf::Sprite mSprite;

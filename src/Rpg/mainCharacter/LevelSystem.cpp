@@ -26,6 +26,14 @@ void LevelSystem::checkLevelUp() {
 
 void LevelSystem::grantRewards(int level) {
     std::cout << "Leveled up!" << std::endl;
+    if (level == 2) {
+        std::unique_ptr<TowerBlueprintEpic> towerBlueprintItem = std::make_unique<TowerBlueprintEpic>();
+        mInventory->addItem(std::move(towerBlueprintItem), 1);
+
+        std::cout << "Leveled up!" << std::endl;
+    } else if (level == 3) {
+
+    }
 }
 
 int LevelSystem::getCurrentXp() const {

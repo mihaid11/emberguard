@@ -1,9 +1,10 @@
 #include "MainCharacter.h"
+#include "LevelSystem.h"
 #include <iostream>
 #include <math.h>
 
-MainCharacter::MainCharacter(const sf::Vector2f& position)
-    : mPosition(position), mSpeed(142.0f), mPriority(0) {
+MainCharacter::MainCharacter(const sf::Vector2f& position, Inventory* inventory)
+    : mPosition(position), mSpeed(142.0f), mPriority(0), mLevelSystem(inventory) {
     mCollisionZone.setSize(sf::Vector2f(24.f, 16.f));
     mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 21.f, mPosition.y + 47.f));
     mCollisionZone.setFillColor(sf::Color::Red);
@@ -164,3 +165,6 @@ int MainCharacter::getAnimation() {
     return 0;
 }
 
+LevelSystem& MainCharacter::getLevelSystem() {
+    return mLevelSystem;
+}
