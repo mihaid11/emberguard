@@ -18,6 +18,7 @@ public:
     void handleMouseClick(const sf::Vector2f& mousePos);
     void updateHover(const sf::Vector2f& mousePos);
 
+    void refresh();
     bool isActive() const;
     void setActive(bool state);
 

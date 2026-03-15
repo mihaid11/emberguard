@@ -27,6 +27,9 @@ public:
     int getAnimation();
 
     LevelSystem& getLevelSystem();
+    int getLevel() const;
+    int getXp() const;
+    int getXpForNextLevel() const;
 
 private:
     enum class AnimationIndex {
