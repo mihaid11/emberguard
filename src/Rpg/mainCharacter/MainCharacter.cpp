@@ -168,3 +168,16 @@ int MainCharacter::getAnimation() {
 LevelSystem& MainCharacter::getLevelSystem() {
     return mLevelSystem;
 }
+
+int MainCharacter::getLevel() const {
+    return mLevelSystem.getLevel();
+}
+
+int MainCharacter::getXp() const {
+    return mLevelSystem.getCurrentXp();
+}
+
+int MainCharacter::getXpForNextLevel() const {
+    return mLevelSystem.getXpForNextLevel();
+}
+

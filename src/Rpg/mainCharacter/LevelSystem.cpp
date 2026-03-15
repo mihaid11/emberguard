@@ -5,7 +5,7 @@
 
 LevelSystem::LevelSystem(Inventory* inventory, LevelCompleteMenu* levelCompleteMenu, int maxLevel)
     : mInventory(inventory), mLevelCompleteMenu(levelCompleteMenu), mCurrentXp(0),
-    mCurrentLevel(0), mMaxLevel(maxLevel) {
+    mCurrentLevel(1), mMaxLevel(maxLevel) {
 
 }
 
@@ -27,6 +27,7 @@ void LevelSystem::checkLevelUp() {
 
 void LevelSystem::grantRewards(int level) {
     mLevelCompleteMenu->setLevel(level);
+    mLevelCompleteMenu->refresh();
     mLevelCompleteMenu->setActive(true);
 }
 
@@ -39,7 +40,7 @@ int LevelSystem::getLevel() const {
 }
 
 int LevelSystem::getXpForNextLevel() const {
-    return static_cast<float>(100.f * std::pow(mCurrentLevel, 1.25f));
+    return static_cast<float>(50.f * std::pow(mCurrentLevel, 1.3f));
 }
 
 float LevelSystem::getXpPercentage() const {

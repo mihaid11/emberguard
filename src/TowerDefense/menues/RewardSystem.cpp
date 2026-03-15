@@ -40,13 +40,45 @@ Reward RewardSystem::generateReward(int level) {
     Reward reward;
 
     if (level == 2) {
-        reward.name = "Epic Tower Blueprint";
-        reward.itemId = 4;
+        reward.name = "Tower Blueprint";
+        reward.itemId = 2;
         reward.quantity = 1;
     } else if (level == 3) {
         reward.name = "Crystals";
         reward.itemId = 0;
         reward.quantity = 50;
+    } else if (level == 4) {
+        reward.name = "Rare Tower Blueprint";
+        reward.itemId = 3;
+        reward.quantity = 1;
+    } else if (level == 5) {
+        reward.name = "Epic Tower Blueprint";
+        reward.itemId = 4;
+        reward.quantity = 1;
+    } else if (level == 6) {
+        reward.name = "Crystals";
+        reward.itemId = 0;
+        reward.quantity = 300;
+    } else if (level == 7) {
+        reward.name = "Rare Tower Blueprint";
+        reward.itemId = 3;
+        reward.quantity = 3;
+    } else if (level == 8) {
+        reward.name = "Crystals";
+        reward.itemId = 0;
+        reward.quantity = 500;
+    } else if (level == 9) {
+        reward.name = "Epic Tower Blueprint";
+        reward.itemId = 4;
+        reward.quantity = 1;
+    } else if (level == 10) {
+        reward.name = "Mythic Tower Blueprint";
+        reward.itemId = 5;
+        reward.quantity = 1;
+    } else {
+        reward.name = "Crystals";
+        reward.itemId = 0;
+        reward.quantity = 1000;
     }
 
     return reward;
