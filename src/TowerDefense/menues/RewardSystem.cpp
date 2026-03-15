@@ -6,7 +6,7 @@
 #include "../../Rpg/inventory/items/TowerBlueprintMythic.h"
 #include <ctime>
 
-Reward RewardSystem::generateReward(int level) {
+Reward RewardSystem::generateTowerLevelReward(int level) {
     Reward reward;
     std::srand(static_cast<unsigned>(std::time(nullptr)));
     int roll = std::rand() % 100;
@@ -24,13 +24,29 @@ Reward RewardSystem::generateReward(int level) {
         reward.itemId = 2;
         reward.quantity = 1;
     } else if (roll < 97) {
-        reward.name = "Tower Blueprint Rare";
+        reward.name = "Rare Tower Blueprint";
         reward.itemId = 3;
         reward.quantity = 1;
     } else {
-        reward.name = (roll % 2 == 0) ? "Tower Blueprint Epic" : "Tower Blueprint Mythic";
+        reward.name = (roll % 2 == 0) ? "Epic Tower Blueprint" : "Mythic Tower Blueprint";
         reward.itemId = (roll % 2 == 0) ? 4 : 5;
         reward.quantity = 1;
+    }
+
+    return reward;
+}
+
+Reward RewardSystem::generateReward(int level) {
+    Reward reward;
+
+    if (level == 2) {
+        reward.name = "Epic Tower Blueprint";
+        reward.itemId = 4;
+        reward.quantity = 1;
+    } else if (level == 3) {
+        reward.name = "Crystals";
+        reward.itemId = 0;
+        reward.quantity = 50;
     }
 
     return reward;

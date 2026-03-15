@@ -4,10 +4,11 @@
 #include "../map/entities/DrawableEntity.h"
 #include "../inventory/Inventory.h"
 #include "LevelSystem.h"
+#include "../../TowerDefense/menues/LevelCompleteMenu.h"
 
 class MainCharacter : public DrawableEntity {
 public:
-    MainCharacter(const sf::Vector2f& position, Inventory* inventory);
+    MainCharacter(const sf::Vector2f& position, Inventory* inventory, LevelCompleteMenu* levelCompleteMenu);
 
     void update(float dt, bool inDialogue);
     void render(sf::RenderWindow& window) override;

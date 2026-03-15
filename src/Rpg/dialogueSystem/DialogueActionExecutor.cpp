@@ -54,7 +54,7 @@ void DialogueActionExecutor::executeAction(const DialogueAction& action) {
         if (itemId != -1)
             mInventory.removeItemById(itemId, action.value);
     } else if (action.type == "change_crystals") {
-        mRpgEngine.changeCrystals(action.value);
+        mRpgEngine.addCrystals(action.value);
     } else if (action.type == "set_chapter") {
         mStoryManager.setChapter(action.value);
     } else {

@@ -26,6 +26,7 @@
 #include "../menues/ShopMenu.h"
 #include "../menues/AnalyzeMenu.h"
 #include "../menues/ChestMenu.h"
+#include "../../TowerDefense/menues/LevelCompleteMenu.h"
 #include "../map/entities/DrawableEntity.h"
 #include "../map/buildings/MCHouse.h"
 #include "../map/buildings/MCHouseInt.h"
@@ -59,7 +60,7 @@ public:
     void newGame();
     void setSaveNumber(int saveNumber);
     void setFlag(std::string name, bool value);
-    void changeCrystals(int value);
+    void addCrystals(int value);
     void setCrystals(int crystals);
 
     void initialize();
@@ -118,6 +119,7 @@ private:
     BankMenu mBankMenu;
     AnalyzeMenu mAnalyzeMenu;
     ChestMenu mChestMenu;
+    LevelCompleteMenu mLevelCompleteMenu;
 
     NPC* mCurrentInteractingNPC;
     TimeSystem mTimeSystem;

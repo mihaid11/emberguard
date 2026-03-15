@@ -3,8 +3,9 @@
 #include "../inventory/items/TowerBlueprintEpic.h"
 
 
-LevelSystem::LevelSystem(Inventory* inventory, int maxLevel)
-    : mInventory(inventory), mCurrentXp(0), mCurrentLevel(0), mMaxLevel(maxLevel) {
+LevelSystem::LevelSystem(Inventory* inventory, LevelCompleteMenu* levelCompleteMenu, int maxLevel)
+    : mInventory(inventory), mLevelCompleteMenu(levelCompleteMenu), mCurrentXp(0),
+    mCurrentLevel(0), mMaxLevel(maxLevel) {
 
 }
 
@@ -25,15 +26,8 @@ void LevelSystem::checkLevelUp() {
 }
 
 void LevelSystem::grantRewards(int level) {
-    std::cout << "Leveled up!" << std::endl;
-    if (level == 2) {
-        std::unique_ptr<TowerBlueprintEpic> towerBlueprintItem = std::make_unique<TowerBlueprintEpic>();
-        mInventory->addItem(std::move(towerBlueprintItem), 1);
-
-        std::cout << "Leveled up!" << std::endl;
-    } else if (level == 3) {
-
-    }
+    mLevelCompleteMenu->setLevel(level);
+    mLevelCompleteMenu->setActive(true);
 }
 
 int LevelSystem::getCurrentXp() const {

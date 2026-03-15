@@ -2,10 +2,11 @@
 #include <functional>
 #include <math.h>
 #include "../inventory/Inventory.h"
+#include "../../TowerDefense/menues/LevelCompleteMenu.h"
 
 class LevelSystem {
 public:
-    LevelSystem(Inventory* inventory, int maxLevel = 50);
+    LevelSystem(Inventory* inventory, LevelCompleteMenu* levelCompleteMenu, int maxLevel = 50);
 
     void addXp(int xp);
     
@@ -24,4 +25,5 @@ private:
     int mMaxLevel;
 
     Inventory* mInventory;
+    LevelCompleteMenu* mLevelCompleteMenu;
 };

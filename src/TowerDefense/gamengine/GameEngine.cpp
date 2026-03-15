@@ -34,7 +34,7 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mShowText2(false),
     mGameManager(gameManager),
     mSmallMenu(mWindow, this, gameManager, mCurrentLevel, mAvailableTowers),
-    mLevelCompleteMenu(mWindow, this, gameManager, mCurrentLevel),
+    mLevelCompleteMenu(mWindow, this, nullptr, gameManager, mCurrentLevel, true),
     mGameOverMenu(mWindow, this, gameManager, mCurrentLevel, mCrystals, mAvailableTowers) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
