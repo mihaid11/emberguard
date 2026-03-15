@@ -1,22 +1,24 @@
 #include "LevelCompleteMenu.h"
 #include "../gamengine/GameEngine.h"
+#include "../../Rpg/gamengine/RPGEngine.h"
 #include "../../GameManager.h"
 #include "../../Rpg/inventory/items/Wood.h"
 #include "../../Rpg/inventory/items/TowerBlueprint.h"
 #include "../../Rpg/inventory/items/TowerBlueprintRare.h"
 #include "../../Rpg/inventory/items/TowerBlueprintEpic.h"
 #include "../../Rpg/inventory/items/TowerBlueprintMythic.h"
+#include "RewardSystem.h"
 #include <iostream>
 
-LevelCompleteMenu::LevelCompleteMenu(sf::RenderWindow& window, GameEngine* game,
-    GameManager* gameManager, int level)
-    : mGame(game), mGameManager(gameManager), mLevel(level),
-    continueButton(sf::Vector2f(0, 0), sf::Vector2f(165, 40), "Continue") {
+LevelCompleteMenu::LevelCompleteMenu(sf::RenderWindow& window, GameEngine* towerGame,
+    RPGEngine* rpgGame, GameManager* gameManager, int level, bool isTowerLevel)
+    : mTowerGame(towerGame), mRpgGame(rpgGame), mGameManager(gameManager), mLevel(level), mActive(false),
+    mIsTowerLevel(isTowerLevel), mContinueButton(sf::Vector2f(0, 0), sf::Vector2f(165, 40), "Continue") {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for AnalyzeMenu!" << std::endl;
 
-    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 5.5f, window.getSize().y / 3.f));
+    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 5.3f, window.getSize().y / 2.3f));
     mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
     mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2,
                            (window.getSize().y - mMenuShape.getSize().y) / 2);
@@ -24,28 +26,44 @@ LevelCompleteMenu::LevelCompleteMenu(sf::RenderWindow& window, GameEngine* game,
     mBackground.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
     mBackground.setFillColor(sf::Color(50, 50, 50, 185));
     mBackground.setPosition(sf::Vector2f(0, 0));
-    continueButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - continueButton.getSize().x) / 2.f,
-                                            mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.1f));
 
-    mReward = RewardSystem::generateReward(level);
-    continueButton.setCallback([this, game, gameManager]() {
-        if (mGameManager) {
+    if (isTowerLevel)
+        mLevelCompleteText.setString("Level completed!");
+    else
+        mLevelCompleteText.setString("Level up!");
+    mLevelCompleteText.setFont(mFont);
+    mLevelCompleteText.setCharacterSize(18);
+    mLevelCompleteText.setFillColor(sf::Color::White);
+    mLevelCompleteText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mLevelCompleteText.getLocalBounds().width) / 2.f,
+                                                mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.05f));
+
+    if (isTowerLevel)
+        mReward = RewardSystem::generateTowerLevelReward(level);
+    else
+        mReward = RewardSystem::generateReward(level);
+
+    mContinueButton.setCallback([this]() {
+        if (mIsTowerLevel) {
+            if (mGameManager) {
+                if (mReward.itemId == 0)
+                    mGameManager->switchToRPG(mTowerGame->getCrystals() + mReward.quantity);
+                else
+                    mGameManager->switchToRPG(mTowerGame->getCrystals());
+            } else
+                std::cerr << "Error: GameManager is nullptr in continueButton callback." << std::endl;
+        } else {
             if (mReward.itemId == 0)
-                mGameManager->switchToRPG(game->getCrystals() + mReward.quantity);
-            else
-                mGameManager->switchToRPG(game->getCrystals());
-        } else
-            std::cerr << "Error: GameManager is nullptr in continueButton callback." << std::endl;
+                mRpgGame->addCrystals(mReward.quantity);
+            mActive = false;
+        }
     });
 
-    mButtons.push_back(continueButton);
-
-    mRewardShape.setSize(sf::Vector2f(mMenuShape.getSize().x * 0.6f, mMenuShape.getSize().y * 0.55f));
+    mRewardShape.setSize(sf::Vector2f(mMenuShape.getSize().x * 0.63f, mMenuShape.getSize().y * 0.56f));
     mRewardShape.setFillColor(sf::Color::Transparent);
     mRewardShape.setOutlineColor(sf::Color::White);
     mRewardShape.setOutlineThickness(1.5f);
     mRewardShape.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mRewardShape.getSize().x) / 2.f,
-                                          mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.9f - mRewardShape.getSize().y));
+                                          mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.18f));
 
     mRewardText.setFont(mFont);
     mRewardText.setString(mReward.name);
@@ -84,29 +102,55 @@ LevelCompleteMenu::LevelCompleteMenu(sf::RenderWindow& window, GameEngine* game,
     }
     mItemIcon.setPosition(sf::Vector2f(mRewardShape.getPosition().x + (mRewardShape.getSize().x - mItemIcon.getSize().x) / 2.f,
                                        mRewardShape.getPosition().y + mRewardShape.getSize().y * 0.1f));
+
+    mContinueButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mContinueButton.getSize().x) / 2.f,
+                                             mRewardShape.getPosition().y + mRewardShape.getSize().y * 1.15f));
 }
 
 void LevelCompleteMenu::render(sf::RenderWindow& window) {
+    if (!mIsTowerLevel && !mActive)
+        return;
+
     window.draw(mBackground);
     window.draw(mMenuShape);
+
+    window.draw(mLevelCompleteText);
     window.draw(mRewardShape);
     window.draw(mRewardText);
     window.draw(mQuantityText);
     window.draw(mItemIcon);
 
-    for (auto& button : mButtons)
-        button.render(window);
+    mContinueButton.render(window);
 }
 
 void LevelCompleteMenu::handleMouseClick(const sf::Vector2f& mousePos) {
-    for (auto& button : mButtons) {
-        if (button.isMouseOver(mousePos))
-            button.onClick();
-    }
+    if (!mIsTowerLevel && !mActive)
+        return;
+
+    if (mContinueButton.isMouseOver(mousePos))
+        mContinueButton.onClick();
 }
 
 void LevelCompleteMenu::updateHover(const sf::Vector2f& mousePos) {
-    for (auto& button : mButtons)
-        button.updateHover(mousePos);
+    if (!mIsTowerLevel && !mActive)
+        return;
+
+    mContinueButton.updateHover(mousePos);
+}
+
+bool LevelCompleteMenu::isActive() const {
+    return mActive;
+}
+
+void LevelCompleteMenu::setActive(bool state) {
+    mActive = state;
+}
+
+int LevelCompleteMenu::getLevel() const {
+    return mLevel;
+}
+
+void LevelCompleteMenu::setLevel(int level) {
+    mLevel = level;
 }
 

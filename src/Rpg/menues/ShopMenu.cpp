@@ -378,9 +378,9 @@ void ShopMenu::updateTooltip(int slot, int id) {
     std::string tooltipText;
     if (id == 1) tooltipText = "Cost: 5\nWood\nA piece of wood, useful for crafting.";
     else if (id == 2) tooltipText = "Cost: 50\nTower Blueprint\nCan be used to unlock towers!";
-    else if (id == 3) tooltipText = "Cost: 100\nTower Blueprint Rare\nCan be used to unlock rare towers!";
-    else if (id == 4) tooltipText = "Cost: 150\nTower Blueprint Epic\nCan be used to unlock epic towers!";
-    else if (id == 5) tooltipText = "Cost: 250\nTower Blueprint Mythic\nCan be used to unlock mythic towers!";
+    else if (id == 3) tooltipText = "Cost: 100\nRare Tower Blueprint\nCan be used to unlock rare towers!";
+    else if (id == 4) tooltipText = "Cost: 150\nEpic Tower Blueprint\nCan be used to unlock epic towers!";
+    else if (id == 5) tooltipText = "Cost: 250\nMythic Tower Blueprint\nCan be used to unlock mythic towers!";
     else tooltipText = "Nothing here!";
 
     mTooltipText.setString(tooltipText);
