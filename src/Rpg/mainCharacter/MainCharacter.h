@@ -28,8 +28,11 @@ public:
 
     LevelSystem& getLevelSystem();
     int getLevel() const;
+    void setLevel(int level);
+
     int getXp() const;
     int getXpForNextLevel() const;
+    void setXp(int xp);
 
 private:
     enum class AnimationIndex {

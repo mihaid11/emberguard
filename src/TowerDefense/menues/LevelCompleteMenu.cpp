@@ -103,6 +103,11 @@ void LevelCompleteMenu::refresh() {
                     mGameManager->switchToRPG(mTowerGame->getCrystals() + mReward.quantity);
                 else
                     mGameManager->switchToRPG(mTowerGame->getCrystals());
+
+                int xp = static_cast<int>(50.f * std::pow(mLevel, 1.3f) * 0.6f);
+                mGameManager->getGameEngine().addXp(xp);
+
+                mGameManager->getGameEngine().advanceTowerDefenseLevel();
             } else
                 std::cerr << "Error: GameManager is nullptr in continueButton callback." << std::endl;
         } else {

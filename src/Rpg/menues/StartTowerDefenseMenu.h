@@ -19,7 +19,12 @@ public:
     void updateHover(const sf::Vector2f& mousePos);
     void update(int crystals, std::vector<int>& availableTowers);
 
+    void advanceLevel();
+    void refresh();
+
 private:
+    sf::RenderWindow& mWindow;
+
     sf::RectangleShape mMenuShape;
     sf::RectangleShape mHoveredZoneShape;
     sf::Text mTitle;

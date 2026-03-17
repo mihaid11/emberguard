@@ -39,6 +39,10 @@ int LevelSystem::getLevel() const {
     return mCurrentLevel;
 }
 
+void LevelSystem::setLevel(int level) {
+    mCurrentLevel = level;
+}
+
 int LevelSystem::getXpForNextLevel() const {
     return static_cast<float>(50.f * std::pow(mCurrentLevel, 1.3f));
 }
@@ -49,3 +53,8 @@ float LevelSystem::getXpPercentage() const {
 
     return static_cast<float>(mCurrentXp) / static_cast<float>(getXpForNextLevel());
 }
+
+void LevelSystem::setXp(int xp) {
+    mCurrentXp = xp;
+}
+

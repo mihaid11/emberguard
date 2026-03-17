@@ -11,9 +11,12 @@ public:
     void addXp(int xp);
     
     int getLevel() const;
+    void setLevel(int level);
+
     int getCurrentXp() const;
     int getXpForNextLevel() const;
     float getXpPercentage() const;
+    void setXp(int xp);
 
     void grantRewards(int level);
 

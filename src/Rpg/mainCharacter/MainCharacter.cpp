@@ -173,11 +173,19 @@ int MainCharacter::getLevel() const {
     return mLevelSystem.getLevel();
 }
 
+void MainCharacter::setLevel(int level) {
+    mLevelSystem.setLevel(level);
+}
+
 int MainCharacter::getXp() const {
     return mLevelSystem.getCurrentXp();
 }
 
 int MainCharacter::getXpForNextLevel() const {
     return mLevelSystem.getXpForNextLevel();
+}
+
+void MainCharacter::setXp(int xp) {
+    mLevelSystem.setXp(xp);
 }
 
