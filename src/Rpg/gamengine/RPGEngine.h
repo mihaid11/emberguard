@@ -62,6 +62,8 @@ public:
     void setFlag(std::string name, bool value);
     void addCrystals(int value);
     void setCrystals(int crystals);
+    void addXp(int xp);
+    void advanceTowerDefenseLevel();
 
     void initialize();
     void uninitialize();
@@ -97,7 +99,7 @@ private:
 
     GameManager* mGameManager;
     int mCrystals;
-    int mCurrentLevel;
+    int mCurrentTowerDefenseLevel;
     std::vector<int> mAvailableTowers;
     int mChapter;
 

@@ -78,7 +78,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mStructureIndex(-1),
     mCrystals(100),
     mStorageCapacity(500),
-    mCurrentLevel(1),
+    mCurrentTowerDefenseLevel(1),
     mChapter(1),
     mSelectedChoice(0),
     mPaused(true),
@@ -103,7 +103,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
                     }
                   }, mWaypointManager},
     mZoneManager(mGameContext, 1),
-    mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentLevel, mCrystals),
+    mStartTowerDefenseMenu(window, mAvailableTowers, this, gameManager, mCurrentTowerDefenseLevel, mCrystals),
     mBankMenu(window, mCrystals, mStorageCapacity, mTimeSystem),
     mShopMenu(window, mInventory, mTimeSystem, 5, mCrystals),
     mAnalyzeMenu(window, mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals) {
@@ -863,8 +863,8 @@ void RPGEngine::saveGame() {
     for (int i = 0; i < droppedItemId.size(); ++i)
         std::cout << droppedItemId[i] << " " << droppedItemXPos[i] << " " << droppedItemYPos[i] << " " << droppedItemQuantity[i] << std::endl;*/
 
-    mSaveSystem.save(mCharacter.getPosition(), mCharacter.getAnimation(),
-                     npcPositions, npcWaypoints, mCrystals,
+    mSaveSystem.save(mCharacter.getPosition(), mCharacter.getAnimation(), mCharacter.getLevel(), mCharacter.getXp(),
+                     mCurrentTowerDefenseLevel, npcPositions, npcWaypoints, mCrystals,
                      year, day, hour, minute, bankBalance, hasBorrowActive, penalty,
                      interest, amountToRepay, daysToRepayment, startYear, startDay,
                      startHour, startMinute, inventoryItemId, inventoryItemQuantity,
@@ -877,7 +877,8 @@ void RPGEngine::saveGame() {
 
 void RPGEngine::loadGame() {
     sf::Vector2f playerPosition;
-    int playerAnimation;
+    int playerAnimation, playerLevel, playerXp;
+    int towerDefenseLevel;
     std::vector<sf::Vector2f> npcPositions;
     std::vector<int> npcWaypoints;
     int crystals, year, day, hour, minute, bankBalance, penalty, interest,
@@ -895,8 +896,8 @@ void RPGEngine::loadGame() {
     std::vector<std::string> flagKeys;
     std::vector<int> flagValues;
 
-    if (mSaveSystem.load(playerPosition, playerAnimation,
-                         npcPositions, npcWaypoints, crystals, year,
+    if (mSaveSystem.load(playerPosition, playerAnimation, playerLevel, playerXp,
+                         towerDefenseLevel, npcPositions, npcWaypoints, crystals, year,
                          day, hour, minute, bankBalance, hasBorrowActive, penalty,
                          interest, amountToRepay, daysToRepayment, startYear, startDay,
                          startHour, startMinute, inventoryItemId, inventoryItemQuantity,
@@ -911,6 +912,9 @@ void RPGEngine::loadGame() {
         mDroppedItems.clear();
 
         mCharacter.setAnimation(playerAnimation);
+        mCharacter.setLevel(playerLevel);
+        mCharacter.setXp(playerXp);
+        mCurrentTowerDefenseLevel = towerDefenseLevel;
 
         mIsInsideAStructure = insideStructure;
         mStructureIndex = structureIndex;
@@ -1211,5 +1215,13 @@ sf::Vector2f RPGEngine::calculateDropPosition() {
     }
 
     return validPos - sf::Vector2f(8.f, 8.f);
+}
+
+void RPGEngine::addXp(int xp) {
+    mCharacter.getLevelSystem().addXp(xp);
+}
+
+void RPGEngine::advanceTowerDefenseLevel() {
+    mStartTowerDefenseMenu.advanceLevel();
 }
 
