@@ -7,8 +7,8 @@ SaveSystem::SaveSystem() : mSaveFilePath("") {
 
 }
 
-void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnimation,
-                      const std::vector<sf::Vector2f>& npcPositions, const std::vector<int>& npcWaypoints,
+void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnimation, const int& playerLevel, const int& playerXp,
+                      const int& towerDefenseLevel, const std::vector<sf::Vector2f>& npcPositions, const std::vector<int>& npcWaypoints,
                       const int& crystals, const int& year, const int& day, const int& hour,
                       const int& minute, const int& bankBalance, const int& hasBorrowActive,
                       const int& penalty, const int& interest, const int& amountToRepay, const int& daysToRepayment,
@@ -29,9 +29,10 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnima
         return;
     }
 
-    outFile << playerPosition.x << " " << playerPosition.y << " " << playerAnimation << std::endl;
-    outFile << npcPositions.size() << std::endl;
+    outFile << playerPosition.x << " " << playerPosition.y << " " << playerAnimation << " " << playerLevel << " " << playerXp << " " << std::endl;
+    outFile << towerDefenseLevel << std::endl;
 
+    outFile << npcPositions.size() << std::endl;
     for (size_t i = 0; i < npcPositions.size(); ++i)
         outFile << npcPositions[i].x << " " << npcPositions[i].y << " " << npcWaypoints[i] << std::endl;
 
@@ -73,8 +74,8 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnima
     outFile.close();
 }
 
-bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation,
-                      std::vector<sf::Vector2f>& npcPositions, std::vector<int>& npcWaypoints,
+bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation, int& playerLevel, int& playerXp,
+                      int& towerDefenseLevel, std::vector<sf::Vector2f>& npcPositions, std::vector<int>& npcWaypoints,
                       int& crystals, int& year, int& day, int& hour, int& minute, int& bankBalance,
                       int& hasBorrowActive, int& penalty, int& interest, int& amountToRepay, int& daysToRepayment,
                       int& startYear, int& startDay, int& startHour, int& startMinute,
@@ -94,8 +95,14 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation,
     }
 
     // Load player position
-    if (!(inFile >> playerPosition.x >> playerPosition.y >> playerAnimation)) {
-        std::cerr << "Error reading player position from save file." << std::endl;
+    if (!(inFile >> playerPosition.x >> playerPosition.y >> playerAnimation >> playerLevel >> playerXp)) {
+        std::cerr << "Error reading player position and level from save file." << std::endl;
+        return false;
+    }
+
+    // Load tower defense level
+    if (!(inFile >> towerDefenseLevel)) {
+        std::cerr << "Error reading tower defense level from save file." << std::endl;
         return false;
     }
 
@@ -295,7 +302,8 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation,
 
 bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int& day, int& hour, int& minute) {
     sf::Vector2f playerPosition;
-    int playerAnimation;
+    int playerAnimation, playerLevel, playerXp;
+    int towerDefenseLevel;
     std::vector<sf::Vector2f> npcPositions;
     std::vector<int> npcWaypoints;
     int bankBalance, penalty, interest, amountToRepay, daysToRepayment,
@@ -316,8 +324,8 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
 
     std::string tmp = mSaveFilePath;
     mSaveFilePath = saveFile;
-    bool success = load(playerPosition, playerAnimation, npcPositions,
-                        npcWaypoints, crystals, year, day,
+    bool success = load(playerPosition, playerAnimation, playerLevel, playerXp,
+                        towerDefenseLevel, npcPositions, npcWaypoints, crystals, year, day,
                         hour, minute, bankBalance, hasBorrowActive, penalty, interest,
                         amountToRepay, daysToRepayment, startYear, startDay, startHour,
                         startMinute, inventoryItemId, inventoryItemQuantity,
