@@ -1,11 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../mainCharacter/MainCharacter.h"
 #include "Inventory.h"
 #include "items/DroppedItem.h"
 
 class InventoryMenu {
 public:
-    InventoryMenu(Inventory& inventory, const sf::Vector2f& position,
+    InventoryMenu(Inventory& inventory, const sf::Vector2f& position, MainCharacter& character,
                   const sf::Vector2f& slotSize, const sf::Vector2f& playerPos,
                   std::vector<DroppedItem>& droppedItems);
 
@@ -20,6 +21,8 @@ public:
     void restart();
 
 private:
+    MainCharacter& mCharacter;
+
     Inventory& mInventory;
     std::vector<sf::RectangleShape> mSlots;
     sf::Vector2f mSlotSize;

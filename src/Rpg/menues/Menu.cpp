@@ -24,6 +24,7 @@ Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
     mInventoryMenu = std::make_unique<InventoryMenu>(inventory,
                                                      sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2,
                                                                   mMenuShape.getPosition().y + mMenuShape.getSize().y / 3),
+                                                     rpgEngine.getPlayer(),
                                                      sf::Vector2f(70.0f, 70.0f), playerPos, droppedItems);
 
     mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x / 2.0f, 58));

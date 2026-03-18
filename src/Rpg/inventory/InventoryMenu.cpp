@@ -1,10 +1,10 @@
 #include "InventoryMenu.h"
 #include <iostream>
 
-InventoryMenu::InventoryMenu(Inventory& inventory, const sf::Vector2f& position, const sf::Vector2f& slotSize,
-    const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems)
-    : mInventory(inventory), mPosition(position), mSlotSize(slotSize), mHoveredSlot(-1), mDraggedSlot(-1),
-    mPlayerPos(playerPos), mDroppedItems(droppedItems) {
+InventoryMenu::InventoryMenu(Inventory& inventory, const sf::Vector2f& position, MainCharacter& character,
+    const sf::Vector2f& slotSize, const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems)
+    : mCharacter(character), mInventory(inventory), mPosition(position), mSlotSize(slotSize),
+    mHoveredSlot(-1), mDraggedSlot(-1), mPlayerPos(playerPos), mDroppedItems(droppedItems) {
     int totalSlots = mInventory.getSlotCount();
     mSlots.resize(totalSlots);
     for (int i = 0; i < totalSlots; ++i) {
@@ -50,6 +50,10 @@ void InventoryMenu::render(sf::RenderWindow& window) {
             window.draw(mTooltipText);
         }
     }
+
+    sf::Sprite characterSprite = mCharacter.getIconSprite();
+    characterSprite.setPosition(sf::Vector2f(mPosition.x - mSlotSize.x * 3.6f, mPosition.y));
+    window.draw(characterSprite);
 }
 
 void InventoryMenu::updateHover(const sf::Vector2f& mousePos) {

@@ -593,7 +593,7 @@ void RPGEngine::render() {
         dialogueBox.setPosition((mWindow.getSize().x - dialogueBox.getSize().x) / 2 - 60.f,
             mWindow.getSize().y - dialogueBox.getSize().y - 35.0f);
 
-        sf::Sprite npcSprite = mCurrentInteractingNPC->getSprite();
+        sf::Sprite npcSprite = mCurrentInteractingNPC->getIconSprite();
         npcSprite.setPosition(dialogueBox.getPosition().x - 21.f,
             dialogueBox.getPosition().y + 37.5f);
         separationLine.setPosition({dialogueBox.getPosition().x + 140.f, dialogueBox.getPosition().y});
@@ -1164,14 +1164,6 @@ void RPGEngine::uninitialize() {
     mIsInitialized = false;
 }
 
-SaveSystem& RPGEngine::getSaveSystem() {
-    return mSaveSystem;
-}
-
-Inventory& RPGEngine::getInventory() {
-    return mInventory;
-}
-
 sf::Vector2f RPGEngine::calculateDropPosition() {
     sf::FloatRect playerBounds = mCharacter.getBounds();
     sf::Vector2f startPos = {playerBounds.left + playerBounds.width / 2.f, playerBounds.top + playerBounds.height / 2.f};
@@ -1225,3 +1217,14 @@ void RPGEngine::advanceTowerDefenseLevel() {
     mStartTowerDefenseMenu.advanceLevel();
 }
 
+SaveSystem& RPGEngine::getSaveSystem() {
+    return mSaveSystem;
+}
+
+Inventory& RPGEngine::getInventory() {
+    return mInventory;
+}
+
+MainCharacter& RPGEngine::getPlayer() {
+    return mCharacter;
+}

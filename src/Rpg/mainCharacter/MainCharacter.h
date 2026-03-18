@@ -34,6 +34,9 @@ public:
     int getXpForNextLevel() const;
     void setXp(int xp);
 
+    sf::Sprite& getSprite();
+    sf::Sprite& getIconSprite();
+
 private:
     enum class AnimationIndex {
         IdleUp,
@@ -56,6 +59,9 @@ private:
     sf::Sprite mSprite;
     Animation mAnimations[int(AnimationIndex::Count)];
     AnimationIndex mCurrentAnimation = AnimationIndex::IdleDown;
+
+    sf::Sprite mIconSprite;
+    Animation mIconTexture;
 
     sf::RectangleShape mCollisionZone;
     sf::RectangleShape mInteractZone;
