@@ -54,6 +54,7 @@ public:
 
     std::string getID() const { return mId; }
     sf::Sprite& getSprite();
+    sf::Sprite& getIconSprite();
 
 protected:
     std::string mId;

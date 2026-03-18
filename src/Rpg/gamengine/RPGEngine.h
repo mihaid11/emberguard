@@ -72,6 +72,7 @@ public:
 
     SaveSystem& getSaveSystem();
     Inventory& getInventory();
+    MainCharacter& getPlayer();
 
 private:
     sf::RenderWindow& mWindow;

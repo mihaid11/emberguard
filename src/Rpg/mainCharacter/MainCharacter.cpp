@@ -22,6 +22,11 @@ MainCharacter::MainCharacter(const sf::Vector2f& position, Inventory* inventory,
     mAnimations[int(AnimationIndex::WalkingDown)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/walkDown.png", 6, 1.6f);
     mAnimations[int(AnimationIndex::WalkingLeft)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/walkLeft.png", 6, 1.52f);
     mAnimations[int(AnimationIndex::WalkingRight)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/walkRight.png", 6, 1.52f);
+
+    mIconSprite.setTextureRect({ 0, 0, 64, 64 });
+    mIconTexture = Animation(0, 0, 28, 64, "assets/sprites/mainCharacter/idleDown.png", 1, 0.0f);
+    mIconTexture.applyToSprite(mIconSprite);
+    mIconSprite.setScale({ 2.7f, 2.7f });
 }
 
 void MainCharacter::update(float dt, bool inDialogue) {
@@ -189,3 +194,10 @@ void MainCharacter::setXp(int xp) {
     mLevelSystem.setXp(xp);
 }
 
+sf::Sprite& MainCharacter::getSprite() {
+    return mSprite;
+}
+
+sf::Sprite& MainCharacter::getIconSprite() {
+    return mIconSprite;
+}

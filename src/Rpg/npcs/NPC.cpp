@@ -229,10 +229,6 @@ void NPC::setInteract(bool showInteract) {
     mShowInteract = showInteract;
 }
 
-sf::Sprite& NPC::getSprite() {
-    return mIconSprite;
-}
-
 void NPC::startPause(float duration) {
     mIsPaused = true;
     mPauseDuration = duration;
@@ -272,3 +268,10 @@ std::vector<DialogueAction> NPC::getCurrentDialogueActions() const {
     return mDialogueManager.getCurrentActions();
 }
 
+sf::Sprite& NPC::getSprite() {
+    return mSprite;
+}
+
+sf::Sprite& NPC::getIconSprite() {
+    return mIconSprite;
+}
