@@ -65,7 +65,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mChestInventory(2, 2),
     mCurrentInteractingNPC(nullptr),
     mSkillTree(),
-    mMenu(window, mSkillTree, mInventory, mCharacter.getPosition(), mDroppedItems, *this, gameManager),
+    mMenu(window, mSkillTree, mInventory, *this, gameManager),
     mHotbar(mInventory, sf::Vector2f(mWindow.getSize().x / 2 - 45.f * 3 / 2, mWindow.getSize().y - 45.f - 4.f),
         mInventory.getSlotCount() / 2, sf::Vector2f(45.f, 45.f)),
     mShowMenu(false),

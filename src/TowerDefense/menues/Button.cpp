@@ -53,8 +53,22 @@ void Button::onClick() {
 }
 
 void Button::setPosition(const sf::Vector2f& position) {
-    mButtonShape.setPosition(position);
-    mButtonText.setPosition(position.x + mSize.x / 2.0f, position.y + mSize.y / 2.0f);
+    mPosition = position;
+    mButtonShape.setPosition(mPosition);
+
+    sf::FloatRect rect = mButtonText.getLocalBounds();
+    mButtonText.setOrigin(rect.left + rect.width / 2.f, rect.top + rect.height / 2.f);
+    mButtonText.setPosition(mPosition.x + mSize.x / 2.0f, mPosition.y + mSize.y / 2.0f);
+}
+
+void Button::setSize(const sf::Vector2f& size) {
+    mSize = size;
+    mButtonShape.setSize(mSize);
+    mButtonText.setCharacterSize(static_cast<int>(mSize.y * 0.42f));
+
+    sf::FloatRect rect = mButtonText.getLocalBounds();
+    mButtonText.setOrigin(rect.left + rect.width / 2.f, rect.top + rect.height / 2.f);
+    mButtonText.setPosition(mPosition.x + mSize.x / 2.0f, mPosition.y + mSize.y / 2.0f);
 }
 
 void Button::setText(const std::string& text) {
