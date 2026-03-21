@@ -14,7 +14,7 @@ class GameManager;
 class Menu {
 public:
     Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
-         const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems, RPGEngine& rpgEngine, GameManager* gameManager);
+         RPGEngine& rpgEngine, GameManager* gameManager);
 
     void render(sf::RenderWindow& window);
     void handleMouseClick(const sf::Vector2f& mousePos);
@@ -27,14 +27,16 @@ public:
     InventoryMenu& getInventoryMenu();
 
 private:
+    sf::RectangleShape mBackground;
     sf::RectangleShape mMenuShape;
     sf::RectangleShape mHoveredZoneShape;
     GameManager* mGameManager;
 
     std::vector<Button> mButtons;
-    Button skillTreeButton;
-    Button inventoryButton;
-    Button exitButton;
+    Button mSkillTreeButton;
+    Button mInventoryButton;
+    Button mExitButton;
+    float mGap;
 
     std::string mCurrentMenu;
     std::unique_ptr<SkillTreeMenu> mSkillTreeMenu;

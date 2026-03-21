@@ -47,10 +47,6 @@ void Inventory::setItemQuantityAt(int slot, int quantity) {
         mSlots[slot].quantity = quantity;
 }
 
-int Inventory::getSlotCount() const {
-    return mRows * mCols;
-}
-
 void Inventory::resize(int newRows, int newCols) {
     mRows = newRows;
     mCols = newCols;
@@ -92,3 +88,14 @@ void Inventory::clear() {
     mSlots.resize(mRows * mCols);
 }
 
+int Inventory::getSlotCount() const {
+    return mRows * mCols;
+}
+
+int Inventory::getRows() const {
+    return mRows;
+}
+
+int Inventory::getCols() const {
+    return mCols;
+}

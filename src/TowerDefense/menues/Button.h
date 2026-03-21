@@ -14,6 +14,7 @@ public:
     void onClick();
 
     void setPosition(const sf::Vector2f& position);
+    void setSize(const sf::Vector2f& size);
     void setText(const std::string& text);
 
     void setBackgroundColor(sf::Color color);

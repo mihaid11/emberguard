@@ -4,33 +4,36 @@
 #include "../../GameManager.h"
 
 Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
-          const sf::Vector2f& playerPos, std::vector<DroppedItem>& droppedItems,
-          RPGEngine& rpgEngine, GameManager* gameManager)
-    : mCurrentMenu("Inventory"), mGameManager(gameManager),
-    inventoryButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Inventory"),
-    skillTreeButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "SkillTree"),
-    exitButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Exit"), mShowText(false) {
+           RPGEngine& rpgEngine, GameManager* gameManager)
+    : mCurrentMenu("Inventory"), mGameManager(gameManager), mGap(0),
+    mInventoryButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Inventory"),
+    mSkillTreeButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "SkillTree"),
+    mExitButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Exit"), mShowText(false) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font" << std::endl;
+
+    mBackground.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
+    mBackground.setFillColor(sf::Color(50, 50, 50, 185));
+    mBackground.setPosition(sf::Vector2f(0, 0));
 
     mMenuShape.setSize(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f));
     mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
     mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
                            (window.getSize().y - mMenuShape.getSize().y) / 2.0f);
 
-    mSkillTreeMenu = std::make_unique<SkillTreeMenu>(sf::Vector2f(mMenuShape.getPosition().x + 10.0f, mMenuShape.getPosition().y + 100.0f),
-                                                     sf::Vector2f(mMenuShape.getSize().x - 20.0f, mMenuShape.getSize().y - 110.0f), skillTree);
-    mInventoryMenu = std::make_unique<InventoryMenu>(inventory,
-                                                     sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2,
-                                                                  mMenuShape.getPosition().y + mMenuShape.getSize().y / 3),
-                                                     rpgEngine.getPlayer(),
-                                                     sf::Vector2f(70.0f, 70.0f), playerPos, droppedItems);
-
-    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x / 2.0f, 58));
+    mHoveredZoneShape.setSize(sf::Vector2f(mMenuShape.getSize().x, mMenuShape.getSize().y * 0.155f));
     mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
-    mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
-                                               (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
+    mHoveredZoneShape.setPosition(mMenuShape.getPosition());
+
+    mSkillTreeMenu = std::make_unique<SkillTreeMenu>(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.156f, mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.277f),
+                                                     sf::Vector2f(mMenuShape.getSize().x * 0.968f, mMenuShape.getSize().y * 0.694f), skillTree);
+    float slotSize = mMenuShape.getSize().y * 0.195f;
+    mInventoryMenu = std::make_unique<InventoryMenu>(inventory,
+                                                     sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f,
+                                                                  mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
+                                                                  (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y) / 4.f),
+                                                     rpgEngine.getPlayer(), sf::Vector2f(slotSize, slotSize));
 
     mErrorText.setFillColor(sf::Color::White);
     mErrorText.setFont(mFont);
@@ -39,20 +42,24 @@ Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
     mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.05f,
                                         mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.2f));
 
-    sf::Vector2f buttonSize(80.0f, 35.0f);
-    float startX = mMenuShape.getPosition().x + 20.0f;
-    float startY = mMenuShape.getPosition().y + 10.0f;
-    float gap = 20.0f;
+    sf::Vector2f buttonSize(mHoveredZoneShape.getSize().x * 0.12f, mHoveredZoneShape.getSize().y * 0.6f);
+    mInventoryButton.setSize(buttonSize);
+    mSkillTreeButton.setSize(buttonSize);
+    mExitButton.setSize(buttonSize);
 
-    inventoryButton.setPosition(sf::Vector2f(startX, startY));
-    skillTreeButton.setPosition(sf::Vector2f(startX + buttonSize.x + gap, startY));
-    exitButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x - buttonSize.x - gap, startY));
+    mGap = mHoveredZoneShape.getSize().x * 0.04f;;
+    float startX = mHoveredZoneShape.getPosition().x + mGap;
+    float startY = mHoveredZoneShape.getPosition().y + (mHoveredZoneShape.getSize().y - buttonSize.y) / 2.f;
 
-    inventoryButton.setCallback([&]() {
+    mInventoryButton.setPosition(sf::Vector2f(startX, startY));
+    mSkillTreeButton.setPosition(sf::Vector2f(startX + buttonSize.x + mGap, startY));
+    mExitButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x - buttonSize.x - mGap, startY));
+
+    mInventoryButton.setCallback([&]() {
         switchToMenu("Inventory");
     });
 
-    skillTreeButton.setCallback([&]() {
+    mSkillTreeButton.setCallback([&]() {
         // TODO : Implement prototype of skill tree menu
         // For now only an error message is displayed
         //switchToMenu("SkillTree");
@@ -61,7 +68,7 @@ Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
         mShowText = true;
     });
 
-    exitButton.setCallback([&]() {
+    mExitButton.setCallback([&]() {
         rpgEngine.saveGame();
         if (mGameManager)
             mGameManager->switchToMainMenu();
@@ -69,15 +76,15 @@ Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
             std::cerr << "Error: GameManager is nullptr in exitButton callback." << std::endl;
     });
 
-    mButtons.push_back(inventoryButton);
-    mButtons.push_back(skillTreeButton);
-    mButtons.push_back(exitButton);
+    mButtons.push_back(mInventoryButton);
+    mButtons.push_back(mSkillTreeButton);
+    mButtons.push_back(mExitButton);
 
     mCrystalText.setFont(mFont);
-    mCrystalText.setCharacterSize(14);
+    mCrystalText.setCharacterSize(13);
     mCrystalText.setFillColor(sf::Color::White);
-    mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - 230.0f,
-                             mMenuShape.getPosition().y + 15.0f);
+    mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - mExitButton.getSize().x - mGap * 1.6f,
+                             mMenuShape.getPosition().y + (mHoveredZoneShape.getSize().y - mCrystalText.getGlobalBounds().height) / 2.f);
 }
 
 void Menu::handleMouseClick(const sf::Vector2f& mousePos)
@@ -116,8 +123,10 @@ void Menu::restart() {
 
 void Menu::update(int crystals, const Inventory& inventory, const SkillTree& skillTree) {
     mCrystalText.setString("Crystals " + std::to_string(crystals));
+    mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - mExitButton.getSize().x - mGap * 1.6f,
+                             mMenuShape.getPosition().y + (mHoveredZoneShape.getSize().y - mCrystalText.getGlobalBounds().height) / 2.f);
 
-    skillTreeButton.setCallback([&]() {
+    mSkillTreeButton.setCallback([&]() {
         // TODO : Implement prototype of skill tree menu
         // For now only an error message is displayed
         //switchToMenu("SkillTree");
@@ -142,6 +151,7 @@ InventoryMenu& Menu::getInventoryMenu() {
 }
 
 void Menu::render(sf::RenderWindow& window) {
+    window.draw(mBackground);
     window.draw(mMenuShape);
     window.draw(mHoveredZoneShape);
     window.draw(mCrystalText);
