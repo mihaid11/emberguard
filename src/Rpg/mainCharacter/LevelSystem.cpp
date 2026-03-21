@@ -56,5 +56,6 @@ float LevelSystem::getXpPercentage() const {
 
 void LevelSystem::setXp(int xp) {
     mCurrentXp = xp;
+    checkLevelUp();
 }
 

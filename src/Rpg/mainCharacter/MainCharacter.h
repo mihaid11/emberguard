@@ -32,7 +32,9 @@ public:
 
     int getXp() const;
     int getXpForNextLevel() const;
+    float getXpPercentage() const;
     void setXp(int xp);
+    void addXp(int xp);
 
     sf::Sprite& getSprite();
     sf::Sprite& getIconSprite();

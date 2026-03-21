@@ -1,15 +1,19 @@
 #include "InventoryMenu.h"
 #include <iostream>
+#include <string>
 
 InventoryMenu::InventoryMenu(Inventory& inventory, const sf::Vector2f& position,
         MainCharacter& character, const sf::Vector2f& slotSize)
     : mCharacter(character), mInventory(inventory), mPosition(position),
-    mSlotSize(slotSize), mGap(mSlotSize.x * 3.f), mHoveredSlot(-1), mDraggedSlot(-1), mCharacterSprite(mCharacter.getIconSprite()) {
+    mSlotSize(slotSize), mGap(mSlotSize.x * 1.5f), mHoveredSlot(-1), mDraggedSlot(-1), mCharacterSprite(mCharacter.getIconSprite()) {
 
     int totalSlots = mInventory.getSlotCount();
     mSlots.resize(totalSlots);
 
-    float width = mCharacterSprite.getLocalBounds().width + mInventory.getCols() * mSlotSize.x + mGap;
+    sf::FloatRect spriteBounds = mCharacterSprite.getGlobalBounds();
+    float width = spriteBounds.width + mInventory.getCols() * mSlotSize.x + mGap;
+    mCharacterSprite.setPosition(sf::Vector2f(mPosition.x - width / 2.f, mPosition.y - 21.f));
+
     for (int i = 0; i < totalSlots; ++i) {
         mSlots[i].setSize(slotSize);
         mSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
@@ -17,11 +21,36 @@ InventoryMenu::InventoryMenu(Inventory& inventory, const sf::Vector2f& position,
         mSlots[i].setOutlineThickness(2.0f);
         int row = i / mInventory.getCols();
         int col = i % mInventory.getCols();
-        mSlots[i].setPosition(mPosition.x - width / 2.f + col * slotSize.x + mCharacterSprite.getLocalBounds().width + mGap, mPosition.y + row * slotSize.y);
+        mSlots[i].setPosition(mPosition.x - width / 2.f + col * slotSize.x + spriteBounds.width + mGap, mPosition.y + row * slotSize.y);
     }
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Failed to load font in the inventory menu!";
+
+    mLevelText.setFont(mFont);
+    mLevelText.setCharacterSize(15);
+    mLevelText.setFillColor(sf::Color::White);
+    mLevelText.setString("Level 1");
+    mLevelText.setPosition(mCharacterSprite.getPosition().x + (spriteBounds.width - mLevelText.getLocalBounds().width) / 2.f,
+                           mCharacterSprite.getPosition().y + spriteBounds.height * 1.2f);
+
+    mXpBar.setSize(sf::Vector2f(spriteBounds.width / 1.5f, 12.f));
+    mXpBar.setPosition(sf::Vector2f(mCharacterSprite.getPosition().x + (spriteBounds.width - mXpBar.getSize().x) / 2.f,
+                                    mLevelText.getPosition().y + mLevelText.getLocalBounds().height + 15.f));
+    mXpBar.setFillColor(sf::Color(50, 50, 50, 200));
+    mXpBar.setOutlineColor(sf::Color::White);
+    mXpBar.setOutlineThickness(1.f);
+
+    mXpBarFill.setSize(sf::Vector2f(0.f, 12.f));
+    mXpBarFill.setPosition(mXpBar.getPosition());
+    mXpBarFill.setFillColor(sf::Color::Cyan);
+
+    mXpText.setFont(mFont);
+    mXpText.setCharacterSize(12);
+    mXpText.setFillColor(sf::Color::White);
+    mXpText.setString("0 / 50");
+    mXpText.setPosition(mCharacterSprite.getPosition().x + (spriteBounds.width - mXpText.getLocalBounds().width) / 2.f,
+                        mXpBar.getPosition().y + 20.f);
 
     mTooltipText.setFont(mFont);
     mTooltipText.setCharacterSize(14);
@@ -30,8 +59,6 @@ InventoryMenu::InventoryMenu(Inventory& inventory, const sf::Vector2f& position,
     mTooltipBackground.setFillColor(sf::Color(50, 50, 50, 200));
     mTooltipBackground.setOutlineColor(sf::Color::White);
     mTooltipBackground.setOutlineThickness(1.0f);
-
-    mCharacterSprite.setPosition(sf::Vector2f(mPosition.x - width / 2.f, mPosition.y));
 }
 
 void InventoryMenu::render(sf::RenderWindow& window) {
@@ -48,6 +75,13 @@ void InventoryMenu::render(sf::RenderWindow& window) {
         }
     }
 
+    window.draw(mCharacterSprite);
+
+    window.draw(mLevelText);
+    window.draw(mXpText);
+    window.draw(mXpBar);
+    window.draw(mXpBarFill);
+
     if (mHoveredSlot != -1) {
         const Item* item = mInventory.getItemAt(mHoveredSlot);
         if (item) {
@@ -55,8 +89,6 @@ void InventoryMenu::render(sf::RenderWindow& window) {
             window.draw(mTooltipText);
         }
     }
-
-    window.draw(mCharacterSprite);
 }
 
 void InventoryMenu::updateHover(const sf::Vector2f& mousePos) {
@@ -93,13 +125,24 @@ void InventoryMenu::update() {
     if (static_cast<int>(mSlots.size()) != totalSlots)
         mSlots.resize(totalSlots);
 
-    float width = mCharacterSprite.getLocalBounds().width + mInventory.getCols() * mSlotSize.x + mGap;
+    sf::FloatRect spriteBounds = mCharacterSprite.getGlobalBounds();
+    float width = spriteBounds.width + mInventory.getCols() * mSlotSize.x + mGap;
     for (int i = 0; i < totalSlots; ++i) {
         int row = i / mInventory.getCols();
         int col = i % mInventory.getCols();
-        mSlots[i].setPosition(mPosition.x - width / 2.f + col * mSlotSize.x + mCharacterSprite.getLocalBounds().width + mGap,
+        mSlots[i].setPosition(mPosition.x - width / 2.f + col * mSlotSize.x + spriteBounds.width + mGap,
                               mPosition.y + row * mSlotSize.y);
     }
+
+    mLevelText.setString("Level " + std::to_string(mCharacter.getLevel()));
+    mLevelText.setPosition(mCharacterSprite.getPosition().x + (spriteBounds.width - mLevelText.getLocalBounds().width) / 2.f,
+                           mCharacterSprite.getPosition().y + spriteBounds.height * 1.2f);
+
+    mXpText.setString(std::to_string(mCharacter.getXp()) + " / " + std::to_string(mCharacter.getXpForNextLevel()));
+    mXpText.setPosition(mCharacterSprite.getPosition().x + (spriteBounds.width - mXpText.getLocalBounds().width) / 2.f,
+                        mXpBar.getPosition().y + mXpBar.getSize().y + 15.f);
+
+    mXpBarFill.setSize(sf::Vector2f(mXpBar.getSize().x * mCharacter.getXpPercentage(), mXpBar.getSize().y));
 }
 
 int InventoryMenu::getHoveredSlot() const {
