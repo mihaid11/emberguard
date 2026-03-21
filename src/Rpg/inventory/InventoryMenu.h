@@ -31,6 +31,11 @@ private:
     int mDraggedSlot;
     float mGap;
 
+    sf::Text mLevelText;
+    sf::Text mXpText;
+    sf::RectangleShape mXpBar;
+    sf::RectangleShape mXpBarFill;
+
     // Tooltip elements
     sf::RectangleShape mTooltipBackground;
     sf::Text mTooltipText;

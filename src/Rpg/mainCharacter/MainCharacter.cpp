@@ -190,8 +190,16 @@ int MainCharacter::getXpForNextLevel() const {
     return mLevelSystem.getXpForNextLevel();
 }
 
+float MainCharacter::getXpPercentage() const {
+    return mLevelSystem.getXpPercentage();
+}
+
 void MainCharacter::setXp(int xp) {
     mLevelSystem.setXp(xp);
+}
+
+void MainCharacter::addXp(int xp) {
+    mLevelSystem.addXp(xp);
 }
 
 sf::Sprite& MainCharacter::getSprite() {
