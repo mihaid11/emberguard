@@ -584,14 +584,15 @@ void RPGEngine::render() {
 
     if (mShowDialogue) {
         mWindow.setView(mWindow.getDefaultView());
+        sf::Vector2f viewSize = mWindow.getDefaultView().getSize();
 
-        sf::RectangleShape dialogueBox(sf::Vector2f(mWindow.getSize().x / 2.8f + 120.f,
-            mWindow.getSize().y / 4.2f));
+        sf::RectangleShape dialogueBox(sf::Vector2f(viewSize.x / 2.8f + 120.f,
+            viewSize.y / 4.2f));
         sf::RectangleShape separationLine(sf::Vector2f(0.2f, dialogueBox.getSize().y));
         separationLine.setFillColor(sf::Color(100, 100, 100, 255));
         dialogueBox.setFillColor(sf::Color(50, 50, 50, 255));
-        dialogueBox.setPosition((mWindow.getSize().x - dialogueBox.getSize().x) / 2 - 60.f,
-            mWindow.getSize().y - dialogueBox.getSize().y - 35.0f);
+        dialogueBox.setPosition((viewSize.x - dialogueBox.getSize().x) / 2 - 60.f,
+            viewSize.y - dialogueBox.getSize().y - 35.0f);
 
         sf::Sprite npcSprite = mCurrentInteractingNPC->getIconSprite();
         npcSprite.setPosition(dialogueBox.getPosition().x - 21.f,
@@ -706,23 +707,25 @@ void RPGEngine::renderDialogueChoices(const sf::Vector2f& dialogueBoxPos, const 
 }
 
 void RPGEngine::renderDateTime(sf::RenderWindow& window, sf::Font& font, const std::string& date, const std::string& time) {
+    sf::Vector2f viewSize = window.getDefaultView().getSize();
+
     sf::RectangleShape background(sf::Vector2f(200, 80));
     background.setFillColor(sf::Color(0, 0, 0, 150));
-    background.setPosition(window.getSize().x - 210.f, 10.f);
+    background.setPosition(viewSize.x - 210.f, 10.f);
 
     sf::Text dateText;
     dateText.setFont(font);
     dateText.setString(date);
     dateText.setCharacterSize(16);
     dateText.setFillColor(sf::Color::White);
-    dateText.setPosition(window.getSize().x - 200.f, 20.f);
+    dateText.setPosition(viewSize.x - 200.f, 20.f);
 
     sf::Text timeText;
     timeText.setFont(font);
     timeText.setString(time);
     timeText.setCharacterSize(16);
     timeText.setFillColor(sf::Color::White);
-    timeText.setPosition(window.getSize().x - 200.f, 50.f);
+    timeText.setPosition(viewSize.x - 200.f, 50.f);
 
     window.draw(background);
     window.draw(dateText);
