@@ -1,6 +1,6 @@
 #include "SmallMenu.h"
 #include "../gamengine/GameEngine.h"
-#include "../../GameManager.h"
+#include "../../core/GameManager.h"
 #include <iostream>
 
 SmallMenu::SmallMenu(sf::RenderWindow& window, GameEngine* game, GameManager* gameManager,

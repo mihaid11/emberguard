@@ -1,7 +1,7 @@
 #include "Menu.h"
 #include <iostream>
 #include "../gamengine/RPGEngine.h"
-#include "../../GameManager.h"
+#include "../../core/GameManager.h"
 
 Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
            RPGEngine& rpgEngine, GameManager* gameManager)

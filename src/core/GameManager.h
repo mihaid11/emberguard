@@ -1,8 +1,8 @@
 #pragma once
-#include "Rpg/gamengine/RPGEngine.h"
-#include "TowerDefense/gamengine/GameEngine.h"
-#include "MainMenu/MainMenu.h"
-#include "Rpg/dialogueSystem/DialogueManager.h"
+#include "../Rpg/gamengine/RPGEngine.h"
+#include "../TowerDefense/gamengine/GameEngine.h"
+#include "../ui/MainMenu.h"
+#include "../Rpg/dialogueSystem/DialogueManager.h"
 #include "TimeSystem.h"
 
 enum class GameState {

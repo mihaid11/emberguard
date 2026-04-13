@@ -3,7 +3,7 @@
 #include "../enemy/Enemy.h"
 #include <vector>
 #include "../projectiles/Projectile.h"
-#include "../../Animation.h"
+#include "../../core/Animation.h"
 
 class Player {
 public:

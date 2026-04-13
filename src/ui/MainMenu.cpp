@@ -1,5 +1,5 @@
 #include "MainMenu.h"
-#include "../GameManager.h"
+#include "../core/GameManager.h"
 #include <clocale>
 #include <iostream>
 

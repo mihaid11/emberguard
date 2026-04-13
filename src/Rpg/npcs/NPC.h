@@ -7,7 +7,7 @@
 #include "../dialogueSystem/DialogueManager.h"
 #include "../dialogueSystem/DialogueDatabase.h"
 #include "../story/StoryManager.h"
-#include "../../Animation.h"
+#include "../../core/Animation.h"
 #include "../map/entities/DrawableEntity.h"
 
 class NPC : public DrawableEntity {

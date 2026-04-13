@@ -1,6 +1,6 @@
 #include "GameOverMenu.h"
 #include "../gamengine/GameEngine.h"
-#include "../../GameManager.h"
+#include "../../core/GameManager.h"
 #include <iostream>
 
 GameOverMenu::GameOverMenu(sf::RenderWindow& window, GameEngine* game, GameManager* gameManager,

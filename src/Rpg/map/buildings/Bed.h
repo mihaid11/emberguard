@@ -1,8 +1,8 @@
 #pragma once
 #include "../entities/Entity.h"
 #include <SFML/Graphics.hpp>
-#include "../../../TimeSystem.h"
-#include "../../../TransitionSystem.h"
+#include "../../../core/TimeSystem.h"
+#include "../../../core/TransitionSystem.h"
 
 class GameManager;
 

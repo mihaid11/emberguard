@@ -1,6 +1,6 @@
 #include "StartTowerDefenseMenu.h"
 #include <iostream>
-#include "../../GameManager.h"
+#include "../../core/GameManager.h"
 #include "../gamengine/RPGEngine.h"
 
 StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vector<int>& availableTowers,

@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../../TowerDefense/menues/Button.h"
+#include "../../ui/Button.h"
 #include <memory>
 #include <vector>
 #include "../skillTree/SkillTreeMenu.h"

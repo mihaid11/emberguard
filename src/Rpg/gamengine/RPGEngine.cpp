@@ -5,7 +5,7 @@
 #include <sstream>
 #include <filesystem>
 #include <math.h>
-#include "../../GameManager.h"
+#include "../../core/GameManager.h"
 #include "../inventory/ItemFactory.h"
 
 std::vector<sf::String> wrapText(const sf::String& text, const sf::Font& font, unsigned int characterSize, float boxWidth) {
@@ -380,155 +380,152 @@ void RPGEngine::update() {
         return;
 
     float dt = mClock.restart().asSeconds();
+    sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
 
-    if (!mShowMenu) {
-        if (!mShowStartMenu) {
-            if (!mShowBankMenu) {
-                if (!mShowShopMenu) {
-                    if (!mShowAnalyzeMenu) {
-                        if (!mShowChestMenu) {
-                            if (!mLevelCompleteMenu.isActive()) {
-                                sf::Vector2f previousPosition = mCharacter.getPosition();
-
-                                if (!mShowDialogue) {
-                                    mHotbar.update();
-                                }
-
-                                mTransitionSystem.update(dt);
-
-                                mTimeSystem.update(dt);
-
-                                if (mTimeSystem.getHour() == 0 && mTimeSystem.getMinute() == 0)
-                                    mShopMenu.regenerateIds();
-
-                                if (mTransitionSystem.isTransitioning())
-                                    return;
-
-                                mCharacter.update(dt, mShowDialogue);
-                                mZoneManager.update(mCharacter.getPosition());
-
-                                if (mZoneManager.checkCollision(mCharacter.getBounds()))
-                                    mCharacter.setPosition(previousPosition);
-
-                                for (auto& npc : mNPCManager.getNPCs()) {
-                                    if (npc->getBounds().intersects(mCharacter.getBounds())) {
-                                        sf::Vector2f npcPos = npc->getPosition();
-                                        sf::Vector2f direction = previousPosition - npcPos;
-                                        float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-
-                                        if (distance < 10.0f) {  // Push the player away from the npc with a threshold
-                                            direction /= distance;
-                                            previousPosition += direction * 5.0f * dt;
-                                            mCharacter.setPosition(previousPosition);
-                                        }
-                                    }
-
-                                    if (npc->isPlayerClose(mCharacter.getPosition())) {
-                                        if (mShowDialogue)
-                                            npc->setInteract(false);
-                                        else
-                                            npc->setInteract(true);
-                                    }
-                                    else
-                                        npc->setInteract(false);
-                                }
-
-                                mNPCManager.update(dt);
-                                mView.setCenter(mCharacter.getCenterPosition());
-
-                                if (mCameraFixedPosition.x != 0.f || mCameraFixedPosition.y != 0.f)
-                                    mFixedCamera.setCenter(mCameraFixedPosition);
-                                else
-                                    mFixedCamera.setCenter(mCharacter.getCenterPosition());
-
-                                if (!mNPCManager.playerClose(mCharacter.getPosition())) {
-                                    mShowDialogue = false;
-                                }
-
-                                sf::FloatRect playerBounds = mCharacter.getBounds();
-                                sf::Vector2f playerCenter = {playerBounds.left + playerBounds.width / 2.f, playerBounds.top + playerBounds.height / 2.f};
-
-                                for (auto it = mDroppedItems.begin(); it != mDroppedItems.end();) {
-                                    sf::Vector2f itemCenter = it->getCenterPosition();
-                                    float distance = std::sqrt(
-                                        std::pow(playerCenter.x - itemCenter.x, 2.f) +
-                                        std::pow(playerCenter.y - itemCenter.y, 2.f)
-                                    );
-
-                                    if (it->getPickUpCap()) {
-                                        if (distance < 28.f) {
-                                            auto itemClone = it->getItem()->clone();
-                                            mInventory.addItem(std::move(itemClone), it->getQuantity());
-                                            it = mDroppedItems.erase(it);
-                                            continue;
-                                        }
-                                    } else {
-                                        if (distance > 28.f)
-                                            it->setPickUpCap(true);
-                                    }
-                                    ++it;
-                                }
-
-                                mShowInteract = false;
-
-                                for (auto& entity : mZoneManager.getEntities()) {
-                                    if (!entity->isInteractable())
-                                        continue;
-
-                                    if (entity->getInteractBounds().intersects(mCharacter.getInteractBounds())) {
-                                        mShowInteract = true;
-
-                                        mInteractPos = entity->getInteractPosition();
-
-                                        mInteractCircle.setPosition({mInteractPos.x +
-                                            entity->getInteractBounds().width + 1.5f, mInteractPos.y - 12.f});
-
-                                        mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
-                                            mInteractCircle.getPosition().y + 2.8f});
-
-                                        break;
-                                    }
-                                }
-
-                                if (!mShowInteract) {
-                                    mInteractPos = { 0.f, 0.f };
-                                    mInteractCircle.setPosition(mInteractPos);
-                                    mInteractText.setPosition(mInteractPos);
-                                }
-
-                                mAnalyzeMenu.update();
-                            } else {
-                                sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
-                                mLevelCompleteMenu.updateHover(mousePos);
-                            }
-                        } else {
-                            sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
-                            mChestMenu.updateHover(mousePos);
-                        }
-                    } else {
-                        sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
-                        mAnalyzeMenu.updateHover(mousePos);
-                    }
-                } else {
-                    sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
-                    mShopMenu.updateHover(mousePos);
-                }
-            } else {
-                sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
-                mBankMenu.updateHover(mousePos);
-                mBankMenu.update();
-            }
-        } else {
-            sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
-            mStartTowerDefenseMenu.updateHover(mousePos);
-        }
-
-    } else {
-        sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
+    if (mShowMenu) {
         mMenu.updateHover(mousePos);
         mMenu.update(mCrystals, mInventory, mSkillTree);
+        return;
     }
-    mStartTowerDefenseMenu.update(mCrystals, mAvailableTowers);
+
+    if (mShowStartMenu) {
+        mStartTowerDefenseMenu.updateHover(mousePos);
+        mStartTowerDefenseMenu.update(mCrystals, mAvailableTowers);
+        return;
+    }
+
+    if (mShowBankMenu) {
+        mBankMenu.updateHover(mousePos);
+        mBankMenu.update();
+        return;
+    }
+
+    if (mShowShopMenu) {
+        mShopMenu.updateHover(mousePos);
+        return;
+    }
+
+    if (mShowAnalyzeMenu) {
+        mAnalyzeMenu.update();
+        mAnalyzeMenu.updateHover(mousePos);
+        return;
+    }
+
+    if (mShowChestMenu) {
+        mChestMenu.updateHover(mousePos);
+        return;
+    }
+
+    if (mLevelCompleteMenu.isActive()) {
+        mLevelCompleteMenu.updateHover(mousePos);
+        return;
+    }
+
+    sf::Vector2f previousPosition = mCharacter.getPosition();
+
+    if (!mShowDialogue)
+        mHotbar.update();
+
+    mTransitionSystem.update(dt);
+
+    mTimeSystem.update(dt);
+
+    if (mTimeSystem.getHour() == 0 && mTimeSystem.getMinute() == 0)
+        mShopMenu.regenerateIds();
+
+    if (mTransitionSystem.isTransitioning())
+        return;
+
+    mCharacter.update(dt, mShowDialogue);
+    mZoneManager.update(mCharacter.getPosition());
+
+    if (mZoneManager.checkCollision(mCharacter.getBounds()))
+        mCharacter.setPosition(previousPosition);
+
+    for (auto& npc : mNPCManager.getNPCs()) {
+        if (npc->getBounds().intersects(mCharacter.getBounds())) {
+            sf::Vector2f npcPos = npc->getPosition();
+            sf::Vector2f direction = previousPosition - npcPos;
+            float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+            if (distance < 10.0f) {  // Push the player away from the npc with a threshold
+                direction /= distance;
+                previousPosition += direction * 5.0f * dt;
+                mCharacter.setPosition(previousPosition);
+            }
+        }
+
+        if (npc->isPlayerClose(mCharacter.getPosition())) {
+            if (mShowDialogue)
+                npc->setInteract(false);
+            else
+                npc->setInteract(true);
+        }
+        else
+            npc->setInteract(false);
+    }
+
+    mNPCManager.update(dt);
+    mView.setCenter(mCharacter.getCenterPosition());
+
+    if (mCameraFixedPosition.x != 0.f || mCameraFixedPosition.y != 0.f)
+        mFixedCamera.setCenter(mCameraFixedPosition);
+    else
+        mFixedCamera.setCenter(mCharacter.getCenterPosition());
+
+    if (!mNPCManager.playerClose(mCharacter.getPosition()))
+        mShowDialogue = false;
+
+    sf::FloatRect playerBounds = mCharacter.getBounds();
+    sf::Vector2f playerCenter = {playerBounds.left + playerBounds.width / 2.f, playerBounds.top + playerBounds.height / 2.f};
+
+    for (auto it = mDroppedItems.begin(); it != mDroppedItems.end();) {
+        sf::Vector2f itemCenter = it->getCenterPosition();
+        float distance = std::sqrt(
+            std::pow(playerCenter.x - itemCenter.x, 2.f) +
+            std::pow(playerCenter.y - itemCenter.y, 2.f)
+        );
+
+        if (it->getPickUpCap()) {
+            if (distance < 28.f) {
+                auto itemClone = it->getItem()->clone();
+                mInventory.addItem(std::move(itemClone), it->getQuantity());
+                it = mDroppedItems.erase(it);
+                continue;
+            }
+        } else {
+            if (distance > 28.f)
+                it->setPickUpCap(true);
+        }
+        ++it;
+    }
+
+    mShowInteract = false;
+
+    for (auto& entity : mZoneManager.getEntities()) {
+        if (!entity->isInteractable())
+            continue;
+
+        if (entity->getInteractBounds().intersects(mCharacter.getInteractBounds())) {
+            mShowInteract = true;
+
+            mInteractPos = entity->getInteractPosition();
+
+            mInteractCircle.setPosition({mInteractPos.x +
+                entity->getInteractBounds().width + 1.5f, mInteractPos.y - 12.f});
+
+            mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
+                mInteractCircle.getPosition().y + 2.8f});
+
+            break;
+        }
+    }
+
+    if (!mShowInteract) {
+        mInteractPos = { 0.f, 0.f };
+        mInteractCircle.setPosition(mInteractPos);
+        mInteractText.setPosition(mInteractPos);
+    }
 }
 
 void RPGEngine::render() {
@@ -628,7 +625,6 @@ void RPGEngine::render() {
         if (mNPCManager.currentNPCHasChoices())
             renderDialogueChoices(dialogueBox.getPosition(), dialogueBox.getSize());
     }
-
 
     mWindow.setView(mWindow.getDefaultView());
 
