@@ -6,8 +6,8 @@
 #include "../inventory/items/TowerBlueprintRare.h"
 #include "../inventory/items/TowerBlueprintEpic.h"
 #include "../inventory/items/TowerBlueprintMythic.h"
-#include "../../TimeSystem.h"
-#include "../../TowerDefense/menues/Button.h"
+#include "../../core/TimeSystem.h"
+#include "../../ui/Button.h"
 
 class AnalyzeMenu {
 public:

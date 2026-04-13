@@ -7,7 +7,7 @@
 #include <map>
 #include "../entities/Entity.h"
 #include "../entities/EntityFactory.h"
-#include "../../../ResourceManager.h"
+#include "../../../core/ResourceManager.h"
 
 class Zone {
 public:

@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include "../../TowerDefense/menues/Button.h"
+#include "../../ui/Button.h"
 #include "../../TowerDefense/waves/PathsConfig.h"
 
 class GameManager;

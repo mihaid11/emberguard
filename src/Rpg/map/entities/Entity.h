@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../../../ResourceManager.h"
+#include "../../../core/ResourceManager.h"
 #include "DrawableEntity.h"
 
 class Entity : public DrawableEntity {

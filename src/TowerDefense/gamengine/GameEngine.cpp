@@ -1,5 +1,5 @@
 #include "GameEngine.h"
-#include "../../GameManager.h"
+#include "../../core/GameManager.h"
 #include "../waves/PathsConfig.h"
 #include <iostream>
 #include <string.h>

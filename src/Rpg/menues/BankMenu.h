@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../../TowerDefense/menues/Button.h"
-#include "../../TimeSystem.h"
+#include "../../ui/Button.h"
+#include "../../core/TimeSystem.h"
 #include "WithdrawMenu.h"
 #include "DepositMenu.h"
 #include "BorrowMenu.h"

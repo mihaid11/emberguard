@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../../Animation.h"
+#include "../../core/Animation.h"
 #include "../map/entities/DrawableEntity.h"
 #include "../inventory/Inventory.h"
 #include "LevelSystem.h"

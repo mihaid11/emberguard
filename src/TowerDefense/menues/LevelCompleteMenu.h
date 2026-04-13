@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "RewardSystem.h"
-#include "Button.h"
+#include "../../ui/Button.h"
 #include <vector>
 
 class GameEngine;

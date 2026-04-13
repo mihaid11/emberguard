@@ -1,6 +1,6 @@
 #include "Bed.h"
 #include <iostream>
-#include "../../../GameManager.h"
+#include "../../../core/GameManager.h"
 
 Bed::Bed(const sf::Vector2f& position, float sizeIncrement, const std::string filename,
          const sf::Vector2f& collPosition, const sf::Vector2f& collSize,

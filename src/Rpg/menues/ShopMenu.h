@@ -1,9 +1,9 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "../inventory/Inventory.h"
-#include "../../TimeSystem.h"
+#include "../../core/TimeSystem.h"
 #include <vector>
-#include "../../TowerDefense/menues/Button.h"
+#include "../../ui/Button.h"
 #include "../inventory/items/TowerBlueprint.h"
 #include "../inventory/items/Wood.h"
 #include "../inventory/items/TowerBlueprintRare.h"

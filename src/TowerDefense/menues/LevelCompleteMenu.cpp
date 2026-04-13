@@ -1,7 +1,7 @@
 #include "LevelCompleteMenu.h"
 #include "../gamengine/GameEngine.h"
 #include "../../Rpg/gamengine/RPGEngine.h"
-#include "../../GameManager.h"
+#include "../../core/GameManager.h"
 #include "../../Rpg/inventory/items/Wood.h"
 #include "../../Rpg/inventory/items/TowerBlueprint.h"
 #include "../../Rpg/inventory/items/TowerBlueprintRare.h"

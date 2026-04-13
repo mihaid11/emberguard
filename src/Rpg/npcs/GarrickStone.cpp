@@ -1,5 +1,5 @@
 #include "GarrickStone.h"
-#include "../../GameManager.h"
+#include "../../core/GameManager.h"
 
 GarrickStone::GarrickStone(const sf::Vector2f& position, const std::string& id, GameManager* gameManager)
     : NPC(position, id), mGameManager(gameManager) {
