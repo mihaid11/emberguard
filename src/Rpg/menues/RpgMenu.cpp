@@ -1,9 +1,9 @@
-#include "Menu.h"
+#include "RpgMenu.h"
 #include <iostream>
 #include "../gamengine/RPGEngine.h"
 #include "../../core/GameManager.h"
 
-Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
+RpgMenu::RpgMenu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
            RPGEngine& rpgEngine, GameManager* gameManager)
     : mCurrentMenu("Inventory"), mGameManager(gameManager), mGap(0),
     mInventoryButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Inventory"),
@@ -87,7 +87,7 @@ Menu::Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
                              mMenuShape.getPosition().y + (mHoveredZoneShape.getSize().y - mCrystalText.getGlobalBounds().height) / 2.f);
 }
 
-void Menu::handleMouseClick(const sf::Vector2f& mousePos)
+void RpgMenu::handleMouseClick(const sf::Vector2f& mousePos)
 {
     for (auto& button : mButtons) {
         if (button.isMouseOver(mousePos))
@@ -101,7 +101,7 @@ void Menu::handleMouseClick(const sf::Vector2f& mousePos)
         mInventoryMenu->handleMouseClick(mousePos);
 }
 
-void Menu::updateHover(const sf::Vector2f& mousePos) {
+void RpgMenu::updateHover(const sf::Vector2f& mousePos) {
     for (auto& button : mButtons)
         button.updateHover(mousePos);
 
@@ -112,16 +112,16 @@ void Menu::updateHover(const sf::Vector2f& mousePos) {
         mInventoryMenu->updateHover(mousePos);
 }
 
-void Menu::switchToMenu(const std::string& menuName) {
+void RpgMenu::switchToMenu(const std::string& menuName) {
     mCurrentMenu = menuName;
     std::cout << "Switched to " << menuName << " menu." << std::endl;
 }
 
-void Menu::restart() {
+void RpgMenu::restart() {
     mInventoryMenu->restart();
 }
 
-void Menu::update(int crystals, const Inventory& inventory, const SkillTree& skillTree) {
+void RpgMenu::update(int crystals, const Inventory& inventory, const SkillTree& skillTree) {
     mCrystalText.setString("Crystals " + std::to_string(crystals));
     mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - mExitButton.getSize().x - mGap * 1.6f,
                              mMenuShape.getPosition().y + (mHoveredZoneShape.getSize().y - mCrystalText.getGlobalBounds().height) / 2.f);
@@ -142,15 +142,15 @@ void Menu::update(int crystals, const Inventory& inventory, const SkillTree& ski
         mSkillTreeMenu->update(skillTree);
 }
 
-const std::string& Menu::getMenuType() const {
+const std::string& RpgMenu::getMenuType() const {
     return mCurrentMenu;
 }
 
-InventoryMenu& Menu::getInventoryMenu() {
+InventoryMenu& RpgMenu::getInventoryMenu() {
     return *mInventoryMenu;
 }
 
-void Menu::render(sf::RenderWindow& window) {
+void RpgMenu::render(sf::RenderWindow& window) {
     window.draw(mBackground);
     window.draw(mMenuShape);
     window.draw(mHoveredZoneShape);
@@ -176,4 +176,3 @@ void Menu::render(sf::RenderWindow& window) {
         window.draw(mErrorText);
     }
 }
-
