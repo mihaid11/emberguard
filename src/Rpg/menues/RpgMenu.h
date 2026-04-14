@@ -11,9 +11,9 @@
 class RPGEngine;
 class GameManager;
 
-class Menu {
+class RpgMenu {
 public:
-    Menu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
+    RpgMenu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
          RPGEngine& rpgEngine, GameManager* gameManager);
 
     void render(sf::RenderWindow& window);
