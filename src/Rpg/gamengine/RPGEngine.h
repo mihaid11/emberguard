@@ -6,7 +6,7 @@
 #include "../npcs/NPCManager.h"
 #include "../dialogueSystem/DialogueManager.h"
 #include "../story/StoryManager.h"
-#include "../menues/Menu.h"
+#include "../menues/RpgMenu.h"
 #include "../saveSystem/SaveSystem.h"
 #include "../menues/StartTowerDefenseMenu.h"
 #include "../npcs/MiraStanton.h"
@@ -92,7 +92,6 @@ private:
     bool mShowMenu;
     bool mShowDialogue;
     bool mShowStartMenu;
-    bool mShowShopMenu;
     bool mShowBankMenu;
     bool mShowAnalyzeMenu;
     bool mShowChestMenu;
@@ -117,7 +116,7 @@ private:
     Inventory mInventory;
     Inventory mChestInventory;
     Hotbar mHotbar;
-    Menu mMenu;
+    RpgMenu mMenu;
     ShopMenu mShopMenu;
     StartTowerDefenseMenu mStartTowerDefenseMenu;
     BankMenu mBankMenu;
