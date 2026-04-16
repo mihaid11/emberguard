@@ -3,24 +3,14 @@
 #include "../../core/GameManager.h"
 #include "../gamengine/RPGEngine.h"
 
-StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vector<int>& availableTowers,
-                                             RPGEngine* gameEngine, GameManager* gameManager, int level, int crystals)
-    : mStartButton(sf::Vector2f(826.f, 570.f), sf::Vector2f(80.0f, 30.0f), "Start"),
-    mGameManager(gameManager), mAvailableTowers(availableTowers), mCrystals(crystals),
-    mLevel(level), mGameEngine(gameEngine), mShowText(false), mWindow(window) {
+StartTowerDefenseMenu::StartTowerDefenseMenu(const sf::Vector2f& windowSize, std::vector<int>& availableTowers,
+                                             RPGEngine* gameEngine, GameManager* gameManager, int& level, int& crystals)
+    : Menu(windowSize, sf::Vector2f(0.7f, 0.7f)), mLevel(level), mGameEngine(gameEngine), mCrystals(crystals),
+    mStartButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(80.0f, 30.0f), "Start"), mWindowSize(windowSize),
+    mGameManager(gameManager), mAvailableTowers(availableTowers), mShowText(false) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;
-
-    mMenuShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, window.getSize().y * 3.0f / 4.0f));
-    mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
-    mMenuShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
-                                        (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
-
-    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, 58));
-    mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
-    mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
-                                               (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
 
     mMinimapBorder.setSize(sf::Vector2f(190.f, 110.f));
     mMinimapBorder.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.58f,
@@ -40,8 +30,11 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vect
     mTitle.setFont(mFont);
     mTitle.setCharacterSize(20);
     mTitle.setString("Tower Defense");
-    mTitle.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mTitle.getScale().x) / 2.2f,
-                                    mMenuShape.getPosition().y + 15.f));
+
+    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
+                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
+    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
+                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
 
     mErrorText.setFillColor(sf::Color::White);
     mErrorText.setFont(mFont);
@@ -64,12 +57,39 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(sf::RenderWindow& window, std::vect
     mLine.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f - mLine.getSize().x / 2.f,
                                    mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y));
 
+    mStartButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x - mStartButton.getSize().x - 20.f,
+                                          mMenuShape.getPosition().y + mMenuShape.getSize().y - mStartButton.getSize().y - 20.f));
+    mStartButton.setCallback([this]() {
+        if(!mSelectedTowers.empty()) {
+            mGameEngine->saveGame();
+            mGameManager->switchToTowerDefense(mCrystals, mLevel, mSelectedTowers);
+        } else {
+            mErrorText.setString("Select at least one tower!");
+            mErrorText.setFillColor(sf::Color::White);
+            mClock.restart();
+            mShowText = true;
+        }
+    });
+
+    mTowerSlots.resize(6);
+    sf::Vector2f position(mMenuShape.getPosition().x + 50.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 50.f);
+    for (int i = 0; i < 6; ++i) {
+        mTowerSlots[i].setSize(sf::Vector2f(50.f, 50.f));
+        mTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+        mTowerSlots[i].setOutlineColor(sf::Color::White);
+        mTowerSlots[i].setOutlineThickness(2.0f);
+        mTowerSlots[i].setPosition(position.x + i * 50.f, position.y);
+    }
+
     refresh();
 }
 
 void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
-    window.draw(mMenuShape);
-    window.draw(mHoveredZoneShape);
+    if (!mIsActive)
+        return;
+
+    Menu::render(window);
+
     window.draw(mLevelDescriptionText);
     window.draw(mCurrentLevelText);
     window.draw(mLine);
@@ -85,30 +105,18 @@ void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
         window.draw(circle);
 
     for (int i = 0; i < mTowerSlots.size(); ++i) {
-        if (i < mSelectedTowers.size()) {
-            if (mSelectedTowers[i] == 1)
-                mTowerSlots[i].setFillColor(sf::Color::Green);
-            else if (mSelectedTowers[i] == 2)
-                mTowerSlots[i].setFillColor(sf::Color::Red);
-            else if (mSelectedTowers[i] == 3)
-                mTowerSlots[i].setFillColor(sf::Color::Cyan);
-        } else {
+        if (i < mSelectedTowers.size())
+            mTowerSlots[i].setFillColor(getTowerColor(mSelectedTowers[i]));
+        else
             mTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
-        }
         window.draw(mTowerSlots[i]);
     }
 
     for (int i = 0; i < mSelectingTowerSlots.size(); ++i) {
-        if (i < mAvailableTowers.size()) {
-            if (mAvailableTowers[i] == 1)
-                mSelectingTowerSlots[i].setFillColor(sf::Color::Green);
-            else if (mAvailableTowers[i] == 2)
-                mSelectingTowerSlots[i].setFillColor(sf::Color::Red);
-            else if (mAvailableTowers[i] == 3)
-                mSelectingTowerSlots[i].setFillColor(sf::Color::Cyan);
-        } else {
+        if (i < mAvailableTowers.size())
+            mSelectingTowerSlots[i].setFillColor(getTowerColor(mAvailableTowers[i]));
+        else
             mSelectingTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
-        }
         window.draw(mSelectingTowerSlots[i]);
     }
 
@@ -130,13 +138,14 @@ void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
 }
 
 void StartTowerDefenseMenu::handleMouseClick(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     for (int i = 0; i < mSelectingTowerSlots.size(); ++i) {
         if (mSelectingTowerSlots[i].getGlobalBounds().contains(mousePos)) {
             if (mSelectedTowers.size() < mTowerSlots.size()) {
-                int id = mAvailableTowers[i];
-                mSelectedTowers.push_back(id);
+                mSelectedTowers.push_back(mAvailableTowers[i]);
                 mAvailableTowers.erase(mAvailableTowers.begin() + i);
-                update(mCrystals, mAvailableTowers);
             }
             return;
         }
@@ -144,10 +153,8 @@ void StartTowerDefenseMenu::handleMouseClick(const sf::Vector2f& mousePos) {
 
     for (int i = 0; i < mTowerSlots.size(); ++i) {
         if (mTowerSlots[i].getGlobalBounds().contains(mousePos) && i < mSelectedTowers.size()) {
-            int id = mSelectedTowers[i];
-            mAvailableTowers.push_back(id);
+            mAvailableTowers.push_back(mSelectedTowers[i]);
             mSelectedTowers.erase(mSelectedTowers.begin() + i);
-            update(mCrystals, mAvailableTowers);
         }
     }
 
@@ -156,38 +163,46 @@ void StartTowerDefenseMenu::handleMouseClick(const sf::Vector2f& mousePos) {
 }
 
 void StartTowerDefenseMenu::updateHover(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     mStartButton.updateHover(mousePos);
 }
 
-void StartTowerDefenseMenu::update(int crystals, std::vector<int>& availableTowers) {
-    mCrystals = crystals;
-    mAvailableTowers = availableTowers;
+void StartTowerDefenseMenu::update(float dt) {
+    if (!mIsActive)
+        return;
 
     // Updating tower slots
-    mSelectingTowerSlots.resize(availableTowers.size());
-    sf::Vector2f position1(mMenuShape.getPosition().x + 50.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 150.f);
-    int indent = 0;
-    for (int i = 0; i < availableTowers.size(); ++i) {
-        mSelectingTowerSlots[i].setSize(sf::Vector2f(50.f, 50.f));
-        mSelectingTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
-        mSelectingTowerSlots[i].setOutlineColor(sf::Color::White);
-        mSelectingTowerSlots[i].setOutlineThickness(2.0f);
-        if (i % 6 == 0 && i)
-            indent += 60;
-        mSelectingTowerSlots[i].setPosition(position1.x + i * 50.f, position1.y + indent);
+    if (mSelectingTowerSlots.size() != mAvailableTowers.size()) {
+        mSelectingTowerSlots.resize(mAvailableTowers.size());
+        sf::Vector2f position1(mMenuShape.getPosition().x + 50.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 150.f);
+
+        for (int i = 0; i < mAvailableTowers.size(); ++i) {
+            mSelectingTowerSlots[i].setSize(sf::Vector2f(50.f, 50.f));
+            mSelectingTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+            mSelectingTowerSlots[i].setOutlineColor(sf::Color::White);
+            mSelectingTowerSlots[i].setOutlineThickness(2.0f);
+
+            int row = i / 6;
+            int col = i % 6;
+            mSelectingTowerSlots[i].setPosition(position1.x + col * 60.f, position1.y + row * 60.f);
+        }
     }
 
-    mStartButton.setCallback([&]() {
-        if (!mSelectedTowers.empty()) {
-            mGameEngine->saveGame();
-            mGameManager->switchToTowerDefense(mCrystals, mLevel, mSelectedTowers);
-        } else {
-            mErrorText.setString("Select at least one tower!");
-            mErrorText.setFillColor(sf::Color::White);
-            mClock.restart();
-            mShowText = true;
-        }
-    });
+    for (int i = 0; i < mTowerSlots.size(); ++i) {
+        if (i < mSelectedTowers.size())
+            mTowerSlots[i].setFillColor(getTowerColor(mSelectedTowers[i]));
+        else
+            mTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+    }
+
+    for (int i = 0; i < mSelectingTowerSlots.size(); ++i) {
+        if (i < mAvailableTowers.size())
+            mSelectingTowerSlots[i].setFillColor(getTowerColor(mAvailableTowers[i]));
+        else
+            mSelectingTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+    }
 }
 
 void StartTowerDefenseMenu::advanceLevel() {
@@ -196,10 +211,12 @@ void StartTowerDefenseMenu::advanceLevel() {
 }
 
 void StartTowerDefenseMenu::refresh() {
+    mMinimapPaths.clear();
+    mDifficultyCircles.clear();
 
     const auto& paths = getPaths()[mLevel - 1];
-    const float scaleX = mMinimapBorder.getSize().x / mWindow.getSize().x;
-    const float scaleY = mMinimapBorder.getSize().y / mWindow.getSize().y;
+    const float scaleX = mMinimapBorder.getSize().x / mWindowSize.x;
+    const float scaleY = mMinimapBorder.getSize().y / mWindowSize.y;
 
     for (const auto& path : paths) {
         for (size_t i = 0; i < path.size() - 1; ++i) {
@@ -232,7 +249,6 @@ void StartTowerDefenseMenu::refresh() {
     else
         currentDifficulty = 3;
 
-
     float circleRadius = 8.f;
     const sf::Vector2f startPos(mDifficultyText.getPosition().x, mDifficultyText.getPosition().y + 28.5f);
     for (int i = 0; i < 5; ++i) {
@@ -242,28 +258,19 @@ void StartTowerDefenseMenu::refresh() {
         mDifficultyCircles.push_back(circle);
     }
 
-    mTowerSlots.resize(6);
-    sf::Vector2f position(mMenuShape.getPosition().x + 50.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 50.f);
-    for (int i = 0; i < 6; ++i) {
-        mTowerSlots[i].setSize(sf::Vector2f(50.f, 50.f));
-        mTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
-        mTowerSlots[i].setOutlineColor(sf::Color::White);
-        mTowerSlots[i].setOutlineThickness(2.0f);
-        mTowerSlots[i].setPosition(position.x + i * 50.f, position.y);
-    }
     mSelectedTowers.reserve(mTowerSlots.size());
     mSelectingTowerSlots.resize(mAvailableTowers.size());
     sf::Vector2f position1(mMenuShape.getPosition().x + 50.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 150.f);
 
-    int indent = 0;
     for (int i = 0; i < mAvailableTowers.size(); ++i) {
         mSelectingTowerSlots[i].setSize(sf::Vector2f(50.f, 50.f));
         mSelectingTowerSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
         mSelectingTowerSlots[i].setOutlineColor(sf::Color::White);
         mSelectingTowerSlots[i].setOutlineThickness(2.0f);
-        if (i % 6 == 0 && i)
-            indent += 60;
-        mSelectingTowerSlots[i].setPosition(position1.x + i * 50.f, position1.y + indent);
+
+        int row = i / 6;
+        int col = i % 6;
+        mSelectingTowerSlots[i].setPosition(position1.x + col * 60.f, position1.y + row * 60.f);
     }
 
     std::string levelString = "Level " + std::to_string(mLevel);
@@ -281,16 +288,14 @@ void StartTowerDefenseMenu::refresh() {
     mLevelDescriptionText.setString(descriptionString);
     mLevelDescriptionText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.585f,
                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.3f));
-
-    mStartButton.setCallback([&]() {
-        if(!mSelectedTowers.empty()) {
-            mGameEngine->saveGame();
-            mGameManager->switchToTowerDefense(mCrystals, mLevel, mSelectedTowers);
-        } else {
-            mErrorText.setFillColor(sf::Color::White);
-            mClock.restart();
-            mShowText = true;
-        }
-    });
 }
 
+sf::Color StartTowerDefenseMenu::getTowerColor(int towerId) const {
+    if (towerId == 1)
+        return sf::Color::Green;
+    else if (towerId == 2)
+        return sf::Color::Red;
+    else if (towerId == 3)
+        return sf::Color::Cyan;
+    return sf::Color(0, 0, 0, 220);
+}
