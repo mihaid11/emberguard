@@ -23,12 +23,15 @@ ShopMenu::ShopMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSys
     mTooltipBackground.setOutlineColor(sf::Color::White);
     mTooltipBackground.setOutlineThickness(1.0f);
 
-    mShopText.setFont(mFont);
-    mShopText.setCharacterSize(19);
-    mShopText.setFillColor(sf::Color::White);
-    mShopText.setString("Shop");
-    mShopText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mShopText.getLocalBounds().width) / 2.f,
-                                       mHoveredZoneShape.getPosition().y + (mHoveredZoneShape.getSize().y - mShopText.getLocalBounds().height) / 2.f));
+    mTitle.setFont(mFont);
+    mTitle.setCharacterSize(19);
+    mTitle.setFillColor(sf::Color::White);
+    mTitle.setString("Shop");
+
+    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
+                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
+    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
+                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
 
     mCrystalsText.setFont(mFont);
     mCrystalsText.setCharacterSize(18);
@@ -75,7 +78,7 @@ void ShopMenu::render(sf::RenderWindow& window) {
 
     Menu::render(window);
 
-    window.draw(mShopText);
+    window.draw(mTitle);
     window.draw(mCrystalsText);
 
     for (auto& button : mButtons)

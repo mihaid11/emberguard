@@ -91,7 +91,6 @@ private:
 
     bool mShowMenu;
     bool mShowDialogue;
-    bool mShowStartMenu;
     bool mShowBankMenu;
     bool mShowAnalyzeMenu;
     bool mShowChestMenu;

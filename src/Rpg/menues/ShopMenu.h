@@ -41,7 +41,7 @@ private:
 
     //Tooltip elements
     sf::Font mFont;
-    sf::Text mShopText;
+    sf::Text mTitle;
     sf::Text mTooltipText;
     sf::Text mTimerDisplay;
     sf::RectangleShape mTooltipBackground;

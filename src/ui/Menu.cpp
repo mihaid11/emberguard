@@ -10,7 +10,7 @@ Menu::Menu(const sf::Vector2f& windowSize, const sf::Vector2f& menuSizeRatio) {
     mMenuShape.setPosition((windowSize.x - mMenuShape.getSize().x) / 2.0f,
                            (windowSize.y - mMenuShape.getSize().y) / 2.0f);
 
-    mHoveredZoneShape.setSize(sf::Vector2f(mMenuShape.getSize().x, mMenuShape.getSize().y * 0.15f));
+    mHoveredZoneShape.setSize(sf::Vector2f(mMenuShape.getSize().x, 50.f));
     mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
     mHoveredZoneShape.setPosition(mMenuShape.getPosition());
 }
