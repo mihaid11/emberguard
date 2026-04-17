@@ -1,8 +1,8 @@
 #include "BankMenu.h"
 #include <iostream>
 
-BankMenu::BankMenu(sf::RenderWindow& window, int& crystals, int& storageCapacity, TimeSystem& timeSystem)
-    : mCrystals(crystals), mBankBalance(0), mHasBorrowActive(false),
+BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCapacity, TimeSystem& timeSystem)
+    : Menu(windowSize, sf::Vector2f(0.75f, 0.75f)), mCrystals(crystals), mBankBalance(0), mHasBorrowActive(false),
     mWithdrawButton(sf::Vector2f(1000.0f, 575.0f), sf::Vector2f(155.0f, 72.0f), "Withdraw"),
     mDepositButton(sf::Vector2f(1000.0f, 575.0f), sf::Vector2f(155.f, 72.0f), "Deposit"),
     mBorrowButton(sf::Vector2f(1000.0f, 575.0f), sf::Vector2f(155.f, 72.0f), "Borrow"),
@@ -11,22 +11,15 @@ BankMenu::BankMenu(sf::RenderWindow& window, int& crystals, int& storageCapacity
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for BankMenu!" << std::endl;
 
-    mMenuShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, window.getSize().y * 3.0f / 4.0f));
-    mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
-    mMenuShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
-                                        (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
-
-    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x * 3.0f / 4.0f, 50));
-    mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
-    mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.0f,
-                                               (window.getSize().y - mMenuShape.getSize().y) / 2.0f));
-
     mTitle.setFillColor(sf::Color::White);
     mTitle.setFont(mFont);
     mTitle.setCharacterSize(20);
     mTitle.setString("Crystal Bank");
-    mTitle.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mTitle.getScale().x) / 2.2f,
-                                    mMenuShape.getPosition().y + 15.f));
+
+     mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
+                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
+     mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
+                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
 
     sf::Vector2f buttonSize(155.0f, 72.0f);
     float gap = 50.0f;
@@ -37,86 +30,95 @@ BankMenu::BankMenu(sf::RenderWindow& window, int& crystals, int& storageCapacity
     mDepositButton.setPosition(sf::Vector2f(startX, startY + buttonSize.y + gap));
     mBorrowButton.setPosition(sf::Vector2f(startX, startY + 2 * buttonSize.y + 2 * gap));
 
+    mWithdrawMenu = std::make_unique<WithdrawMenu>(windowSize, sf::Vector2f(mMenuShape.getPosition().x +
+           buttonSize.x + 125.f, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
+           mMenuShape.getSize().y - 150.f), crystals, mBankBalance, storageCapacity);
+
+    mDepositMenu = std::make_unique<DepositMenu>(windowSize, sf::Vector2f(mMenuShape.getPosition().x +
+            buttonSize.x + 125.f, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
+            mMenuShape.getSize().y - 150.f), crystals, mBankBalance, storageCapacity);
+
+    mBorrowMenu = std::make_unique<BorrowMenu>(windowSize, sf::Vector2f(mMenuShape.getPosition().x +
+            buttonSize.x + 125.f, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
+            mMenuShape.getSize().y - 150.f), crystals, mHasBorrowActive, timeSystem);
+
     mWithdrawButton.setCallback([&]() {
-        switchToMenu("Withdraw");
+        mWithdrawMenu->setActive(true);
+        mDepositMenu->setActive(false);
+        mBorrowMenu->setActive(false);
+
+        mWithdrawMenu->updateTexts();
     });
 
     mDepositButton.setCallback([&]() {
-        switchToMenu("Deposit");
+        mWithdrawMenu->setActive(false);
+        mDepositMenu->setActive(true);
+        mBorrowMenu->setActive(false);
+
+        mDepositMenu->updateTexts();
     });
 
     mBorrowButton.setCallback([&]() {
-        switchToMenu("Borrow");
+        mWithdrawMenu->setActive(false);
+        mDepositMenu->setActive(false);
+        mBorrowMenu->setActive(true);
+
+        mBorrowMenu->updateTexts();
     });
 
-    mButtons.push_back(mWithdrawButton);
-    mButtons.push_back(mDepositButton);
-    mButtons.push_back(mBorrowButton);
-
-    mWithdrawMenu = std::make_unique<WithdrawMenu>(window, sf::Vector2f(mMenuShape.getPosition().x +
-           buttonSize.x + 125, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
-           mMenuShape.getSize().y - 150), crystals, mBankBalance, storageCapacity);
-
-    mDepositMenu = std::make_unique<DepositMenu>(window, sf::Vector2f(mMenuShape.getPosition().x +
-            buttonSize.x + 125, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
-            mMenuShape.getSize().y - 150), crystals, mBankBalance, storageCapacity);
-
-    mBorrowMenu = std::make_unique<BorrowMenu>(window, sf::Vector2f(mMenuShape.getPosition().x +
-            buttonSize.x + 125, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
-            mMenuShape.getSize().y - 150), crystals, mHasBorrowActive, timeSystem);
+    mButtons.push_back(&mWithdrawButton);
+    mButtons.push_back(&mDepositButton);
+    mButtons.push_back(&mBorrowButton);
 }
 
 void BankMenu::render(sf::RenderWindow& window) {
-    window.draw(mMenuShape);
-    window.draw(mHoveredZoneShape);
-    for (auto& button : mButtons)
-        button.render(window);
+    if (!mIsActive)
+        return;
+
+    Menu::render(window);
     window.draw(mTitle);
-    if (mCurrentMenu == "Withdraw")
-        mWithdrawMenu->render(window);
-    else if (mCurrentMenu == "Deposit")
-        mDepositMenu->render(window);
-    else if (mCurrentMenu == "Borrow")
-        mBorrowMenu->render(window);
+
+    for (auto& button : mButtons)
+        button->render(window);
+
+    mWithdrawMenu->render(window);
+    mDepositMenu->render(window);
+    mBorrowMenu->render(window);
 }
 
-void BankMenu::update() {
-    if (mCurrentMenu == "Withdraw")
-        mWithdrawMenu->update();
-    else if (mCurrentMenu == "Deposit")
-        mDepositMenu->update();
-    else if (mCurrentMenu == "Borrow")
-        mBorrowMenu->update();
+void BankMenu::update(float dt) {
+    if (!mIsActive)
+        return;
+
+    mWithdrawMenu->update(dt);
+    mDepositMenu->update(dt);
+    mBorrowMenu->update(dt);
 }
 
 void BankMenu::handleMouseClick(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     for (auto& button : mButtons) {
-        if (button.isMouseOver(mousePos))
-            button.onClick();
+        if (button->isMouseOver(mousePos))
+            button->onClick();
     }
 
-    if (mCurrentMenu == "Withdraw")
-        mWithdrawMenu->handleClicks(mousePos);
-    else if (mCurrentMenu == "Deposit")
-        mDepositMenu->handleClicks(mousePos);
-    else if (mCurrentMenu == "Borrow")
-        mBorrowMenu->handleClicks(mousePos);
+    mWithdrawMenu->handleMouseClick(mousePos);
+    mDepositMenu->handleMouseClick(mousePos);
+    mBorrowMenu->handleMouseClick(mousePos);
 }
 
 void BankMenu::updateHover(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     for (auto& button : mButtons)
-        button.updateHover(mousePos);
+        button->updateHover(mousePos);
 
-    if (mCurrentMenu == "Withdraw")
-        mWithdrawMenu->updateHover(mousePos);
-    else if (mCurrentMenu == "Deposit")
-        mDepositMenu->updateHover(mousePos);
-    else if (mCurrentMenu == "Borrow")
-        mBorrowMenu->updateHover(mousePos);
-}
-
-void BankMenu::switchToMenu(const std::string& menuName) {
-    mCurrentMenu = menuName;
+    mWithdrawMenu->updateHover(mousePos);
+    mDepositMenu->updateHover(mousePos);
+    mBorrowMenu->updateHover(mousePos);
 }
 
 int BankMenu::getBankBalance() {
@@ -182,4 +184,3 @@ int BankMenu::getStartHour() {
 int BankMenu::getStartMinute() {
     return mBorrowMenu->getStartMinute();
 }
-

@@ -4,6 +4,7 @@
 class Menu {
 public:
     Menu(const sf::Vector2f& windowSize, const sf::Vector2f& menuSizeRatio = sf::Vector2f(0.5f, 0.5f));
+    Menu(const sf::Vector2f& menuSize, const sf::Vector2f& menuPosition, bool isSubMenu);
     virtual ~Menu() = default;
 
     virtual void update(float dt) = 0;
@@ -21,4 +22,6 @@ protected:
     sf::RectangleShape mHoveredZoneShape;
 
     bool mIsActive = false;
+
+    sf::Text createMessageText(const sf::Font& font, const std::string& string, const sf::Vector2f& position, int size = 16);
 };

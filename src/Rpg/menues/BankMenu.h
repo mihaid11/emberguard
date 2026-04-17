@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 #include "../../core/TimeSystem.h"
 #include "WithdrawMenu.h"
@@ -9,16 +10,15 @@
 #include <string>
 #include <memory>
 
-class BankMenu {
+class BankMenu : public Menu {
 public:
-    BankMenu(sf::RenderWindow& window, int& crystals, int& storageCapacity,
-        TimeSystem& timeSystem);
-    void render(sf::RenderWindow& window);
-    void update();
-    void handleMouseClick(const sf::Vector2f& mousePos);
-    void updateHover(const sf::Vector2f& mousePos);
+    BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCapacity, TimeSystem& timeSystem);
 
-    void switchToMenu(const std::string& menuName);
+    void render(sf::RenderWindow& window) override;
+    void update(float dt) override;
+    void handleMouseClick(const sf::Vector2f& mousePos) override;
+    void updateHover(const sf::Vector2f& mousePos) override;
+
     int getBankBalance();
     void setBankBalance(int bankBalance);
 
@@ -41,24 +41,21 @@ public:
     void restart();
 
 private:
-    sf::Text mTitle;
     sf::Font mFont;
-    sf::RectangleShape mMenuShape;
-    sf::RectangleShape mHoveredZoneShape;
+    sf::Text mTitle;
+
     Button mDepositButton;
     Button mWithdrawButton;
     Button mBorrowButton;
-    std::vector<Button> mButtons;
+    std::vector<Button*> mButtons;
 
     std::unique_ptr<WithdrawMenu> mWithdrawMenu;
     std::unique_ptr<DepositMenu> mDepositMenu;
     std::unique_ptr<BorrowMenu> mBorrowMenu;
 
     int& mCrystals;
-    std::string mCurrentMenu;
     int mBankBalance;
 
     bool mHasBorrowActive;
     TimeSystem& mTimeSystem;
 };
-
