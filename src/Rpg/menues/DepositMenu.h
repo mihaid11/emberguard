@@ -1,34 +1,36 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 
-class DepositMenu {
+class DepositMenu : public Menu {
 public:
-    DepositMenu(sf::RenderWindow& window, const sf::Vector2f position,
-                const sf::Vector2f size, int& crystals, int& bankBalances, int& storageCapacity);
-    void render(sf::RenderWindow& window);
-    void handleClicks(const sf::Vector2f& mousePos);
-    void updateHover(const sf::Vector2f& mousePos);
-    void update();
+    DepositMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position,
+                const sf::Vector2f& size, int& crystals, int& bankBalances, int& storageCapacity);
+
+    void render(sf::RenderWindow& window) override;
+    void handleMouseClick(const sf::Vector2f& mousePos) override;
+    void updateHover(const sf::Vector2f& mousePos) override;
+    void update(float dt) override;
+
+    void updateTexts();
     void restart();
 
 private:
     // called when deposit buttons are clicked
-    void depositAmount(int amount, int& bankBalance, int& crystals, int& storageCapacity);
+    void depositAmount(int amount);
 
-    sf::Text createMessageText(std::string string, float height);
-    sf::RectangleShape mMenuShape;
     Button m100Button;
     Button m250Button;
     Button m500Button;
     Button mConfirmButton;
     Button mBackButton;
 
+    sf::Font mFont;
     sf::Text mBalance;
     sf::Text mCrystalBalance;
     sf::Text mAmount;
     sf::Text mCanDepositOnlyText;
-    sf::Font mFont;
 
     bool mConfirmShowing;
     bool mStorageWillBeFull;
@@ -43,4 +45,3 @@ private:
     bool mInsufficientFunds;
     sf::Text mInsufficientFundsText;
 };
-
