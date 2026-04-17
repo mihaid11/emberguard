@@ -2,9 +2,10 @@
 #include <iostream>
 #include <sstream>
 
-BorrowMenu::BorrowMenu(sf::RenderWindow& window, const sf::Vector2f position,
-                       const sf::Vector2f size, int& crystals, bool& hasBorrowActive, TimeSystem& timeSystem)
-    :m500Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "500"),
+BorrowMenu::BorrowMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position,
+                       const sf::Vector2f& size, int& crystals, bool& hasBorrowActive, TimeSystem& timeSystem)
+    : Menu(size, position, true),
+    m500Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "500"),
     m1000Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "1000"),
     m2000Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "2000"),
     mConfirmButton(sf::Vector2f(0, 0), sf::Vector2f(200.0f, 40.0f), "Confirm Loan"),
@@ -16,41 +17,20 @@ BorrowMenu::BorrowMenu(sf::RenderWindow& window, const sf::Vector2f position,
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for BankMenu!" << std::endl;
 
-    mMenuShape.setSize(size);
-    mMenuShape.setPosition(position);
-    mMenuShape.setFillColor(sf::Color(70, 70, 70, 200));
-
-    mLoanAmount.setFont(mFont);
-    mLoanAmount.setCharacterSize(16);
-    mLoanAmount.setFillColor(sf::Color::White);
-    mLoanAmount.setString("Loan Amount: ");
-    mLoanAmount.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 25.f));
-
-    mRepayment.setFont(mFont);
-    mRepayment.setCharacterSize(16);
-    mRepayment.setFillColor(sf::Color::White);
-    mRepayment.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 75.f));
-
-    mInterestText.setFont(mFont);
-    mInterestText.setCharacterSize(16);
-    mInterestText.setFillColor(sf::Color::White);
-    mInterestText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 125.f));
-
-    mTotalRepay.setFont(mFont);
-    mTotalRepay.setCharacterSize(16);
-    mTotalRepay.setFillColor(sf::Color::White);
-    mTotalRepay.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 175.f));
-
-    mPenaltyText.setFont(mFont);
-    mPenaltyText.setCharacterSize(16);
-    mPenaltyText.setFillColor(sf::Color::White);
-    mPenaltyText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 250.f));
-
-    mBorrowActiveText.setFont(mFont);
-    mBorrowActiveText.setCharacterSize(16);
-    mBorrowActiveText.setFillColor(sf::Color::White);
-    mBorrowActiveText.setString("You can't have more than one borrow active!");
-    mBorrowActiveText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 25.f));
+    mLoanAmount = createMessageText(mFont, "Loan Amount: ",
+                                    sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 25.f));
+    mRepayment = createMessageText(mFont, "Repayment by: ",
+                                   sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 75.f));
+    mInterestText = createMessageText(mFont, "Interest rate: ",
+                                      sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 125.f));
+    mTotalRepay = createMessageText(mFont, "Total to Repay: ",
+                                    sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 175.f));
+    mPenaltyText = createMessageText(mFont, "Penalty: ",
+                                     sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 250.f));
+    mBorrowActiveText = createMessageText(mFont, "You can't have more than one borrow active!",
+                                          sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 25.f));
+    mTimerText = createMessageText(mFont, "", sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 2.f / 3.f - 65.f,
+                                                           mMenuShape.getPosition().y + mMenuShape.getSize().y * 2.f / 3.f - 170.f));
 
     m500Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 300.f,
                                         mMenuShape.getPosition().y + 25.f - 8.75f));
@@ -62,43 +42,46 @@ BorrowMenu::BorrowMenu(sf::RenderWindow& window, const sf::Vector2f position,
     mBackButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 400.f, mMenuShape.getPosition().y + 310.f));
 
     m500Button.setCallback([&]() {
-        if (hasBorrowActive == false) {
+        if (mHasBorrowActive == false) {
             mAmountToBorrow = 500;
             mConfirmShowing = true;
             mInterest = 30;
             mDaysToRepayment = 3;
             mPenalty = 20;
             mAmountToRepay = mAmountToBorrow * (100 + mInterest) / 100;
-            mRepaymentDay = mDaysToRepayment + timeSystem.getDay();
+            mRepaymentDay = mDaysToRepayment + mTimeSystem.getDay();
         }
+        updateTexts();
     });
 
     m1000Button.setCallback([&]() {
-        if (hasBorrowActive == false) {
+        if (mHasBorrowActive == false) {
             mAmountToBorrow = 1000;
             mConfirmShowing = true;
             mInterest = 25;
             mDaysToRepayment = 5;
             mPenalty = 15;
             mAmountToRepay = mAmountToBorrow * (100 + mInterest) / 100;
-            mRepaymentDay = mDaysToRepayment + timeSystem.getDay();
+            mRepaymentDay = mDaysToRepayment + mTimeSystem.getDay();
         }
+        updateTexts();
     });
 
-    m2000Button.setCallback([&]() {
-        if (hasBorrowActive == false) {
+    m2000Button.setCallback([this]() {
+        if (mHasBorrowActive == false) {
             mAmountToBorrow = 2000;
             mConfirmShowing = true;
             mInterest = 20;
             mDaysToRepayment = 7;
             mPenalty = 10;
             mAmountToRepay = mAmountToBorrow * (100 + mInterest) / 100;
-            mRepaymentDay = mDaysToRepayment + timeSystem.getDay();
+            mRepaymentDay = mDaysToRepayment + mTimeSystem.getDay();
         }
+        updateTexts();
     });
 
-    mConfirmButton.setCallback([&]() {
-        crystals += mAmountToBorrow;
+    mConfirmButton.setCallback([this]() {
+        mCrystals += mAmountToBorrow;
         mAmountToBorrow = 0;
         mConfirmShowing = false;
         mHasBorrowActive = true;
@@ -106,9 +89,11 @@ BorrowMenu::BorrowMenu(sf::RenderWindow& window, const sf::Vector2f position,
         mStartDay = mTimeSystem.getDay();
         mStartHour = mTimeSystem.getHour();
         mStartMinute = mTimeSystem.getMinute();
+
+        updateTexts();
     });
 
-    mBackButton.setCallback([&]() {
+    mBackButton.setCallback([this]() {
         mAmountToBorrow = 0;
         mInterest = 0;
         mDaysToRepayment = 0;
@@ -116,11 +101,17 @@ BorrowMenu::BorrowMenu(sf::RenderWindow& window, const sf::Vector2f position,
         mAmountToRepay = 0;
         mRepaymentDay = 0;
         mConfirmShowing = false;
+
+        updateTexts();
     });
 }
 
 void BorrowMenu::render(sf::RenderWindow& window) {
+    if (!mIsActive)
+        return;
+
     window.draw(mMenuShape);
+
     window.draw(mRepayment);
     window.draw(mInterestText);
     window.draw(mTotalRepay);
@@ -133,55 +124,7 @@ void BorrowMenu::render(sf::RenderWindow& window) {
         m2000Button.render(window);
     } else {
         window.draw(mBorrowActiveText);
-        int currentYear = mTimeSystem.getYear();
-        int currentDay = mTimeSystem.getDay();
-        int currentHour = mTimeSystem.getHour();
-        int currentMinute = mTimeSystem.getMinute();
-
-        int elapsedYears, elapsedDays, elapsedHours, elapsedMinutes;
-        int hourDecrement = 0;
-        int dayDecrement = 0;
-        int yearDecrement = 0;
-
-        if (currentMinute >= mStartMinute) {
-            elapsedMinutes = currentMinute - mStartMinute;
-        } else {
-            elapsedMinutes = 60 + currentMinute - mStartMinute;
-            hourDecrement = 1;
-        }
-
-        if (currentHour >= mStartHour) {
-            elapsedHours = currentHour - mStartHour - hourDecrement;
-        } else {
-            elapsedHours = 24 + currentHour - mStartHour - hourDecrement;
-            dayDecrement = 1;
-        }
-
-        if (currentDay >= mStartDay) {
-            elapsedDays = currentDay - mStartDay - dayDecrement;
-        } else {
-            elapsedDays = 365 + currentDay - mStartDay - dayDecrement;
-            yearDecrement = 1;
-        }
-
-        elapsedYears = currentYear - mStartYear - yearDecrement;
-
-        int remainingHours = 23 - elapsedHours;
-        int remainingMinutes = 59 - elapsedMinutes;
-        int remainingDays = mDaysToRepayment - elapsedDays - 1;
-
-        std::ostringstream timerText;
-        timerText << "Remaining: " << remainingDays << "d " << remainingHours << "h " << remainingMinutes << "m";
-
-        sf::Text timerDisplay;
-        timerDisplay.setFont(mFont);
-        timerDisplay.setCharacterSize(16);
-        timerDisplay.setFillColor(sf::Color::White);
-        timerDisplay.setString(timerText.str());
-        timerDisplay.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 2.f / 3 - 65.f,
-            mMenuShape.getPosition().y + mMenuShape.getSize().y * 2.f / 3 - 170.f));
-
-        window.draw(timerDisplay);
+        window.draw(mTimerText);
     }
 
     if (mConfirmShowing) {
@@ -190,7 +133,10 @@ void BorrowMenu::render(sf::RenderWindow& window) {
     }
 }
 
-void BorrowMenu::handleClicks(const sf::Vector2f& mousePos) {
+void BorrowMenu::handleMouseClick(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     if (m500Button.isMouseOver(mousePos))
         m500Button.onClick();
     if (m1000Button.isMouseOver(mousePos))
@@ -207,6 +153,9 @@ void BorrowMenu::handleClicks(const sf::Vector2f& mousePos) {
 }
 
 void BorrowMenu::updateHover(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     m500Button.updateHover(mousePos);
     m1000Button.updateHover(mousePos);
     m2000Button.updateHover(mousePos);
@@ -217,18 +166,9 @@ void BorrowMenu::updateHover(const sf::Vector2f& mousePos) {
     }
 }
 
-void BorrowMenu::update() {
-    if (mConfirmShowing) {
-        mRepayment.setString("Repayment by: Day " + std::to_string(mRepaymentDay));
-        mInterestText.setString("Interest Rate: " + std::to_string(mInterest) + "%");
-        mTotalRepay.setString("Total to Repay: " + std::to_string(mAmountToRepay));
-        mPenaltyText.setString("Penalty: +" + std::to_string(mPenalty) + "% per late day");
-    } else {
-        mRepayment.setString("");
-        mInterestText.setString("");
-        mTotalRepay.setString("");
-        mPenaltyText.setString("");
-    }
+void BorrowMenu::update(float dt) {
+    if (!mIsActive)
+        return;
 
     if (mHasBorrowActive) {
         int currentYear = mTimeSystem.getYear();
@@ -265,6 +205,14 @@ void BorrowMenu::update() {
         if (elapsedDays == mDaysToRepayment) {
             reset();
             mCrystals -= mAmountToRepay;
+        } else {
+            int remainingHours = 23 - elapsedHours;
+            int remainingMinutes = 59 - elapsedMinutes;
+            int remainingDays = mDaysToRepayment - elapsedDays - 1;
+
+            std::ostringstream timerText;
+            timerText << "Remaining: " << remainingDays << "d " << remainingHours << "h " << remainingMinutes << "m";
+            mTimerText.setString(timerText.str());
         }
     }
 }
@@ -338,3 +286,16 @@ void BorrowMenu::setStats(bool hasBorrowActive, int penalty, int interest, int a
     mStartMinute = startMinute;
 }
 
+void BorrowMenu::updateTexts() {
+    if (mConfirmShowing) {
+        mRepayment.setString("Repayment by: Day " + std::to_string(mRepaymentDay));
+        mInterestText.setString("Interest Rate: " + std::to_string(mInterest) + "%");
+        mTotalRepay.setString("Total to Repay: " + std::to_string(mAmountToRepay));
+        mPenaltyText.setString("Penalty: +" + std::to_string(mPenalty) + "% per late day");
+    } else {
+        mRepayment.setString("");
+        mInterestText.setString("");
+        mTotalRepay.setString("");
+        mPenaltyText.setString("");
+    }
+}
