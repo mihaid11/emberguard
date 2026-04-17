@@ -1,17 +1,18 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 #include "../../core/TimeSystem.h"
 
-class BorrowMenu {
+class BorrowMenu : public Menu {
 public:
-    BorrowMenu(sf::RenderWindow& window, const sf::Vector2f position,
-        const sf::Vector2f size, int& crystals, bool& hasBorrowActive,
-        TimeSystem& timeSystem);
-    void render(sf::RenderWindow& window);
-    void handleClicks(const sf::Vector2f& mousePos);
-    void updateHover(const sf::Vector2f& mousePos);
-    void update();
+    BorrowMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position,
+               const sf::Vector2f& size, int& crystals, bool& hasBorrowActive, TimeSystem& timeSystem);
+
+    void render(sf::RenderWindow& window) override;
+    void handleMouseClick(const sf::Vector2f& mousePos) override;
+    void updateHover(const sf::Vector2f& mousePos) override;
+    void update(float dt) override;
 
     int getPenalty();
     int getDaysToRepayment();
@@ -24,25 +25,26 @@ public:
 
     bool getActiveBorrow();
 
+    void updateTexts();
     void restart();
     void reset();
     void setStats(bool hasBorrowActive, int penalty, int interest, int amountToRepay, int daysToRepayment,
                   int startYear, int startDay, int startHour, int startMinute);
 
 private:
-    sf::RectangleShape mMenuShape;
     Button m500Button;
     Button m1000Button;
     Button m2000Button;
     Button mConfirmButton;
     Button mBackButton;
 
+    sf::Font mFont;
     sf::Text mLoanAmount;
     sf::Text mRepayment;
     sf::Text mInterestText;
     sf::Text mTotalRepay;
     sf::Text mPenaltyText;
-    sf::Font mFont;
+    sf::Text mTimerText;
 
     bool mConfirmShowing;
     int mAmountToBorrow;
@@ -61,4 +63,3 @@ private:
     int mStartMinute;
     TimeSystem& mTimeSystem;
 };
-
