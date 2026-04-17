@@ -1,34 +1,36 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 
-class WithdrawMenu{
+class WithdrawMenu : public Menu {
 public:
-    WithdrawMenu(sf::RenderWindow& window, const sf::Vector2f position,
-                 const sf::Vector2f size, int& crystals, int& bankBalances, int& storageCapacity);
-    void render(sf::RenderWindow& window);
-    void handleClicks(const sf::Vector2f& mousePos);
-    void updateHover(const sf::Vector2f& mousePos);
-    void update();
+    WithdrawMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position,
+                 const sf::Vector2f& size, int& crystals, int& bankBalances, int& storageCapacity);
+
+    void render(sf::RenderWindow& window) override;
+    void handleMouseClick(const sf::Vector2f& mousePos) override;
+    void updateHover(const sf::Vector2f& mousePos) override;
+    void update(float dt) override;
+
+    void updateTexts();
     void restart();
 
 private:
     // called when withdraw buttons are clicked
-    void withdrawAmount(int amount, int& bankBalance);
+    void withdrawAmount(int amount);
 
-    sf::Text createMessageText(std::string string, float height);
-    sf::RectangleShape mMenuShape;
     Button m100Button;
     Button m250Button;
     Button m500Button;
     Button mConfirmButton;
     Button mBackButton;
 
+    sf::Font mFont;
     sf::Text mBalance;
     sf::Text mCrystalBalance;
     sf::Text mInsufficientFundsText;
     sf::Text mAmount;
-    sf::Font mFont;
 
     bool mConfirmShowing;
     bool mInsufficientFunds;
@@ -37,4 +39,3 @@ private:
     int& mBankBalance;
     int& mStorageCapacity;
 };
-
