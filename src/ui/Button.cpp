@@ -7,7 +7,6 @@ Button::Button(const sf::Vector2f& position, const sf::Vector2f& size, const std
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font" << std::endl;
 
-    mButtonShape.setPosition(position);
     mButtonShape.setSize(size);
     mButtonShape.setFillColor(sf::Color(0, 0, 0, 200));
     mButtonShape.setOutlineThickness(2);
@@ -21,7 +20,8 @@ Button::Button(const sf::Vector2f& position, const sf::Vector2f& size, const std
     // Center the text within the button
     sf::FloatRect textBounds = mButtonText.getLocalBounds();
     mButtonText.setOrigin(textBounds.left + textBounds.width / 2.0f, textBounds.top + textBounds.height / 2.0f);
-    mButtonText.setPosition(position.x + size.x / 2.0f, position.y + size.y / 2.0f);
+
+    setPosition(position);
 }
 
 void Button::render(sf::RenderWindow& window) {
@@ -56,9 +56,8 @@ void Button::setPosition(const sf::Vector2f& position) {
     mPosition = position;
     mButtonShape.setPosition(mPosition);
 
-    sf::FloatRect rect = mButtonText.getLocalBounds();
-    mButtonText.setOrigin(rect.left + rect.width / 2.f, rect.top + rect.height / 2.f);
-    mButtonText.setPosition(mPosition.x + mSize.x / 2.0f, mPosition.y + mSize.y / 2.0f);
+    sf::FloatRect rect = mButtonShape.getGlobalBounds();
+    mButtonText.setPosition(rect.left + rect.width / 2.0f, rect.top + rect.height / 2.0f);
 }
 
 void Button::setSize(const sf::Vector2f& size) {
@@ -68,11 +67,20 @@ void Button::setSize(const sf::Vector2f& size) {
 
     sf::FloatRect rect = mButtonText.getLocalBounds();
     mButtonText.setOrigin(rect.left + rect.width / 2.f, rect.top + rect.height / 2.f);
-    mButtonText.setPosition(mPosition.x + mSize.x / 2.0f, mPosition.y + mSize.y / 2.0f);
+    setPosition(mPosition);
+}
+
+void Button::setOrigin(const sf::Vector2f& origin) {
+    mButtonShape.setOrigin(origin);
+    setPosition(mPosition);
 }
 
 void Button::setText(const std::string& text) {
     mButtonText.setString(text);
+
+    mButtonText.setOrigin(mButtonText.getLocalBounds().left + mButtonText.getLocalBounds().width / 2.0f,
+                          mButtonText.getLocalBounds().top + mButtonText.getLocalBounds().height / 2.0f);
+    setPosition(mPosition);
 }
 
 void Button::setBackgroundColor(sf::Color color) {
@@ -90,4 +98,3 @@ const sf::Vector2f& Button::getPosition() const {
 const sf::Vector2f& Button::getSize() const {
     return mSize;
 }
-

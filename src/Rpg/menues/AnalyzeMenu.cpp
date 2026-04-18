@@ -6,9 +6,10 @@
 #include <time.h>
 #include <algorithm>
 
-AnalyzeMenu::AnalyzeMenu(sf::RenderWindow& window, Inventory& inventory, TimeSystem& timeSystem,
+AnalyzeMenu::AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem,
                          std::vector<int>& availableTowers, const sf::Vector2f& slotSize, int& crystals)
-    : mInventory(inventory), mTimeSystem(timeSystem), mInSlot(false), mExtracting(false),
+    : Menu(windowSize, sf::Vector2f(0.55f, 0.55f)),
+    mInventory(inventory), mTimeSystem(timeSystem), mInSlot(false), mExtracting(false),
     mHoveredSlot(-1), mSlotItem(nullptr), mCompleted(false),
     mStartButton(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 35.f), "Start"),
     mCancelButton(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 35.f), "Cancel"),
@@ -18,36 +19,15 @@ AnalyzeMenu::AnalyzeMenu(sf::RenderWindow& window, Inventory& inventory, TimeSys
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for AnalyzeMenu!" << std::endl;
 
-    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 2.f, window.getSize().y / 2.f));
-    mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
-    mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2.f,
-                           (window.getSize().y - mMenuShape.getSize().y) / 2.f);
+    mTitle.setFont(mFont);
+    mTitle.setCharacterSize(20);
+    mTitle.setFillColor(sf::Color::White);
+    mTitle.setString("Analyzer");
 
-    mHoveredZoneShape.setSize(sf::Vector2f(window.getSize().x / 2.f, 40));
-    mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
-    mHoveredZoneShape.setPosition(sf::Vector2f((window.getSize().x - mMenuShape.getSize().x) / 2.f,
-                                               (window.getSize().y - mMenuShape.getSize().y) / 2.f));
-
-    mMenuText.setFont(mFont);
-    mMenuText.setCharacterSize(20);
-    mMenuText.setFillColor(sf::Color::White);
-    mMenuText.setString("Analyzer");
-    mMenuText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x / 2.f - 50.f,
-                                       mMenuShape.getPosition().y + 8.f));
-
-    mErrorText.setFillColor(sf::Color::White);
-    mErrorText.setFont(mFont);
-    mErrorText.setCharacterSize(18);
-    mErrorText.setString("Only extract Tower Blueprint!");
-    mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.469f,
-                                        mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.657f));
-
-    mStartButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 2.f / 3 - 47.f,
-                                          mMenuShape.getPosition().y + mMenuShape.getSize().y * 2.f / 3));
-    mCancelButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 2.f / 3 - 47.f,
-                                           mMenuShape.getPosition().y + mMenuShape.getSize().y * 2.f / 3));
-    mCompleteButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 2.f / 3 - 47.f,
-                                             mMenuShape.getPosition().y + mMenuShape.getSize().y * 2.f / 3));
+    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
+                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
+    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
+                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
 
     mStartButton.setCallback([&]() {
         mInSlot = false;
@@ -105,25 +85,53 @@ AnalyzeMenu::AnalyzeMenu(sf::RenderWindow& window, Inventory& inventory, TimeSys
         mTimerActive = false;
     });
 
-    sf::Vector2f mPosition(mMenuShape.getPosition().x + 50.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 90.f);
+    float padding = 20.f;
+    float contentY = mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y;
+    float contentHeight = mMenuShape.getSize().y - mHoveredZoneShape.getSize().y;
+
+    float leftCenterX = mMenuShape.getPosition().x + (mMenuShape.getSize().x * 0.25f) + 20.f;
+    float rightCenterX = mMenuShape.getPosition().x + (mMenuShape.getSize().x * 0.75f) - 15.f;
+    float centerY = contentY + (contentHeight / 2.f);
+
+    int cols = 3;
     int totalSlots = mInventory.getSlotCount();
+    int rows = std::ceil((float)totalSlots / cols);
     mSlots.resize(totalSlots);
+
+    float gridWidth = cols * slotSize.x;
+    float gridHeight = rows * slotSize.y;
+
     for (int i = 0; i < totalSlots; ++i) {
         mSlots[i].setSize(slotSize);
         mSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
         mSlots[i].setOutlineColor(sf::Color::White);
         mSlots[i].setOutlineThickness(2.0f);
-        int row = i / 3;
-        int col = i % 3;
-        mSlots[i].setPosition(mPosition.x + col * slotSize.x, mPosition.y + row * slotSize.y);
+
+        int row = i / cols;
+        int col = i % cols;
+        mSlots[i].setPosition(leftCenterX - gridWidth / 2.f + col * slotSize.x, centerY - gridHeight / 2.f + row * slotSize.y - 20.f);
     }
 
     mSlot.setSize(slotSize);
+    mSlot.setOrigin(mSlot.getSize() / 2.f);
     mSlot.setFillColor(sf::Color(0, 0, 0, 220));
     mSlot.setOutlineColor(sf::Color::White);
     mSlot.setOutlineThickness(2.0f);
-    mSlot.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 2.f / 3 - 25.f,
-                                   mMenuShape.getPosition().y + mMenuShape.getSize().y * 1.f / 3 + 10.f));
+    mSlot.setPosition(sf::Vector2f(rightCenterX, centerY - 20.f));
+
+    mTimerText = createMessageText(mFont, "", sf::Vector2f(rightCenterX, mSlot.getPosition().y - mSlot.getOrigin().y - 50.f));
+    mErrorText = createMessageText(mFont, "Only extract Tower Blueprint!", sf::Vector2f(leftCenterX, centerY - gridHeight / 2.f + rows * slotSize.y + 17.5f), 18);
+
+    sf::Vector2f buttonPos(rightCenterX, mSlot.getPosition().y + mSlot.getOrigin().y + 60.f);
+
+    mStartButton.setOrigin(mStartButton.getSize() / 2.f);
+    mStartButton.setPosition(buttonPos);
+
+    mCancelButton.setOrigin(mCancelButton.getSize() / 2.f);
+    mCancelButton.setPosition(buttonPos);
+
+    mCompleteButton.setOrigin(mCompleteButton.getSize() / 2.f);
+    mCompleteButton.setPosition(buttonPos);
 
     mTooltipText.setFont(mFont);
     mTooltipText.setCharacterSize(14);
@@ -135,9 +143,12 @@ AnalyzeMenu::AnalyzeMenu(sf::RenderWindow& window, Inventory& inventory, TimeSys
 }
 
 void AnalyzeMenu::render(sf::RenderWindow& window) {
-    window.draw(mMenuShape);
-    window.draw(mHoveredZoneShape);
-    window.draw(mMenuText);
+    if (!mIsActive)
+        return;
+
+    Menu::render(window);
+
+    window.draw(mTitle);
     window.draw(mSlot);
 
     if (mInSlot)
@@ -191,63 +202,18 @@ void AnalyzeMenu::render(sf::RenderWindow& window) {
 
     if (mSlotItem) {
         sf::RectangleShape icon = mSlotItem->getIcon();
-        icon.setPosition(mSlot.getPosition());
+        icon.setPosition(mSlot.getPosition() - mSlot.getOrigin());
         window.draw(icon);
     }
 
-    if (mTimerActive) {
-        int currentYear = mTimeSystem.getYear();
-        int currentDay = mTimeSystem.getDay();
-        int currentHour = mTimeSystem.getHour();
-        int currentMinute = mTimeSystem.getMinute();
-
-        int elapsedYears, elapsedDays, elapsedHours, elapsedMinutes;
-        int hourDecrement = 0;
-        int dayDecrement = 0;
-        int yearDecrement = 0;
-
-        if (currentMinute >= mStartMinute) {
-            elapsedMinutes = currentMinute - mStartMinute;
-        } else {
-            elapsedMinutes = 60 + currentMinute - mStartMinute;
-            hourDecrement = 1;
-        }
-
-        if (currentHour >= mStartHour) {
-            elapsedHours = currentHour - mStartHour - hourDecrement;
-        } else {
-            elapsedHours = 24 + currentHour - mStartHour - hourDecrement;
-            dayDecrement = 1;
-        }
-
-        if (currentDay >= mStartDay) {
-            elapsedDays = currentDay - mStartDay - dayDecrement;
-        } else {
-            elapsedDays = 365 + currentDay - mStartDay - dayDecrement;
-            yearDecrement = 1;
-        }
-
-        elapsedYears = currentYear - mStartYear - yearDecrement;
-
-        int remainingHours = 23 - elapsedHours;
-        int remainingMinutes = 59 - elapsedMinutes;
-
-        std::ostringstream timerText;
-        timerText << "Remaining: " << remainingHours << "h " << remainingMinutes << "m";
-
-        sf::Text timerDisplay;
-        timerDisplay.setFont(mFont);
-        timerDisplay.setCharacterSize(16);
-        timerDisplay.setFillColor(sf::Color::White);
-        timerDisplay.setString(timerText.str());
-        timerDisplay.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 2.f / 3 - 65.f ,
-                                              mMenuShape.getPosition().y + mMenuShape.getSize().y * 2.f / 3 - 170.f));
-
-        window.draw(timerDisplay);
-    }
+    if (mTimerActive)
+        window.draw(mTimerText);
 }
 
 void AnalyzeMenu::handleMouseClick(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     if (mInSlot) {
         if (mStartButton.isMouseOver(mousePos))
             mStartButton.onClick();
@@ -285,10 +251,10 @@ void AnalyzeMenu::handleMouseClick(const sf::Vector2f& mousePos) {
                 mInSlot = true;
             } else {
                 mSlotItem = nullptr;
-                mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.469f,
-                                                    mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.657f));
                 mErrorText.setString("Only extract Tower Blueprint!");
                 mErrorText.setFillColor(sf::Color::White);
+                mErrorText.setOrigin(mErrorText.getLocalBounds().width / 2.f, 0);
+
                 mClock.restart();
                 mShowText = true;
             }
@@ -296,10 +262,10 @@ void AnalyzeMenu::handleMouseClick(const sf::Vector2f& mousePos) {
     } else {
         int hoveredSlot = getSlotIndexAtPosition(mousePos);
         if (hoveredSlot != -1) {
-            mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.091f,
-                                                mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.83f));
             mErrorText.setString("Already extracting!");
             mErrorText.setFillColor(sf::Color::White);
+            mErrorText.setOrigin(mErrorText.getLocalBounds().width / 2.f, 0);
+
             mClock.restart();
             mShowText = true;
         }
@@ -307,6 +273,9 @@ void AnalyzeMenu::handleMouseClick(const sf::Vector2f& mousePos) {
 }
 
 void AnalyzeMenu::updateHover(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     if (mInSlot)
         mStartButton.updateHover(mousePos);
     else if (mExtracting)
@@ -325,7 +294,10 @@ void AnalyzeMenu::updateHover(const sf::Vector2f& mousePos) {
     updateTooltip();
 }
 
-void AnalyzeMenu::update() {
+void AnalyzeMenu::update(float dt) {
+    if (!mIsActive)
+        return;
+
     if (mTimerActive) {
         int currentYear = mTimeSystem.getYear();
         int currentDay = mTimeSystem.getDay();
@@ -365,6 +337,15 @@ void AnalyzeMenu::update() {
             mCompleted = true;
             mExtracting = false;
         }
+
+        int remainingHours = 23 - elapsedHours;
+        int remainingMinutes = 59 - elapsedMinutes;
+
+        std::ostringstream timerText;
+        timerText << "Remaining: " << remainingHours << "h " << remainingMinutes << "m";
+
+        mTimerText.setString(timerText.str());
+        mTimerText.setOrigin(sf::Vector2f(mTimerText.getLocalBounds().width / 2.f, 0));
     }
 }
 
@@ -473,4 +454,3 @@ void AnalyzeMenu::reset() {
     mShowText = false;
     mClock.restart();
 }
-

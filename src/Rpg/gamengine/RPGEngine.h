@@ -91,7 +91,6 @@ private:
 
     bool mShowMenu;
     bool mShowDialogue;
-    bool mShowAnalyzeMenu;
     bool mShowChestMenu;
     sf::Text mDialogueText;
     sf::Font mFont;

@@ -167,7 +167,7 @@ void BorrowMenu::updateHover(const sf::Vector2f& mousePos) {
 }
 
 void BorrowMenu::update(float dt) {
-    if (!mIsActive)
+    if (!mIsActive || !mHasBorrowActive)
         return;
 
     if (mHasBorrowActive) {
@@ -202,9 +202,10 @@ void BorrowMenu::update(float dt) {
             yearDecrement = 1;
         }
 
-        if (elapsedDays == mDaysToRepayment) {
-            reset();
+        if (elapsedDays >= mDaysToRepayment) {
             mCrystals -= mAmountToRepay;
+            reset();
+            updateTexts();
         } else {
             int remainingHours = 23 - elapsedHours;
             int remainingMinutes = 59 - elapsedMinutes;
