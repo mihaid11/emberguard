@@ -1,5 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "../../ui/Menu.h"
+#include "../../ui/Button.h"
 #include "../inventory/Inventory.h"
 #include "../inventory/items/Item.h"
 #include "../inventory/items/TowerBlueprint.h"
@@ -7,16 +9,17 @@
 #include "../inventory/items/TowerBlueprintEpic.h"
 #include "../inventory/items/TowerBlueprintMythic.h"
 #include "../../core/TimeSystem.h"
-#include "../../ui/Button.h"
 
-class AnalyzeMenu {
+class AnalyzeMenu : public Menu {
 public:
-    AnalyzeMenu(sf::RenderWindow& window, Inventory& inventory, TimeSystem& timeSystem,
+    AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem,
                 std::vector<int>& availableTowers, const sf::Vector2f& slotSize, int& crystals);
-    void render(sf::RenderWindow& window);
-    void handleMouseClick(const sf::Vector2f& mousePos);
-    void updateHover(const sf::Vector2f& mousePos);
-    void update();
+
+    void render(sf::RenderWindow& window) override;
+    void handleMouseClick(const sf::Vector2f& mousePos) override;
+    void updateHover(const sf::Vector2f& mousePos) override;
+    void update(float dt) override;
+
     void getInfo(int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear, int& startDay,
                  int& startHour, int& startMinute, int& slotItemId);
     void setInfo(int extracting, int inSlot, int completed, int timerActive, int startYear, int startDay,
@@ -24,10 +27,8 @@ public:
     void reset();
 
 private:
-    sf::RectangleShape mMenuShape;
-    sf::RectangleShape mHoveredZoneShape;
-    sf::Text mMenuText;
     sf::Font mFont;
+    sf::Text mTitle;
 
     Inventory& mInventory;
     TimeSystem& mTimeSystem;
@@ -35,6 +36,7 @@ private:
     sf::RectangleShape mSlot;
     Item* mSlotItem;
     bool mExtracting;
+
     // if the item is in slot but the extracting is not active
     bool mInSlot;
     bool mCompleted;
@@ -46,6 +48,7 @@ private:
     std::vector<sf::RectangleShape> mSlots;
     sf::RectangleShape mTooltipBackground;
     sf::Text mTooltipText;
+    sf::Text mTimerText;
 
     bool mTimerActive;
     int mStartYear;
@@ -62,4 +65,3 @@ private:
     void updateTooltip();
     void updateSlotColors();
 };
-

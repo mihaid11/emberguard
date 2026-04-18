@@ -15,6 +15,7 @@ public:
 
     void setPosition(const sf::Vector2f& position);
     void setSize(const sf::Vector2f& size);
+    void setOrigin(const sf::Vector2f& origin);
     void setText(const std::string& text);
 
     void setBackgroundColor(sf::Color color);
@@ -32,4 +33,3 @@ private:
     int mIsHovered;
     sf::Vector2f mPosition;
 };
-
