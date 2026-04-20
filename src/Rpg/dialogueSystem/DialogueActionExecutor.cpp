@@ -61,4 +61,3 @@ void DialogueActionExecutor::executeAction(const DialogueAction& action) {
         std::cout << "Wrong action type!" << std::endl;
     }
 }
-

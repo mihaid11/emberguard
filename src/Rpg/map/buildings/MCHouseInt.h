@@ -12,6 +12,7 @@ public:
         std::function<void(const std::string&)> changeMap);
 
     void interact() override;
+    float getDepthOffset() const override { return -10000.f; }
 private:
     MainCharacter& mMainCharacter;
     bool& mIsInsideAStructure;

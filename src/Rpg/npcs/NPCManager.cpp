@@ -205,4 +205,3 @@ void NPCManager::interactWithCurrentNPC(bool& showDialogue, sf::Text& dialogueTe
         mCurrentNPC = nullptr;
     }
 }
-

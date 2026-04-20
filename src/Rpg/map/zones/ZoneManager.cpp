@@ -72,13 +72,26 @@ bool ZoneManager::checkCollision(const sf::FloatRect& bounds) {
 }
 
 Entity* ZoneManager::checkInteraction(const sf::FloatRect& bounds) {
+    Entity* closest = nullptr;
+    float minDistance = 99999.f;
+    sf::Vector2f pos(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+
     for (auto& pair: mZones) {
         for (const auto& entity: pair.second->getEntities()) {
-            if (entity->isInteractable() && entity->getInteractBounds().intersects(bounds))
-                return entity.get();
+            if (entity->isInteractable() && entity->getInteractBounds().intersects(bounds)) {
+                sf::FloatRect entityBounds = entity->getInteractBounds();
+                sf::Vector2f entityPos(entityBounds.left + entityBounds.width / 2.f, entityBounds.top + entityBounds.height / 2.f);
+                float dist = std::sqrt(std::pow(pos.x - entityPos.x, 2) + std::pow(pos.y - entityPos.y, 2));
+
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    closest = entity.get();
+                }
+            }
         }
     }
-    return nullptr;
+
+    return closest;
 }
 
 void ZoneManager::render(sf::RenderWindow& window) {

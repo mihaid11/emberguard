@@ -107,10 +107,54 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;
 
+    mDialogueBox.setSize(sf::Vector2f(window.getSize().x / 2.3f, window.getSize().y / 3.8f));
+    mDialogueBox.setFillColor(sf::Color(50, 50, 50, 255));
+    mDialogueBox.setPosition((window.getSize().x - mDialogueBox.getSize().x) / 2.f, window.getSize().y - mDialogueBox.getSize().y - 15.0f);
+
+    mSeparationLine.setSize(sf::Vector2f(1.f, mDialogueBox.getSize().y));
+    mSeparationLine.setFillColor(sf::Color(100, 100, 100, 255));
+    mSeparationLine.setPosition(sf::Vector2f(mDialogueBox.getPosition().x + mDialogueBox.getSize().x * 0.25f, mDialogueBox.getPosition().y));
+
+    mDialogueInteractCircle.setRadius(13.f);
+    mDialogueInteractCircle.setFillColor(sf::Color(30, 30, 30, 200));
+    mDialogueInteractCircle.setOutlineColor(sf::Color::White);
+    mDialogueInteractCircle.setOutlineThickness(0.7f);
+    mDialogueInteractCircle.setPosition(sf::Vector2f(mDialogueBox.getPosition().x + mDialogueBox.getSize().x - 3.f * mDialogueInteractCircle.getRadius(),
+                                                     mDialogueBox.getPosition().y + mDialogueInteractCircle.getRadius()));
+
+    mDialogueInteractText.setFont(mFont);
+    mDialogueInteractText.setCharacterSize(10);
+    mDialogueInteractText.setFillColor(sf::Color::White);
+    mDialogueInteractText.setString("E");
+    mDialogueInteractText.setOrigin(mDialogueInteractText.getLocalBounds().left + mDialogueInteractText.getLocalBounds().width / 2.f,
+                                    mDialogueInteractText.getLocalBounds().top + mDialogueInteractText.getLocalBounds().height / 2.f);
+    mDialogueInteractText.setPosition(sf::Vector2f(mDialogueInteractCircle.getPosition().x + mDialogueInteractCircle.getRadius(),
+                                                   mDialogueInteractCircle.getPosition().y + mDialogueInteractCircle.getRadius()));
+
     mDialogueText.setFont(mFont);
     mDialogueText.setCharacterSize(13);
     mDialogueText.setFillColor(sf::Color::White);
-    mDialogueText.setPosition(400.f, 500.f);
+    mDialogueText.setPosition(sf::Vector2f(mSeparationLine.getPosition().x + 15.f, mDialogueBox.getPosition().y + 15.f));
+
+    mDialogueTextWidth = mDialogueBox.getSize().x - mDialogueText.getPosition().x + mDialogueBox.getPosition().x - 5.f * mDialogueInteractCircle.getRadius();
+    mDialogueLineHeight = mDialogueText.getCharacterSize() * 1.35f;
+
+    mIconSprite.setPosition(sf::Vector2f((mDialogueBox.getPosition().x + mSeparationLine.getPosition().x) / 2.f,
+                                         mDialogueBox.getPosition().y + mDialogueBox.getSize().y / 2.f - 20.f));
+
+    mDateTimeBackground.setSize(sf::Vector2f(200, 80));
+    mDateTimeBackground.setFillColor(sf::Color(0, 0, 0, 150));
+    mDateTimeBackground.setPosition(window.getSize().x - 210.f, 10.f);
+
+    mDateText.setFont(mFont);
+    mDateText.setCharacterSize(16);
+    mDateText.setFillColor(sf::Color::White);
+    mDateText.setPosition(window.getSize().x - 200.f, 20.f);
+
+    mTimeText.setFont(mFont);
+    mTimeText.setCharacterSize(16);
+    mTimeText.setFillColor(sf::Color::White);
+    mTimeText.setPosition(window.getSize().x - 200.f, 50.f);
 
     mInteractCircle.setRadius(7.5f);
     mInteractCircle.setFillColor(sf::Color(30, 30, 30, 200));
@@ -121,16 +165,8 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mInteractText.setCharacterSize(7);
     mInteractText.setFillColor(sf::Color::White);
     mInteractText.setString("E");
-
-    mDialogueInteractCircle.setRadius(13.f);
-    mDialogueInteractCircle.setFillColor(sf::Color(30, 30, 30, 200));
-    mDialogueInteractCircle.setOutlineColor(sf::Color::White);
-    mDialogueInteractCircle.setOutlineThickness(0.7f);
-
-    mDialogueInteractText.setFont(mFont);
-    mDialogueInteractText.setCharacterSize(10);
-    mDialogueInteractText.setFillColor(sf::Color::White);
-    mDialogueInteractText.setString("E");
+    mInteractText.setOrigin(mInteractText.getLocalBounds().left + mInteractText.getLocalBounds().width / 2.f,
+                            mInteractText.getLocalBounds().top + mInteractText.getLocalBounds().height / 2.f);
 
     //Add NPCs dialogues
     mDialogueDatabase.loadDialogueFromFile("dialogues/mira_stanton.json");
@@ -180,6 +216,11 @@ void RPGEngine::processEvents() {
                     mNPCManager.handleInteraction(mCharacter, mShowDialogue, mDialogueText);
                     if (mShowDialogue) {
                         mCurrentInteractingNPC = mNPCManager.getCurrentNPC();
+                        mIconSprite = mCurrentInteractingNPC->getIconSprite();
+                        mIconSprite.setOrigin(mIconSprite.getLocalBounds().left + mIconSprite.getLocalBounds().width / 2.f,
+                                              mIconSprite.getLocalBounds().top + mIconSprite.getLocalBounds().height / 2.f);
+                        mIconSprite.setPosition(sf::Vector2f((mDialogueBox.getPosition().x + mSeparationLine.getPosition().x) / 2.f,
+                                         mDialogueBox.getPosition().y + mDialogueBox.getSize().y / 2.f - 20.f));
                     } else {
                         Entity* interactable = mZoneManager.checkInteraction(mCharacter.getInteractBounds());
                         if (interactable)
@@ -507,11 +548,9 @@ void RPGEngine::update() {
 
             mInteractPos = entity->getInteractPosition();
 
-            mInteractCircle.setPosition({mInteractPos.x +
-                entity->getInteractBounds().width + 1.5f, mInteractPos.y - 12.f});
-
-            mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
-                mInteractCircle.getPosition().y + 2.8f});
+            mInteractCircle.setPosition(sf::Vector2f(mInteractPos.x + entity->getInteractBounds().width + 1.5f, mInteractPos.y - 12.f));
+            mInteractText.setPosition(sf::Vector2f(mInteractCircle.getPosition().x + mInteractCircle.getRadius(),
+                                                   mInteractCircle.getPosition().y + mInteractCircle.getRadius()));
 
             break;
         }
@@ -525,12 +564,7 @@ void RPGEngine::update() {
 }
 
 void RPGEngine::render() {
-    std::string currentDate = mTimeSystem.getDateString();
-    std::string currentTime = mTimeSystem.getTimeString();
-
     mWindow.clear();
-
-    sf::View originalView = mWindow.getView();
 
     if (!mIsInsideAStructure)
         mWindow.setView(mView);
@@ -539,88 +573,66 @@ void RPGEngine::render() {
 
     mZoneManager.render(mWindow);
 
-    std::vector<std::pair<float, DrawableEntity*>> renderQueue;
+    mRenderQueue.clear();
 
-    for (auto* entity : mZoneManager.getEntities()) {
-        float depth = entity->getPosition().y + entity->getHeight();
-
-        if (dynamic_cast<MCHouseInt*>(entity))
-            depth = -9999.f;
-        else if (dynamic_cast<Bed*>(entity))
-            depth = -8888.f;
-
-        renderQueue.emplace_back(depth, entity);
+    for (auto* entity: mZoneManager.getEntities()) {
+        mRenderQueue.push_back(entity);
     }
 
-
     for (auto& npc : mNPCManager.getNPCs())
-        renderQueue.emplace_back(npc->getPosition().y + npc->getHeight(), static_cast<DrawableEntity*>(npc.get()));
+        mRenderQueue.push_back(npc.get());
 
     for (auto& droppedItem : mDroppedItems)
-        renderQueue.emplace_back(droppedItem.getPosition().y + droppedItem.getHeight(), &droppedItem);
+        mRenderQueue.push_back(&droppedItem);
 
-    renderQueue.emplace_back(mCharacter.getBounds().top + mCharacter.getBounds().height, &mCharacter);
+    mRenderQueue.push_back(&mCharacter);
 
-    std::sort(renderQueue.begin(), renderQueue.end(),
-        [](const std::pair<float, DrawableEntity*>& a, const std::pair<float, DrawableEntity*>& b) {
-            return a.first < b.first;
-        });
+    std::sort(mRenderQueue.begin(), mRenderQueue.end(), [&](DrawableEntity* a, DrawableEntity* b) {
+        float depthA = a->getDepthOffset();
+        float depthB = b->getDepthOffset();
+
+        if (depthA == 0.f)
+            depthA = a->getPosition().y + a->getHeight();
+        if (depthB == 0.f)
+            depthB = b->getPosition().y + b->getHeight();
+
+        return depthA < depthB;
+    });
 
     // Render in order
-    for (auto& entity : renderQueue)
-        entity.second->render(mWindow);
+    for (auto& entity : mRenderQueue)
+        entity->render(mWindow);
 
     if (mShowInteract) {
         mWindow.draw(mInteractCircle);
         mWindow.draw(mInteractText);
     }
 
+    mWindow.setView(mWindow.getDefaultView());
+
     if (mShowDialogue) {
-        mWindow.setView(mWindow.getDefaultView());
-        sf::Vector2f viewSize = mWindow.getDefaultView().getSize();
-
-        sf::RectangleShape dialogueBox(sf::Vector2f(viewSize.x / 2.8f + 120.f, viewSize.y / 4.2f));
-        sf::RectangleShape separationLine(sf::Vector2f(0.2f, dialogueBox.getSize().y));
-        separationLine.setFillColor(sf::Color(100, 100, 100, 255));
-        dialogueBox.setFillColor(sf::Color(50, 50, 50, 255));
-        dialogueBox.setPosition((viewSize.x - dialogueBox.getSize().x) / 2 - 60.f,
-            viewSize.y - dialogueBox.getSize().y - 35.0f);
-
-        sf::Sprite npcSprite = mCurrentInteractingNPC->getIconSprite();
-        npcSprite.setPosition(dialogueBox.getPosition().x - 21.f, dialogueBox.getPosition().y + 37.5f);
-        separationLine.setPosition(sf::Vector2f(dialogueBox.getPosition().x + 140.f, dialogueBox.getPosition().y));
-
-        mDialogueInteractCircle.setPosition({dialogueBox.getPosition().x + dialogueBox.getSize().x - 35.f,
-            dialogueBox.getPosition().y + 13.f});
-        mDialogueInteractText.setPosition({mDialogueInteractCircle.getPosition().x + 9.5f,
-            mDialogueInteractCircle.getPosition().y + 6.f});
-
-        mWindow.draw(dialogueBox);
-        mWindow.draw(npcSprite);
+        mWindow.draw(mDialogueBox);
+        mWindow.draw(mSeparationLine);
+        mWindow.draw(mIconSprite);
         mWindow.draw(mDialogueInteractCircle);
         mWindow.draw(mDialogueInteractText);
-        mWindow.draw(separationLine);
 
-        float textWidth = dialogueBox.getSize().x - 170.f  - 40.0f;
-        auto lines = wrapText(mDialogueText.getString(), mFont, mDialogueText.getCharacterSize(), textWidth);
+        auto lines = wrapText(mDialogueText.getString(), mFont, mDialogueText.getCharacterSize(), mDialogueTextWidth);
+        float yOffset = mDialogueBox.getPosition().y + 15.f;
 
-        float lineHeight = mDialogueText.getCharacterSize() * 1.35f;
-        float yOffset = dialogueBox.getPosition().y + 10.0f;
-        mDialogueText.setPosition(dialogueBox.getPosition().x + 158.f, yOffset);
+        mDialogueText.setPosition(sf::Vector2f(mSeparationLine.getPosition().x + 15.f, yOffset));
 
         sf::Text lineText = mDialogueText;
         for (const auto& line : lines) {
-            lineText.setPosition(dialogueBox.getPosition().x + 158.f, yOffset);
+            lineText.setPosition(sf::Vector2f(mSeparationLine.getPosition().x + 15.f, yOffset));
             lineText.setString(line);
             mWindow.draw(lineText);
-            yOffset += lineHeight;
+            yOffset += mDialogueLineHeight;
         }
 
         if (mNPCManager.currentNPCHasChoices())
-            renderDialogueChoices(dialogueBox.getPosition(), dialogueBox.getSize());
+            renderDialogueChoices();
     }
-
-    mWindow.setView(mWindow.getDefaultView());
 
     if (mShowMenu)
         mMenu.render(mWindow);
@@ -637,29 +649,32 @@ void RPGEngine::render() {
         mHotbar.render(mWindow);
 
     mLevelCompleteMenu.render(mWindow);
-
     mTransitionSystem.render(mWindow);
 
-    renderDateTime(mWindow, mFont, currentDate, currentTime);
+    mDateText.setString(mTimeSystem.getDateString());
+    mTimeText.setString(mTimeSystem.getTimeString());
+    mWindow.draw(mDateTimeBackground);
+    mWindow.draw(mDateText);
+    mWindow.draw(mTimeText);
 
     mWindow.display();
 }
 
-void RPGEngine::renderDialogueChoices(const sf::Vector2f& dialogueBoxPos, const sf::Vector2f& dialogueBoxSize) {
+void RPGEngine::renderDialogueChoices() {
     auto choices = mNPCManager.getCurrentNPCChoices();
     if (choices.empty()) return;
 
     mChoiceBoxes.clear();
     mChoiceTexts.clear();
 
-    float choiceY = dialogueBoxPos.y + dialogueBoxSize.y + 10.f;
-    float choiceWidth = dialogueBoxSize.x;
+    float choiceY = mDialogueBox.getPosition().y + mDialogueBox.getSize().y + 10.f;
+    float choiceWidth = mDialogueBox.getSize().x;
     float choiceHeight = 35.f;
 
     for (size_t i = 0; i < choices.size(); ++i) {
         sf::RectangleShape choiceBox;
-        choiceBox.setSize({choiceWidth, choiceHeight});
-        choiceBox.setPosition(dialogueBoxPos.x, choiceY);
+        choiceBox.setSize(sf::Vector2f(choiceWidth, choiceHeight));
+        choiceBox.setPosition(sf::Vector2f(mDialogueBox.getPosition().x, choiceY));
 
         if (i == mSelectedChoice) {
             choiceBox.setFillColor(sf::Color(70, 70, 70, 255));
@@ -677,7 +692,7 @@ void RPGEngine::renderDialogueChoices(const sf::Vector2f& dialogueBoxPos, const 
         choiceText.setFillColor(sf::Color::White);
 
         choiceText.setString(choices[i].text);
-        choiceText.setPosition(dialogueBoxPos.x + 15.f, choiceY + 8.f);
+        choiceText.setPosition(mDialogueBox.getPosition().x + 15.f, choiceY + 8.f);
 
         mChoiceBoxes.push_back(choiceBox);
         mChoiceTexts.push_back(choiceText);
@@ -687,32 +702,6 @@ void RPGEngine::renderDialogueChoices(const sf::Vector2f& dialogueBoxPos, const 
 
         choiceY += choiceHeight + 5.f;
     }
-}
-
-void RPGEngine::renderDateTime(sf::RenderWindow& window, sf::Font& font, const std::string& date, const std::string& time) {
-    sf::Vector2f viewSize = window.getDefaultView().getSize();
-
-    sf::RectangleShape background(sf::Vector2f(200, 80));
-    background.setFillColor(sf::Color(0, 0, 0, 150));
-    background.setPosition(viewSize.x - 210.f, 10.f);
-
-    sf::Text dateText;
-    dateText.setFont(font);
-    dateText.setString(date);
-    dateText.setCharacterSize(16);
-    dateText.setFillColor(sf::Color::White);
-    dateText.setPosition(viewSize.x - 200.f, 20.f);
-
-    sf::Text timeText;
-    timeText.setFont(font);
-    timeText.setString(time);
-    timeText.setCharacterSize(16);
-    timeText.setFillColor(sf::Color::White);
-    timeText.setPosition(viewSize.x - 200.f, 50.f);
-
-    window.draw(background);
-    window.draw(dateText);
-    window.draw(timeText);
 }
 
 void RPGEngine::resume(int crystals) {

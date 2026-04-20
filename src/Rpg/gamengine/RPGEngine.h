@@ -47,8 +47,8 @@ public:
     void processEvents();
     void update();
     void render();
-    void renderDateTime(sf::RenderWindow& window, sf::Font& font, const std::string& date, const std::string& time);
-    void renderDialogueChoices(const sf::Vector2f& dialogueBoxPos, const sf::Vector2f& dialogueBoxSize);
+    void renderDialogueChoices();
+
     void resume(int crystals);
     void closeMenues();
 
@@ -105,6 +105,17 @@ private:
     int mSaveNumber;
     std::string mSavePath;
 
+    std::vector<DrawableEntity*> mRenderQueue;
+    sf::RectangleShape mDialogueBox;
+    sf::RectangleShape mSeparationLine;
+    float mDialogueTextWidth;
+    float mDialogueLineHeight;
+    sf::Sprite mIconSprite;
+
+    sf::RectangleShape mDateTimeBackground;
+    sf::Text mDateText;
+    sf::Text mTimeText;
+
     StoryManager mStoryManager;
     DialogueDatabase mDialogueDatabase;
     NPCManager mNPCManager;
@@ -145,6 +156,7 @@ private:
     int mSelectedChoice;
     std::vector<sf::RectangleShape> mChoiceBoxes;
     std::vector<sf::Text> mChoiceTexts;
+    void updateDialogueChoices();
 
     bool mIsInsideAStructure;
     int mStructureIndex;
