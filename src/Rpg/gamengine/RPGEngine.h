@@ -153,6 +153,7 @@ private:
     sf::CircleShape mDialogueInteractCircle;
     sf::Text mDialogueInteractText;
 
+    sf::Vector2f mLastMousePos;
     int mSelectedChoice;
     std::vector<sf::RectangleShape> mChoiceBoxes;
     std::vector<sf::Text> mChoiceTexts;
