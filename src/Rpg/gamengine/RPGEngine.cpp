@@ -200,9 +200,11 @@ void RPGEngine::processEvents() {
 
                 if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W) {
                     mSelectedChoice = (mSelectedChoice - 1 + choices.size()) % choices.size();
+                    updateDialogueChoices();
                     return;
                 } else if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S) {
                     mSelectedChoice = (mSelectedChoice + 1) % choices.size();
+                    updateDialogueChoices();
                     return;
                 } else if (event.key.code == sf::Keyboard::E || event.key.code == sf::Keyboard::Return) {
                     mNPCManager.selectChoiceForCurrentNPC(mSelectedChoice, mShowDialogue, mDialogueText);
@@ -211,7 +213,7 @@ void RPGEngine::processEvents() {
                 }
             }
 
-            if (event.key.code == sf::Keyboard::E) {
+            if (event.key.code == sf::Keyboard::E || event.key.code == sf::Keyboard::Return) {
                 if (!mShowDialogue) {
                     mNPCManager.handleInteraction(mCharacter, mShowDialogue, mDialogueText);
                     if (mShowDialogue) {
@@ -221,14 +223,25 @@ void RPGEngine::processEvents() {
                                               mIconSprite.getLocalBounds().top + mIconSprite.getLocalBounds().height / 2.f);
                         mIconSprite.setPosition(sf::Vector2f((mDialogueBox.getPosition().x + mSeparationLine.getPosition().x) / 2.f,
                                          mDialogueBox.getPosition().y + mDialogueBox.getSize().y / 2.f - 20.f));
+
+                        if (mNPCManager.currentNPCHasChoices()) {
+                            mSelectedChoice = 0;
+                            updateDialogueChoices();
+                        }
                     } else {
                         Entity* interactable = mZoneManager.checkInteraction(mCharacter.getInteractBounds());
                         if (interactable)
                             interactable->interact();
                     }
                 } else if (mCurrentInteractingNPC && mShowDialogue) {
-                    if (!mNPCManager.currentNPCHasChoices())
+                    if (!mNPCManager.currentNPCHasChoices()) {
                         mNPCManager.interactWithCurrentNPC(mShowDialogue, mDialogueText);
+
+                        if (mNPCManager.currentNPCHasChoices()) {
+                            mSelectedChoice = 0;
+                            updateDialogueChoices();
+                        }
+                    }
                 } else {
                     mShowDialogue = false;
                     if (mCurrentInteractingNPC) {
@@ -379,13 +392,23 @@ void RPGEngine::processEvents() {
         } else if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Left) {
                 sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
-                if (mShowDialogue && mNPCManager.currentNPCHasChoices()) {
-                    for (size_t i = 0; i < mChoiceBoxes.size(); ++i) {
-                        if (mChoiceBoxes[i].getGlobalBounds().contains(mousePos)) {
-                            mNPCManager.selectChoiceForCurrentNPC(i, mShowDialogue, mDialogueText);
-                            mSelectedChoice = 0;
-                            return;
+
+                if (mShowDialogue) {
+                    if (mNPCManager.currentNPCHasChoices()) {
+                        for (size_t i = 0; i < mChoiceBoxes.size(); ++i) {
+                            if (mChoiceBoxes[i].getGlobalBounds().contains(mousePos)) {
+                                mNPCManager.selectChoiceForCurrentNPC(i, mShowDialogue, mDialogueText);
+                                mSelectedChoice = 0;
+                                return;
+                            }
                         }
+                    } else {
+                        mNPCManager.interactWithCurrentNPC(mShowDialogue, mDialogueText);
+                        if (mNPCManager.currentNPCHasChoices()) {
+                            mSelectedChoice = 0;
+                            updateDialogueChoices();
+                        }
+                        return;
                     }
                 }
 
@@ -512,6 +535,25 @@ void RPGEngine::update() {
 
     if (!mNPCManager.playerClose(mCharacter.getPosition()))
         mShowDialogue = false;
+
+    bool mouseMoved = (mousePos != mLastMousePos);
+    mLastMousePos = mousePos;
+
+    if (mShowDialogue && mNPCManager.currentNPCHasChoices()) {
+        if (mouseMoved) {
+            bool changed = false;
+
+            for (int i = 0; i < mChoiceBoxes.size(); ++i) {
+                if (mChoiceBoxes[i].getGlobalBounds().contains(mousePos) && mSelectedChoice != i) {
+                    mSelectedChoice = i;
+                    changed = true;
+                }
+            }
+
+            if (changed)
+                updateDialogueChoices();
+        }
+    }
 
     sf::FloatRect playerBounds = mCharacter.getBounds();
     sf::Vector2f playerCenter = {playerBounds.left + playerBounds.width / 2.f, playerBounds.top + playerBounds.height / 2.f};
@@ -661,46 +703,49 @@ void RPGEngine::render() {
 }
 
 void RPGEngine::renderDialogueChoices() {
+    for (const auto& box: mChoiceBoxes)
+        mWindow.draw(box);
+
+    for (const auto& text: mChoiceTexts)
+        mWindow.draw(text);
+}
+
+void RPGEngine::updateDialogueChoices() {
     auto choices = mNPCManager.getCurrentNPCChoices();
     if (choices.empty()) return;
 
-    mChoiceBoxes.clear();
-    mChoiceTexts.clear();
+    mChoiceBoxes.resize(choices.size());
+    mChoiceTexts.resize(choices.size());
 
-    float choiceY = mDialogueBox.getPosition().y + mDialogueBox.getSize().y + 10.f;
     float choiceWidth = mDialogueBox.getSize().x;
     float choiceHeight = 35.f;
+    float spacing = 5.f;
+
+    float totalHeight = (choiceHeight + spacing) * choices.size();
+    float startY = mDialogueBox.getPosition().y - totalHeight - 10.f;
 
     for (size_t i = 0; i < choices.size(); ++i) {
-        sf::RectangleShape choiceBox;
-        choiceBox.setSize(sf::Vector2f(choiceWidth, choiceHeight));
-        choiceBox.setPosition(sf::Vector2f(mDialogueBox.getPosition().x, choiceY));
+        float choiceY = startY + i * (choiceHeight + spacing);
+
+        mChoiceBoxes[i].setSize(sf::Vector2f(choiceWidth, choiceHeight));
+        mChoiceBoxes[i].setPosition(sf::Vector2f(mDialogueBox.getPosition().x, choiceY));
 
         if (i == mSelectedChoice) {
-            choiceBox.setFillColor(sf::Color(70, 70, 70, 255));
-            choiceBox.setOutlineColor(sf::Color(150, 150, 150, 150));
-            choiceBox.setOutlineThickness(2.f);
+            mChoiceBoxes[i].setFillColor(sf::Color(70, 70, 70, 255));
+            mChoiceBoxes[i].setOutlineColor(sf::Color(150, 150, 150, 150));
+            mChoiceBoxes[i].setOutlineThickness(2.f);
         } else {
-            choiceBox.setFillColor(sf::Color(40, 40, 40, 255));
-            choiceBox.setOutlineColor(sf::Color(100, 100, 100, 155));
-            choiceBox.setOutlineThickness(1.f);
+            mChoiceBoxes[i].setFillColor(sf::Color(40, 40, 40, 255));
+            mChoiceBoxes[i].setOutlineColor(sf::Color(100, 100, 100, 155));
+            mChoiceBoxes[i].setOutlineThickness(1.f);
         }
 
-        sf::Text choiceText;
-        choiceText.setFont(mFont);
-        choiceText.setCharacterSize(mDialogueText.getCharacterSize());
-        choiceText.setFillColor(sf::Color::White);
+        mChoiceTexts[i].setFont(mFont);
+        mChoiceTexts[i].setCharacterSize(mDialogueText.getCharacterSize());
+        mChoiceTexts[i].setFillColor(sf::Color::White);
 
-        choiceText.setString(choices[i].text);
-        choiceText.setPosition(mDialogueBox.getPosition().x + 15.f, choiceY + 8.f);
-
-        mChoiceBoxes.push_back(choiceBox);
-        mChoiceTexts.push_back(choiceText);
-
-        mWindow.draw(choiceBox);
-        mWindow.draw(choiceText);
-
-        choiceY += choiceHeight + 5.f;
+        mChoiceTexts[i].setString(choices[i].text);
+        mChoiceTexts[i].setPosition(mDialogueBox.getPosition().x + 15.f, choiceY + 8.f);
     }
 }
 

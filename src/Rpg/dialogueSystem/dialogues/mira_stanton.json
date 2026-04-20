@@ -14,6 +14,23 @@
         "Alden! There you are!",
         "I was just thinking about that shortcut we found through the forest last week.",
         "You up for another adventure?"
+      ],
+      "choices": [
+          {
+              "text": "Sure, let's go!",
+              "next_lines": ["Great! Meet me at the forest entrance."],
+              "actions": [
+                { "type": "set_story_flag", "target": "forest_quest_accepted", "value": 1 }
+              ]
+          },
+          {
+              "text": "Not today, Mira.",
+              "next_lines": ["Oh, alright. Maybe next time then."]
+          },
+          {
+              "text": "What shortcut?",
+              "next_lines": ["The one behind the old mill! You have a short memory, Alden."]
+          }
       ]
     }
   ]

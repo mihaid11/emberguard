@@ -17,8 +17,12 @@ void NPCManager::addNPC(std::unique_ptr<NPC> npc) {
 }
 
 void NPCManager::refreshNPCDialogues() {
-    for (auto& npc : mNPCs)
+    for (auto& npc : mNPCs) {
+        if (mCurrentNPC == npc.get())
+            continue;
+
         npc->refreshDialogue(mDialogueDatabase, mStoryManager);
+    }
 }
 
 void NPCManager::update(float dt) {
@@ -171,6 +175,7 @@ void NPCManager::selectChoiceForCurrentNPC(int choiceIndex, bool& showDialogue, 
             showDialogue = false;
             mCurrentNPC->resetDialogue();
             mCurrentNPC->resumeMovement();
+            mCurrentNPC->refreshDialogue(mDialogueDatabase, mStoryManager);
             mCurrentNPC = nullptr;
         }
     }
@@ -202,6 +207,7 @@ void NPCManager::interactWithCurrentNPC(bool& showDialogue, sf::Text& dialogueTe
         showDialogue = false;
         mCurrentNPC->resetDialogue();
         mCurrentNPC->resumeMovement();
+        mCurrentNPC->refreshDialogue(mDialogueDatabase, mStoryManager);
         mCurrentNPC = nullptr;
     }
 }
