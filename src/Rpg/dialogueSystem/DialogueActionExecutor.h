@@ -18,4 +18,3 @@ private:
     RPGEngine& mRpgEngine;
     Inventory& mInventory;
 };
-

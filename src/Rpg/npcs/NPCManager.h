@@ -46,4 +46,3 @@ private:
     DialogueActionExecutor* mActionExecutor;
     bool mShowDialogue;
 };
-

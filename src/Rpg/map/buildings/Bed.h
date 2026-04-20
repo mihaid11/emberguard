@@ -17,6 +17,7 @@ public:
     void interact() override;
     void render(sf::RenderWindow& window) override;
 
+    float getDepthOffset() const override { return -9000.f; }
 private:
     TimeSystem& mTimeSystem;
     TransitionSystem& mTransitionSystem;

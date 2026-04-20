@@ -100,4 +100,3 @@ protected:
     void startPause(float duration);
     void updatePause(float dt);
 };
-
