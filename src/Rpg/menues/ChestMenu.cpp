@@ -1,20 +1,21 @@
 #include "ChestMenu.h"
 #include <iostream>
 
-ChestMenu::ChestMenu(sf::RenderWindow& window, Inventory& inventory, Inventory& chestInventory, const sf::Vector2f& slotSize)
-    : mInventory(inventory), mChestInventory(chestInventory), mHoveredSlot(-1) {
+ChestMenu::ChestMenu(const sf::Vector2f& windowSize, Inventory& inventory, Inventory& chestInventory, const sf::Vector2f& slotSize)
+    : Menu(windowSize), mInventory(inventory), mChestInventory(chestInventory), mHoveredSlot(-1) {
     
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;
 
-    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f));
-    mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
-    mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2.f,
-                           (window.getSize().y - mMenuShape.getSize().y) / 2.f);
+    mTitle.setFont(mFont);
+    mTitle.setCharacterSize(19);
+    mTitle.setFillColor(sf::Color::White);
+    mTitle.setString("ChestMenu");
 
-    mHoveredZoneShape.setSize(sf::Vector2f(mMenuShape.getSize().x, 40));
-    mHoveredZoneShape.setFillColor(sf::Color(10, 10, 10, 100));
-    mHoveredZoneShape.setPosition(mMenuShape.getPosition());
+    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
+                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
+    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
+                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
 
     sf::Vector2f mInventoryPosition(mMenuShape.getPosition().x + 90.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 90.f);
     int totalSlots = mInventory.getSlotCount();
@@ -68,88 +69,45 @@ ChestMenu::ChestMenu(sf::RenderWindow& window, Inventory& inventory, Inventory& 
 }
 
 void ChestMenu::render(sf::RenderWindow& window) {
-    window.draw(mMenuShape);
-    window.draw(mHoveredZoneShape);
+    if (!mIsActive)
+        return;
+
+    Menu::render(window);
+    window.draw(mTitle);
+
     window.draw(mInventoryText);
     window.draw(mChestText);
 
-    for (int i = 0; i < mInventorySlots.size(); ++i) {
-        if (i == mHoveredSlot)
-            mInventorySlots[i].setFillColor(sf::Color(120, 120, 120, 210));
+    drawSlots(window, mInventorySlots, mInventory, 0);
+    drawSlots(window, mChestSlots, mChestInventory, mInventorySlots.size());
+
+    if (mShowTooltip && mHoveredSlot != -1) {
+        window.draw(mTooltipBackground);
+        window.draw(mTooltipText);
+    }
+}
+
+void ChestMenu::drawSlots(sf::RenderWindow& window, const std::vector<sf::RectangleShape>& slots, Inventory& inventory, int indexOffset) {
+    for (int i = 0; i < slots.size(); ++i) {
+        if (i + indexOffset == mHoveredSlot)
+            const_cast<sf::RectangleShape&>(slots[i]).setFillColor(sf::Color(120, 120, 120, 210));
         else
-            mInventorySlots[i].setFillColor(sf::Color(0, 0, 0, 220));
+            const_cast<sf::RectangleShape&>(slots[i]).setFillColor(sf::Color(0, 0, 0, 220));
 
-        window.draw(mInventorySlots[i]);
+        window.draw(slots[i]);
 
-        const Item* item = mInventory.getItemAt(i);
+        const Item* item = inventory.getItemAt(i);
         if (item) {
             sf::RectangleShape icon = item->getIcon();
-            icon.setPosition(mInventorySlots[i].getPosition());
+            icon.setPosition(slots[i].getPosition());
             window.draw(icon);
-        }
-    }
-
-    for (int i = 0; i < mChestSlots.size(); ++i) {
-        if (i + mInventorySlots.size() == mHoveredSlot)
-            mChestSlots[i].setFillColor(sf::Color(120, 120, 120, 210));
-        else
-            mChestSlots[i].setFillColor(sf::Color(0, 0, 0, 220));
-
-        window.draw(mChestSlots[i]);
-
-        const Item* item = mChestInventory.getItemAt(i);
-        if (item) {
-            sf::RectangleShape icon = item->getIcon();
-            icon.setPosition(mChestSlots[i].getPosition());
-            window.draw(icon);
-        }
-    }
-
-    if (mHoveredSlot != -1) {
-        const Item* item = nullptr;
-        if (mHoveredSlot < mInventorySlots.size()) {
-            item = mInventory.getItemAt(mHoveredSlot);
-        } else {
-            int chestSlot = mHoveredSlot - mInventorySlots.size();
-            if (chestSlot < mChestSlots.size()) {
-                item = mChestInventory.getItemAt(chestSlot);
-            }
-        }
-
-        if (item) {
-            std::string quantityText = "";
-            if (mHoveredSlot < mInventorySlots.size()) {
-                quantityText = "   " + std::to_string(mInventory.getItemQuantityAt(mHoveredSlot));
-            } else {
-                int chestSlot = mHoveredSlot - mInventorySlots.size();
-                quantityText = "   " + std::to_string(mChestInventory.getItemQuantityAt(chestSlot));
-            }
-            
-            mTooltipText.setString(item->getName() + quantityText + "\n" + item->getDescription());
-            
-            sf::Vector2f tooltipPos;
-            if (mHoveredSlot < mInventorySlots.size()) {
-                tooltipPos = mInventorySlots[mHoveredSlot].getPosition();
-            } else {
-                int chestSlot = mHoveredSlot - mInventorySlots.size();
-                tooltipPos = mChestSlots[chestSlot].getPosition();
-            }
-            
-            mTooltipText.setPosition(tooltipPos.x, tooltipPos.y - mTooltipText.getLocalBounds().height - 5);
-            mTooltipBackground.setSize(sf::Vector2f(
-                mTooltipText.getLocalBounds().width + 10,
-                mTooltipText.getLocalBounds().height + 10
-            ));
-            mTooltipBackground.setPosition(mTooltipText.getPosition().x - 5, mTooltipText.getPosition().y - 5);
-            
-            window.draw(mTooltipBackground);
-            window.draw(mTooltipText);
         }
     }
 }
 
 void ChestMenu::handleMouseClick(const sf::Vector2f& mousePos) {
-    if (mHoveredSlot == -1) return;
+    if (!mIsActive || mHoveredSlot == -1)
+        return;
 
     if (mHoveredSlot < mInventorySlots.size()) {
         const Item* item = mInventory.getItemAt(mHoveredSlot);
@@ -172,38 +130,75 @@ void ChestMenu::handleMouseClick(const sf::Vector2f& mousePos) {
             }
         }
     }
+
+    updateTooltip(mHoveredSlot);
 }
 
 void ChestMenu::updateHover(const sf::Vector2f& mousePos) {
-    mHoveredSlot = -1;
+    if (!mIsActive)
+        return;
 
-    for (int i = 0; i < mInventorySlots.size(); ++i) {
-        if (mInventorySlots[i].getGlobalBounds().contains(mousePos)) {
-            mHoveredSlot = i;
-            return;
-        }
+    int lastHovered = mHoveredSlot;
+    mHoveredSlot = getSlotIndexAtPosition(mousePos);
+
+    if (mHoveredSlot != lastHovered) {
+        if (mHoveredSlot != -1)
+            updateTooltip(mHoveredSlot);
+        else
+            mShowTooltip = false;
     }
-    
-    // Check chest slots (6-9)
-    for (int i = 0; i < mChestSlots.size(); ++i) {
-        if (mChestSlots[i].getGlobalBounds().contains(mousePos)) {
-            mHoveredSlot = i + mInventorySlots.size();
-            return;
+}
+
+void ChestMenu::update(float dt) {
+    if (!mIsActive)
+        return;
+}
+
+void ChestMenu::updateTooltip(int slotIndex) {
+    const Item* item = nullptr;
+    int quantity = 0;
+
+    if (slotIndex < mInventorySlots.size()) {
+        item = mInventory.getItemAt(slotIndex);
+        quantity = mInventory.getItemQuantityAt(slotIndex);
+    } else {
+        int chestIndex = slotIndex - mInventorySlots.size();
+        item = mChestInventory.getItemAt(chestIndex);
+        quantity = mChestInventory.getItemQuantityAt(chestIndex);
+    }
+
+    if (item) {
+        mTooltipText.setString(item->getName() + "   " + std::to_string(quantity) + "\n" + item->getDescription());
+
+        sf::Vector2f tooltipPos;
+        if (mHoveredSlot < mInventorySlots.size()) {
+            tooltipPos = mInventorySlots[mHoveredSlot].getPosition();
+        } else {
+            int chestSlot = mHoveredSlot - mInventorySlots.size();
+            tooltipPos = mChestSlots[chestSlot].getPosition();
         }
+
+        mTooltipText.setPosition(tooltipPos.x, tooltipPos.y - mTooltipText.getLocalBounds().height - 10.f);
+        mTooltipBackground.setSize(sf::Vector2f(mTooltipText.getLocalBounds().width + 10.f,
+                                                mTooltipText.getLocalBounds().height + 10.f));
+        mTooltipBackground.setPosition(mTooltipText.getPosition().x - 5.f, mTooltipText.getPosition().y - 5.f);
+
+        mShowTooltip = true;
+    } else {
+        mShowTooltip = false;
     }
 }
 
 int ChestMenu::getSlotIndexAtPosition(const sf::Vector2f& pos) const {
-    for (int i = 0; i < mInventorySlots.size(); ++i)
+    for (int i = 0; i < mInventorySlots.size(); ++i) {
         if (mInventorySlots[i].getGlobalBounds().contains(pos))
             return i;
+    }
 
     for (int i = 0; i < mChestSlots.size(); ++i) {
-        if (mChestSlots[i].getGlobalBounds().contains(pos)) {
+        if (mChestSlots[i].getGlobalBounds().contains(pos))
             return i + mInventorySlots.size();
-        }
     }
     
     return -1;
 }
-

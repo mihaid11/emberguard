@@ -15,7 +15,7 @@ struct GameContext {
     bool& isInsideStructure;
     int &structureIndex;
     sf::Vector2f& cameraFixedPosition;
-    bool& showChestMenu;
+    std::function<void(bool)> setChestMenuState;
     TimeSystem& timeSystem;
     TransitionSystem& transitionSystem;
     GameManager* gameManager;
