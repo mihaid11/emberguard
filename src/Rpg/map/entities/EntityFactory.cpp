@@ -72,7 +72,7 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
             sf::Vector2f(0.f, 0.f),
             interactPos,
             interactSize,
-            gameContext.showChestMenu
+            gameContext.setChestMenuState
         );
     }
 
