@@ -54,7 +54,7 @@ public:
 
     std::string getID() const { return mId; }
     sf::Sprite& getSprite();
-    sf::Sprite& getIconSprite();
+    sf::Sprite& getAvatarSprite();
 
 protected:
     std::string mId;
@@ -94,8 +94,8 @@ protected:
     Animation mAnimations[int(AnimationIndex::Count)];
     AnimationIndex mCurrentAnimation = AnimationIndex::IdleDown;
 
-    sf::Sprite mIconSprite;
-    Animation mIconTexture;
+    sf::Sprite mAvatarSprite;
+    sf::Texture mAvatarTexture;
 
     void startPause(float duration);
     void updatePause(float dt);
