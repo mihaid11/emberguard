@@ -37,7 +37,7 @@ public:
     void addXp(int xp);
 
     sf::Sprite& getSprite();
-    sf::Sprite& getIconSprite();
+    sf::Sprite& getAvatarSprite();
 
 private:
     enum class AnimationIndex {
@@ -62,8 +62,8 @@ private:
     Animation mAnimations[int(AnimationIndex::Count)];
     AnimationIndex mCurrentAnimation = AnimationIndex::IdleDown;
 
-    sf::Sprite mIconSprite;
-    Animation mIconTexture;
+    sf::Sprite mAvatarSprite;
+    sf::Texture mAvatarTexture;
 
     sf::RectangleShape mCollisionZone;
     sf::RectangleShape mInteractZone;

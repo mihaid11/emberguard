@@ -18,10 +18,12 @@ NPC::NPC(const sf::Vector2f& position, const std::string& id)
     mAnimations[int(AnimationIndex::WalkingLeft)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/walkLeft.png", 6, 1.52f);
     mAnimations[int(AnimationIndex::WalkingRight)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/walkRight.png", 6, 1.52f);
 
-    mIconSprite.setTextureRect({ 0, 0, 64, 64 });
-    mIconTexture = Animation(0, 0, 28, 64, "assets/sprites/mainCharacter/idleDown.png", 1, 0.0f);
-    mIconTexture.applyToSprite(mIconSprite);
-    mIconSprite.setScale({ 2.7f, 2.7f });
+    if (mAvatarTexture.loadFromFile("assets/sprites/mainCharacter/playerAvatar.png")) {
+        mAvatarSprite.setTexture(mAvatarTexture);
+
+        mAvatarSprite.setOrigin(mAvatarSprite.getLocalBounds().width / 2.f, mAvatarSprite.getLocalBounds().height / 2.f);
+        mAvatarSprite.setScale(3.f, 3.f);
+    }
 
     mInteractCircle.setRadius(7.5f);
     mInteractCircle.setFillColor(sf::Color(30, 30, 30, 200));
@@ -272,6 +274,6 @@ sf::Sprite& NPC::getSprite() {
     return mSprite;
 }
 
-sf::Sprite& NPC::getIconSprite() {
-    return mIconSprite;
+sf::Sprite& NPC::getAvatarSprite() {
+    return mAvatarSprite;
 }
