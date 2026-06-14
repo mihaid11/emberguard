@@ -89,9 +89,7 @@ private:
     sf::Clock mClock;
     sf::View mView;
 
-    bool mShowMenu;
     bool mShowDialogue;
-    bool mShowChestMenu;
     sf::Text mDialogueText;
     sf::Font mFont;
 

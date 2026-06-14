@@ -65,14 +65,13 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mChestInventory(2, 2),
     mCurrentInteractingNPC(nullptr),
     mSkillTree(),
-    mMenu(window, mSkillTree, mInventory, *this, gameManager),
+    mCrystals(100),
+    mMenu(sf::Vector2f(window.getSize()), mSkillTree, mInventory, *this, gameManager, mCrystals),
     mHotbar(mInventory, sf::Vector2f(mWindow.getSize().x / 2 - 45.f * 3 / 2, mWindow.getSize().y - 45.f - 4.f),
         mInventory.getSlotCount() / 2, sf::Vector2f(45.f, 45.f)),
-    mShowMenu(false),
     mShowInteract(false),
     mIsInsideAStructure(false),
     mStructureIndex(-1),
-    mCrystals(100),
     mStorageCapacity(500),
     mCurrentTowerDefenseLevel(1),
     mChapter(1),
@@ -218,7 +217,7 @@ void RPGEngine::processEvents() {
                     mNPCManager.handleInteraction(mCharacter, mShowDialogue, mDialogueText);
                     if (mShowDialogue) {
                         mCurrentInteractingNPC = mNPCManager.getCurrentNPC();
-                        mIconSprite = mCurrentInteractingNPC->getIconSprite();
+                        mIconSprite = mCurrentInteractingNPC->getAvatarSprite();
                         mIconSprite.setOrigin(mIconSprite.getLocalBounds().left + mIconSprite.getLocalBounds().width / 2.f,
                                               mIconSprite.getLocalBounds().top + mIconSprite.getLocalBounds().height / 2.f);
                         mIconSprite.setPosition(sf::Vector2f((mDialogueBox.getPosition().x + mSeparationLine.getPosition().x) / 2.f,
@@ -271,15 +270,15 @@ void RPGEngine::processEvents() {
                 } else if (mShopMenu.isActive()) {
                     mShopMenu.setActive(false);
                 } else {
-                    mShowMenu = !mShowMenu;
-                    if (!mShowMenu)
+                    mMenu.toggle();
+                    if (!mMenu.isActive())
                         mMenu.restart();
                 }
             } else if (event.key.code == sf::Keyboard::L) {
                 mStartTowerDefenseMenu.toggle();
 
                 if (mStartTowerDefenseMenu.isActive()) {
-                    mShowMenu = false;
+                    mMenu.setActive(false);
                     mBankMenu.setActive(false);
                     mShopMenu.setActive(false);
                     mAnalyzeMenu.setActive(false);
@@ -298,7 +297,7 @@ void RPGEngine::processEvents() {
                 mBankMenu.toggle();
 
                 if (mBankMenu.isActive()) {
-                    mShowMenu = false;
+                    mMenu.setActive(false);
                     mStartTowerDefenseMenu.setActive(false);
                     mShopMenu.setActive(false);
                     mAnalyzeMenu.setActive(false);
@@ -327,14 +326,14 @@ void RPGEngine::processEvents() {
                         }
                     }
 
-                    mShowMenu = false;
+                    mMenu.setActive(false);
                     mBankMenu.setActive(false);
                     mStartTowerDefenseMenu.setActive(false);
                     mAnalyzeMenu.setActive(false);
                     mChestMenu.setActive(false);
                 }
             } else if (event.key.code == sf::Keyboard::Q) {
-                if (mShowMenu && mMenu.getMenuType() == "Inventory") {
+                if (mMenu.isActive() && mMenu.getMenuType() == "Inventory") {
                     int slotIndex = mMenu.getInventoryMenu().getHoveredSlot();
                     if (slotIndex != -1) {
                         if (mInventory.getItemAt(slotIndex)) {
@@ -348,7 +347,7 @@ void RPGEngine::processEvents() {
                     }
                 }
 
-                if (!mShowMenu && !mBankMenu.isActive() && !mStartTowerDefenseMenu.isActive() && !mShowDialogue && !mAnalyzeMenu.isActive() && !mChestMenu.isActive()) {
+                if (!mMenu.isActive() && !mBankMenu.isActive() && !mStartTowerDefenseMenu.isActive() && !mShowDialogue && !mAnalyzeMenu.isActive() && !mChestMenu.isActive()) {
                     int slotIndex = mHotbar.getHoveredSlot();
                     if (slotIndex != -1) {
                         if (mInventory.getItemAt(slotIndex)) {
@@ -362,7 +361,7 @@ void RPGEngine::processEvents() {
                     }
                 }
             } else if (event.key.code == sf::Keyboard::Num1 || event.key.code == sf::Keyboard::Num2 || event.key.code == sf::Keyboard::Num3) {
-                if (!mBankMenu.isActive() && !mShowDialogue && !mShowMenu && !mStartTowerDefenseMenu.isActive() && !mAnalyzeMenu.isActive() && !mChestMenu.isActive()) {
+                if (!mBankMenu.isActive() && !mShowDialogue && !mMenu.isActive() && !mStartTowerDefenseMenu.isActive() && !mAnalyzeMenu.isActive() && !mChestMenu.isActive()) {
                     int slot = -1;
                     if (event.key.code == sf::Keyboard::Num1)
                         slot = 0;
@@ -376,7 +375,7 @@ void RPGEngine::processEvents() {
                 mAnalyzeMenu.toggle();
 
                 if (mAnalyzeMenu.isActive()) {
-                    mShowMenu = false;
+                    mMenu.setActive(false);
                     mStartTowerDefenseMenu.setActive(false);
                     mShopMenu.setActive(false);
                     mBankMenu.setActive(false);
@@ -415,19 +414,16 @@ void RPGEngine::processEvents() {
                     }
                 }
 
-                if (mShowMenu)
-                    mMenu.handleMouseClick(mousePos);
-
+                mMenu.handleMouseClick(mousePos);
                 mStartTowerDefenseMenu.handleMouseClick(mousePos);
                 mBankMenu.handleMouseClick(mousePos);
                 mShopMenu.handleMouseClick(mousePos);
                 mAnalyzeMenu.handleMouseClick(mousePos);
-
                 mChestMenu.handleMouseClick(mousePos);
 
                 mLevelCompleteMenu.handleMouseClick(mousePos);
 
-                if(!mShowMenu && !mStartTowerDefenseMenu.isActive() && !mBankMenu.isActive() && !mShopMenu.isActive() && !mAnalyzeMenu.isActive() && !mChestMenu.isActive() && !mShowDialogue) {
+                if(!mMenu.isActive() && !mStartTowerDefenseMenu.isActive() && !mBankMenu.isActive() && !mShopMenu.isActive() && !mAnalyzeMenu.isActive() && !mChestMenu.isActive() && !mShowDialogue) {
                     int slot = mHotbar.contains(mousePos);
                     mHotbar.setHoveredSlot(slot);
                 }
@@ -443,9 +439,9 @@ void RPGEngine::update() {
     float dt = mClock.restart().asSeconds();
     sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
 
-    if (mShowMenu) {
+    if (mMenu.isActive()) {
         mMenu.updateHover(mousePos);
-        mMenu.update(mCrystals, mInventory, mSkillTree);
+        mMenu.update(dt);
         return;
     }
 
@@ -678,9 +674,7 @@ void RPGEngine::render() {
             renderDialogueChoices();
     }
 
-    if (mShowMenu)
-        mMenu.render(mWindow);
-
+    mMenu.render(mWindow);
     mStartTowerDefenseMenu.render(mWindow);
     mBankMenu.render(mWindow);
     mShopMenu.render(mWindow);
@@ -791,9 +785,7 @@ void RPGEngine::closeMenues() {
         mShowDialogue = false;
         mNPCManager.resumeCurrentNPC();
 
-    if (mShowMenu)
-        mShowMenu = false;
-
+    mMenu.setActive(false);
     mStartTowerDefenseMenu.setActive(false);
     mBankMenu.setActive(false);
     mShopMenu.setActive(false);
@@ -1137,7 +1129,7 @@ void RPGEngine::setSaveNumber(int saveNumber) {
 
 void RPGEngine::setFlag(std::string name, bool value) {
     if (name == "mShowMenu")
-        mShowMenu = value;
+        mMenu.setActive(value);
     else if (name == "mShowStartMenu")
         mStartTowerDefenseMenu.setActive(value);
     else if (name == "mShowBankMenu")
