@@ -1,38 +1,38 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 #include <memory>
 #include <vector>
-#include "../skillTree/SkillTreeMenu.h"
+#include "../menues/SkillTreeMenu.h"
 #include "../skillTree/SkillTree.h"
-#include "../inventory/InventoryMenu.h"
+#include "../menues/InventoryMenu.h"
 #include "../inventory/items/DroppedItem.h"
 
 class RPGEngine;
 class GameManager;
 
-class RpgMenu {
+class RpgMenu : public Menu {
 public:
-    RpgMenu(sf::RenderWindow& window, SkillTree& skillTree, Inventory& inventory,
-         RPGEngine& rpgEngine, GameManager* gameManager);
+    RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory& inventory,
+            RPGEngine& rpgEngine, GameManager* gameManager, int& crystals);
 
-    void render(sf::RenderWindow& window);
-    void handleMouseClick(const sf::Vector2f& mousePos);
-    void updateHover(const sf::Vector2f& mousePos);
+    void render(sf::RenderWindow& window) override;
+    void handleMouseClick(const sf::Vector2f& mousePos) override;
+    void updateHover(const sf::Vector2f& mousePos) override;
+    void update(float dt) override;
+
     void switchToMenu(const std::string& menuName);
     void restart();
 
-    void update(int crystals, const Inventory& inventory, const SkillTree& skillTree);
     const std::string& getMenuType() const;
     InventoryMenu& getInventoryMenu();
 
 private:
-    sf::RectangleShape mBackground;
-    sf::RectangleShape mMenuShape;
-    sf::RectangleShape mHoveredZoneShape;
     GameManager* mGameManager;
+    int& mCrystals;
 
-    std::vector<Button> mButtons;
+    std::vector<Button*> mButtons;
     Button mSkillTreeButton;
     Button mInventoryButton;
     Button mExitButton;
@@ -41,6 +41,7 @@ private:
     std::string mCurrentMenu;
     std::unique_ptr<SkillTreeMenu> mSkillTreeMenu;
     std::unique_ptr<InventoryMenu> mInventoryMenu;
+
     sf::Font mFont;
     sf::Text mCrystalText;
 
@@ -48,4 +49,3 @@ private:
     sf::Text mErrorText;
     sf::Clock mClock;
 };
-
