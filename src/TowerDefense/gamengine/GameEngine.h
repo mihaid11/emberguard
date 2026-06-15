@@ -35,6 +35,11 @@ public:
     int getCrystals() const;
     int getInitialCrystals();
 
+    int getEnemiesKilledInRound() const { return mEnemiesKilledInRound; }
+    int getCrystalsEarnedInRound() const { return mCrystalsEarnedInRound; }
+    int getCurrentWave() const;
+    int getMaxWaves() const;
+
 private:
 
     void handleTowerClick(Tower& tower, const sf::Vector2f& worldPos);
@@ -77,6 +82,9 @@ private:
     Enemy* mSelectedEnemy;
     std::vector<int> mAvailableTowers;
 
+    int mEnemiesKilledInRound;
+    int mCrystalsEarnedInRound;
+
     sf::RectangleShape startGameButton;
     sf::Text startGameButtonText;
     bool gameStarted;
@@ -86,7 +94,6 @@ private:
     SmallMenu mSmallMenu;
     GameOverMenu mGameOverMenu;
     LevelCompleteMenu mLevelCompleteMenu;
-    bool mIsPaused;
     GameManager* mGameManager;
 
     bool mShowText1;
@@ -106,4 +113,3 @@ private:
     sf::Text mNotEnoughCrystalsText;
     sf::Clock mNotEnoughCrystalsClock;
 };
-

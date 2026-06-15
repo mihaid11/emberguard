@@ -14,6 +14,9 @@ public:
     bool isWaveComplete() const;
     bool isLevelComplete() const;
 
+    int getCurrentWaveIndex() const { return mCurrentWaveIndex; }
+    const LevelConfig* getLevelConfig() const { return mLevelConfig; }
+
 private:
     const WaveDatabase& mDatabase;
     const LevelConfig* mLevelConfig;
