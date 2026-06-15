@@ -2,36 +2,40 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "../../ui/Button.h"
+#include "../../ui/Menu.h"
 
 class GameEngine;
 class GameManager;
 
-class SmallMenu {
+class SmallMenu : public Menu {
 public:
-    SmallMenu(sf::RenderWindow& window, GameEngine* game, GameManager* gameManager,
+    SmallMenu(const sf::Vector2f& windowSize, GameEngine* game, GameManager* gameManager,
               int level, std::vector<int>& availableTowers);
 
-    void render(sf::RenderWindow& window);
-    void handleMouseClick(const sf::Vector2f& mousePos);
-    void updateHover(const sf::Vector2f& mousePos);
-
-    bool isVisible() const;
-    void show();
-    void hide();
+    void render(sf::RenderWindow& window) override;
+    void handleMouseClick(const sf::Vector2f& mousePos) override;
+    void updateHover(const sf::Vector2f& mousePos) override;
+    void update(float dt) override;
 
 private:
-    sf::RectangleShape mMenuBackground;
-    sf::RectangleShape mBackground;
+    std::vector<Button*> mButtons;
+    Button mResumeButton;
+    Button mRestartButton;
+    Button mSurrenderButton;
 
-    std::vector<Button> mButtons;
-    Button quitButton;
-    Button restartButton;
+    sf::Font mFont;
+    sf::Text mTitle;
+
+    sf::Text mEnemiesKilledText;
+    sf::Text mCrystalsEarnedText;
+    sf::Text mFinalBalanceText;
+    sf::Text mWaveText;
 
     GameEngine* mGame;
     GameManager* mGameManager;
     int mLevel;
-    bool mIsVisible;
 
     std::vector<int>& mAvailableTowers;
-};
 
+    void initializeLayout();
+};

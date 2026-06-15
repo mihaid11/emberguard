@@ -28,12 +28,11 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     gameStarted(false),
     mGameOver(false),
     mLevelCompleted(false),
-    mIsPaused(false),
     mShowNotEnoughCrystalsText(false),
     mShowText1(false),
     mShowText2(false),
     mGameManager(gameManager),
-    mSmallMenu(mWindow, this, gameManager, mCurrentLevel, mAvailableTowers),
+    mSmallMenu(sf::Vector2f(window.getSize()), this, gameManager, mCurrentLevel, mAvailableTowers),
     mLevelCompleteMenu(mWindow, this, nullptr, gameManager, mCurrentLevel, true),
     mGameOverMenu(mWindow, this, gameManager, mCurrentLevel, mCrystals, mAvailableTowers) {
 
@@ -121,7 +120,7 @@ void GameEngine::processEvents() {
                     sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
 
                     if (!mGameOver && !mLevelCompleted) {
-                        if (mIsPaused) {
+                        if (mSmallMenu.isActive()) {
                             mSmallMenu.handleMouseClick(mousePos);
                         } else {
                             if (mPlayerMenu.isMouseOverIcon(mousePos)) {
@@ -340,7 +339,7 @@ void GameEngine::handleNonTowerClick(const sf::Vector2f& worldPos) {
 
 void GameEngine::handleKeyPress(sf::Keyboard::Key keyCode) {
     if (keyCode == sf::Keyboard::Tab) {
-        if (!mIsPaused) {
+        if (!mSmallMenu.isActive()) {
             if (mPlayerMenu.isVisible()) {
                 mPlayerMenu.toggleSelect();
             } else {
@@ -355,9 +354,8 @@ void GameEngine::handleKeyPress(sf::Keyboard::Key keyCode) {
             }
         }
     } else if (keyCode == sf::Keyboard::Escape) {
-        if (mIsPaused) {
-            mIsPaused = false;
-            mSmallMenu.hide();
+        if (mSmallMenu.isActive()) {
+            mSmallMenu.setActive(false);
         } else {
             if (mPlayerMenu.isVisible()) {
                 mPlayerMenu.toggleSelect();
@@ -370,23 +368,20 @@ void GameEngine::handleKeyPress(sf::Keyboard::Key keyCode) {
             } else if (mTowerSelectionMenu.isVisible()) {
                 mTowerSelectionMenu.hide();
             } else {
-                mIsPaused = true;
-                mSmallMenu.show();
+                mSmallMenu.setActive(true);
             }
         }
     }
 }
 
 void GameEngine::update() {
-    if (!mGameOver && !mLevelCompleted) {
-        if (mIsPaused) {
-            sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
-            mSmallMenu.updateHover(mousePos);
-            return;
-        }
+    float dt = mClock.restart().asSeconds();
 
-        float dt = mClock.restart().asSeconds();
+    sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
+    mSmallMenu.update(dt);
+    mSmallMenu.updateHover(mousePos);
 
+    if (!mGameOver && !mLevelCompleted && !mSmallMenu.isActive()) {
         mPlayer.update(dt, mEnemies, mBorderUp, mBorderDown, mBorderLeft, mBorderRight);
         mPlayerMenu.updateHealthBar(mPlayer.getHealth());
 
@@ -441,6 +436,9 @@ void GameEngine::update() {
                 if (enemy->isDead()) {
                     mCrystals += enemy->getReward();
 
+                    mEnemiesKilledInRound++;
+                    mCrystalsEarnedInRound += enemy->getReward();
+
                     enemy = mEnemies.erase(enemy);
                 } else {
                     ++enemy;
@@ -456,7 +454,6 @@ void GameEngine::update() {
             if (distance(mPlayer.getPosition(), mMenuOpenPosition) > mPlayer.getPlacementRange()) {
                 mTowerSelectionMenu.hide();
             } else {
-                sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
                 mTowerSelectionMenu.updateHover(mousePos, mCrystals);
             }
         }
@@ -468,7 +465,6 @@ void GameEngine::update() {
                 mSelectedTower->setSelected(false);
                 mSelectedTower = nullptr;
             } else {
-                sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
                 mTowerMenu.update(mousePos, mCrystals, mCrystalText.getPosition(), mCrystalText.getLocalBounds());
             }
         }
@@ -494,7 +490,6 @@ void GameEngine::update() {
         }
 
         // Handle hover effects for buttons
-        sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
         if (!gameStarted)
             updateButtonHover(startGameButton, startGameButtonText, mousePos);
     } else if (mGameOver) {
@@ -565,8 +560,7 @@ void GameEngine::render() {
     if (mGameOver)
         mGameOverMenu.render(mWindow);
 
-    if (mIsPaused)
-        mSmallMenu.render(mWindow);
+    mSmallMenu.render(mWindow);
 
     if (mLevelCompleted)
         mLevelCompleteMenu.render(mWindow);
@@ -596,17 +590,17 @@ void GameEngine::init(int level, int crystals, const std::vector<int>& available
     mTowers.clear();
     mEnemies.clear();
     mProjectiles.clear();
+
     mTowerHealth = 100;
     gameStarted = false;
     mGameOver = false;
     mLevelCompleted = false;
 
-    mAvailableTowers = availableTowers;
+    mEnemiesKilledInRound = 0;
+    mCrystalsEarnedInRound = 0;
 
-    if (mIsPaused) {
-        mIsPaused = false;
-        mSmallMenu.hide();
-    }
+    mAvailableTowers = availableTowers;
+    mSmallMenu.setActive(false);
 
     mWindow.setView(mWindow.getDefaultView());
 
@@ -624,3 +618,14 @@ int GameEngine::getInitialCrystals() {
     return mInitialCrystals;
 }
 
+int GameEngine::getCurrentWave() const {
+    if (mWaveManager)
+        return mWaveManager->getCurrentWaveIndex() + 1;
+    return 0;
+}
+
+int GameEngine::getMaxWaves() const {
+    if (mWaveManager)
+        return mWaveManager->getLevelConfig()->waves.size();
+    return 0;
+}
