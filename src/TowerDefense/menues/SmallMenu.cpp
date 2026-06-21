@@ -33,6 +33,9 @@ void SmallMenu::render(sf::RenderWindow& window) {
 }
 
 void SmallMenu::handleMouseClick(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     for (auto& button : mButtons) {
         if (button->isMouseOver(mousePos))
             button->onClick();
@@ -40,6 +43,9 @@ void SmallMenu::handleMouseClick(const sf::Vector2f& mousePos) {
 }
 
 void SmallMenu::updateHover(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     for (auto& button : mButtons)
         button->updateHover(mousePos);
 }
