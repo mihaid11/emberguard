@@ -3,54 +3,129 @@
 #include "../../core/GameManager.h"
 #include <iostream>
 
-GameOverMenu::GameOverMenu(sf::RenderWindow& window, GameEngine* game, GameManager* gameManager,
+GameOverMenu::GameOverMenu(const sf::Vector2f& windowSize, GameEngine* game, GameManager* gameManager,
     int level, int crystals, std::vector<int>& availableTowers)
-    : mGame(game), mLevel(level), mCrystals(crystals), mGameManager(gameManager), mAvailableTowers(availableTowers),
-    restartButton(sf::Vector2f(0, 0), sf::Vector2f(175, 40), "Restart"),
-    exitButton(sf::Vector2f(0, 0), sf::Vector2f(175, 40), "Exit") {
+    : Menu(windowSize), mGame(game), mLevel(level), mCrystals(crystals), mGameManager(gameManager),
+    mAvailableTowers(availableTowers), mRestartButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Restart"),
+    mExitButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Exit") {
 
-    mMenuShape.setSize(sf::Vector2f(270, 140));
-    mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
-    mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2,
-                           (window.getSize().y - mMenuShape.getSize().y) / 2);
+    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
+        std::cerr << "Failed to load font for SmallMenu!" << std::endl;
 
-    exitButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 45, mMenuShape.getPosition().y + 77));
-    restartButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + 45, mMenuShape.getPosition().y + 25));
-
-    restartButton.setCallback([this]() {
-        if (mGame)
-            mGame->init(mLevel, mCrystals * 4 /5, mAvailableTowers);
-        else
-            std::cerr << "Error: Game is nullptr in restartButton callback." << std::endl;
-    });
-
-    exitButton.setCallback([&]() {
-        if (mGameManager)
-            mGameManager->switchToRPG(mCrystals * 4 / 5);
-        else
-            std::cerr << "Error: GameManager is nullptr in returnButton callback." << std::endl;
-    });
-
-    mButtons.push_back(restartButton);
-    mButtons.push_back(exitButton);
+    initializeLayout();
 }
 
 void GameOverMenu::render(sf::RenderWindow& window) {
-    window.draw(mMenuShape);
+    if (!mIsActive)
+        return;
+
+    Menu::render(window);
+    window.draw(mTitle);
+
+    window.draw(mEnemiesKilledText);
+    window.draw(mCrystalsEarnedText);
+    window.draw(mWaveText);
+    window.draw(mFinalBalanceText);
 
     for (auto& button : mButtons)
-        button.render(window);
+        button->render(window);
 }
 
 void GameOverMenu::handleMouseClick(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     for (auto& button : mButtons) {
-        if (button.isMouseOver(mousePos))
-            button.onClick();
+        if (button->isMouseOver(mousePos))
+            button->onClick();
     }
 }
 
 void GameOverMenu::updateHover(const sf::Vector2f& mousePos) {
+    if (!mIsActive)
+        return;
+
     for (auto& button : mButtons)
-        button.updateHover(mousePos);
+        button->updateHover(mousePos);
 }
 
+void GameOverMenu::update(float dt) {
+    if (!mIsActive || !mGame)
+        return;
+
+    mEnemiesKilledText.setString("Enemies defeated: " + std::to_string(mGame->getEnemiesKilledInRound()));
+    mCrystalsEarnedText.setString("Crystals earned: " + std::to_string(mGame->getCrystalsEarnedInRound()));
+    mWaveText.setString("Wave: " + std::to_string(mGame->getCurrentWave()) + " / " + std::to_string(mGame->getMaxWaves()));
+    mFinalBalanceText.setString("Leave balance: " + std::to_string(mGame->getInitialCrystals() * 6 / 7) + " crystals");
+}
+
+void GameOverMenu::initializeLayout() {
+    mTitle.setFont(mFont);
+    mTitle.setCharacterSize(19);
+    mTitle.setFillColor(sf::Color::White);
+    mTitle.setString("GameOverMenu");
+
+    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
+                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
+    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
+                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
+
+    mEnemiesKilledText.setFont(mFont);
+    mEnemiesKilledText.setCharacterSize(17);
+    mEnemiesKilledText.setFillColor(sf::Color::White);
+    mEnemiesKilledText.setString("Enemies defeated: 0");
+
+    mCrystalsEarnedText.setFont(mFont);
+    mCrystalsEarnedText.setCharacterSize(17);
+    mCrystalsEarnedText.setFillColor(sf::Color::White);
+    mCrystalsEarnedText.setString("Crystals earned: 0");
+
+    mWaveText.setFont(mFont);
+    mWaveText.setCharacterSize(17);
+    mWaveText.setFillColor(sf::Color::White);
+    mWaveText.setString("Wave: 0/0");
+
+    mFinalBalanceText.setFont(mFont);
+    mFinalBalanceText.setCharacterSize(17);
+    mFinalBalanceText.setFillColor(sf::Color::White);
+    mFinalBalanceText.setString("Leave balance: 0 crystals");
+
+    float startX = mMenuShape.getPosition().x + 20.f;
+    float height = mEnemiesKilledText.getLocalBounds().height + mCrystalsEarnedText.getLocalBounds().height +
+                   mWaveText.getLocalBounds().height + mFinalBalanceText.getLocalBounds().height;
+    float gap = (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mRestartButton.getSize().y * 3.5f -
+                 mEnemiesKilledText.getLocalBounds().height - mCrystalsEarnedText.getLocalBounds().height -
+                 mWaveText.getLocalBounds().height - mFinalBalanceText.getLocalBounds().height) / 3.f;
+    float startY = mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + mRestartButton.getSize().y - 5.f;
+
+    mEnemiesKilledText.setPosition(sf::Vector2f(startX, startY));
+    mWaveText.setPosition(sf::Vector2f(startX, startY + mEnemiesKilledText.getLocalBounds().height + gap));
+    mCrystalsEarnedText.setPosition(sf::Vector2f(startX, startY + mEnemiesKilledText.getLocalBounds().height +
+                                                         mWaveText.getLocalBounds().height + gap * 2));
+    mFinalBalanceText.setPosition(sf::Vector2f(startX, startY + mEnemiesKilledText.getLocalBounds().height + gap * 3 +
+                                                       mWaveText.getLocalBounds().height + mCrystalsEarnedText.getLocalBounds().height));
+
+    startY = mMenuShape.getPosition().y + mMenuShape.getSize().y - mRestartButton.getSize().y * 1.5f;
+    gap = (mMenuShape.getSize().x - mRestartButton.getSize().x * 2.f) / 3.f;
+    startX = mMenuShape.getPosition().x + gap;
+
+    mRestartButton.setPosition(sf::Vector2f(startX, startY));
+    mExitButton.setPosition(sf::Vector2f(startX + mRestartButton.getSize().x + gap, startY));
+
+    mRestartButton.setCallback([this]() {
+        if (mGame)
+            mGame->init(mLevel, mGame->getInitialCrystals(), mAvailableTowers);
+        else
+            std::cerr << "Error: Game is nullptr in restartButton callback." << std::endl;
+    });
+
+    mExitButton.setCallback([this]() {
+        if (mGameManager)
+            mGameManager->switchToRPG(mGame->getInitialCrystals() * 6 / 7);
+        else
+            std::cerr << "Error: GameManager is nullptr in returnButton callback." << std::endl;
+    });
+
+    mButtons.push_back(&mRestartButton);
+    mButtons.push_back(&mExitButton);
+}

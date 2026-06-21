@@ -26,7 +26,6 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mPlayer(sf::Vector2f(100, 100), mProjectiles),
     mPlayerMenu(),
     gameStarted(false),
-    mGameOver(false),
     mLevelCompleted(false),
     mShowNotEnoughCrystalsText(false),
     mShowText1(false),
@@ -34,7 +33,7 @@ GameEngine::GameEngine(sf::RenderWindow& window, GameManager* gameManager)
     mGameManager(gameManager),
     mSmallMenu(sf::Vector2f(window.getSize()), this, gameManager, mCurrentLevel, mAvailableTowers),
     mLevelCompleteMenu(mWindow, this, nullptr, gameManager, mCurrentLevel, true),
-    mGameOverMenu(mWindow, this, gameManager, mCurrentLevel, mCrystals, mAvailableTowers) {
+    mGameOverMenu(sf::Vector2f(window.getSize()), this, gameManager, mCurrentLevel, mCrystals, mAvailableTowers) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font" << std::endl;
@@ -119,7 +118,7 @@ void GameEngine::processEvents() {
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
 
-                    if (!mGameOver && !mLevelCompleted) {
+                    if (!mGameOverMenu.isActive() && !mLevelCompleted) {
                         if (mSmallMenu.isActive()) {
                             mSmallMenu.handleMouseClick(mousePos);
                         } else {
@@ -237,7 +236,7 @@ void GameEngine::processEvents() {
                                 }
                             }
                         }
-                    } else if (mGameOver) {
+                    } else if (mGameOverMenu.isActive()) {
                         mGameOverMenu.handleMouseClick(mousePos);
                     } else if (mLevelCompleted) {
                         mLevelCompleteMenu.handleMouseClick(mousePos);
@@ -381,12 +380,12 @@ void GameEngine::update() {
     mSmallMenu.update(dt);
     mSmallMenu.updateHover(mousePos);
 
-    if (!mGameOver && !mLevelCompleted && !mSmallMenu.isActive()) {
+    if (!mGameOverMenu.isActive() && !mLevelCompleted && !mSmallMenu.isActive()) {
         mPlayer.update(dt, mEnemies, mBorderUp, mBorderDown, mBorderLeft, mBorderRight);
         mPlayerMenu.updateHealthBar(mPlayer.getHealth());
 
         if (mPlayer.getHealth() <= 0) {
-            mGameOver = true;
+            mGameOverMenu.setActive(true);
             return;
         }
 
@@ -427,7 +426,7 @@ void GameEngine::update() {
                     mTowerHealth -= enemy->getDamageToTower();
                     enemy = mEnemies.erase(enemy);
                     if (mTowerHealth <= 0) {
-                        mGameOver = true;
+                        mGameOverMenu.setActive(true);
                         return;
                     }
                     continue;
@@ -492,9 +491,10 @@ void GameEngine::update() {
         // Handle hover effects for buttons
         if (!gameStarted)
             updateButtonHover(startGameButton, startGameButtonText, mousePos);
-    } else if (mGameOver) {
+    } else if (mGameOverMenu.isActive()) {
         sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
         mGameOverMenu.updateHover(mousePos);
+        mGameOverMenu.update(dt);
     } else if (mLevelCompleted) {
         sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
         mLevelCompleteMenu.updateHover(mousePos);
@@ -557,9 +557,7 @@ void GameEngine::render() {
         mWindow.draw(mNotEnoughCrystalsText);
     }
 
-    if (mGameOver)
-        mGameOverMenu.render(mWindow);
-
+    mGameOverMenu.render(mWindow);
     mSmallMenu.render(mWindow);
 
     if (mLevelCompleted)
@@ -577,7 +575,7 @@ void GameEngine::updateButtonHover(sf::RectangleShape& button, sf::Text& buttonT
 }
 
 bool GameEngine::isGameOver() const {
-    return mGameOver;
+    return mGameOverMenu.isActive();
 }
 
 void GameEngine::init(int level, int crystals, const std::vector<int>& availableTowers) {
@@ -593,7 +591,6 @@ void GameEngine::init(int level, int crystals, const std::vector<int>& available
 
     mTowerHealth = 100;
     gameStarted = false;
-    mGameOver = false;
     mLevelCompleted = false;
 
     mEnemiesKilledInRound = 0;
@@ -601,6 +598,7 @@ void GameEngine::init(int level, int crystals, const std::vector<int>& available
 
     mAvailableTowers = availableTowers;
     mSmallMenu.setActive(false);
+    mGameOverMenu.setActive(false);
 
     mWindow.setView(mWindow.getDefaultView());
 

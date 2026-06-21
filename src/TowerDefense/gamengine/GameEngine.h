@@ -88,7 +88,6 @@ private:
     sf::RectangleShape startGameButton;
     sf::Text startGameButtonText;
     bool gameStarted;
-    bool mGameOver;
     bool mLevelCompleted;
 
     SmallMenu mSmallMenu;
