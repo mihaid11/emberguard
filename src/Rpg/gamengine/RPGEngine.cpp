@@ -1065,6 +1065,26 @@ bool RPGEngine::saveExists(int saveNumber) const {
     return false;
 }
 
+bool RPGEngine::deleteSave(int saveNumber) {
+    std::string filename;
+    if (saveNumber == 1)
+        filename = "save1.txt";
+    else if (saveNumber == 2)
+        filename = "save2.txt";
+    else if (saveNumber == 3)
+        filename = "save3.txt";
+    else
+        return false;
+
+    std::error_code error;
+    const bool removed = std::filesystem::remove(filename, error);
+    if (!removed && error) {
+        std::cerr << "Failed to delete save file: " << filename << std::endl;
+        return false;
+    }
+
+    return true;
+}
 
 void RPGEngine::newGame() {
     std::string filename;

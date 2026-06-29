@@ -14,7 +14,10 @@ MainMenu::MainMenu(sf::RenderWindow& window, GameManager* gameManager)
       mGame1Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(140.f, 50.f), "New Game"),
       mGame2Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(140.f, 50.f), "New Game"),
       mGame3Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(140.f, 50.f), "New Game"),
-      mBackPlayButton(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(140.f, 50.f), "Back") {
+      mBackPlayButton(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(140.f, 50.f), "Back"),
+      mDelete1Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(70.f, 28.f), "Delete"),
+      mDelete2Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(70.f, 28.f), "Delete"),
+      mDelete3Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(70.f, 28.f), "Delete") {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;
@@ -127,6 +130,12 @@ MainMenu::MainMenu(sf::RenderWindow& window, GameManager* gameManager)
                                          mWindow.getSize().y * 2 / 3.6f));
     mBackPlayButton.setPosition(sf::Vector2f((mWindow.getSize().x - mPlayButton.getSize().x) / 2.f,
                                               mWindow.getSize().y * 2 / 2.3f));
+    mDelete1Button.setPosition(sf::Vector2f(mSave1Rectangle.getPosition().x + (mSave1Rectangle.getSize().x - mDelete1Button.getSize().x) / 2.f,
+                                             mSave1Rectangle.getPosition().y + mSave1Rectangle.getSize().y + 10.f));
+    mDelete2Button.setPosition(sf::Vector2f(mSave2Rectangle.getPosition().x + (mSave2Rectangle.getSize().x - mDelete2Button.getSize().x) / 2.f,
+                                             mSave2Rectangle.getPosition().y + mSave2Rectangle.getSize().y + 10.f));
+    mDelete3Button.setPosition(sf::Vector2f(mSave3Rectangle.getPosition().x + (mSave3Rectangle.getSize().x - mDelete3Button.getSize().x) / 2.f,
+                                             mSave3Rectangle.getPosition().y + mSave3Rectangle.getSize().y + 10.f));
 
     mPlayButton.setCallback([&]() {
         mShowGameButtons = true;
@@ -154,6 +163,19 @@ MainMenu::MainMenu(sf::RenderWindow& window, GameManager* gameManager)
 
     mBackPlayButton.setCallback([&]() {
         mShowGameButtons = false;
+    });
+
+    mDelete1Button.setCallback([&]() {
+        mGameManager->getGameEngine().deleteSave(1);
+        updateSaves();
+    });
+    mDelete2Button.setCallback([&]() {
+        mGameManager->getGameEngine().deleteSave(2);
+        updateSaves();
+    });
+    mDelete3Button.setCallback([&]() {
+        mGameManager->getGameEngine().deleteSave(3);
+        updateSaves();
     });
     
     updateSaves();
@@ -191,6 +213,13 @@ void MainMenu::processEvents() {
                         if (button.isMouseOver(mousePos))
                             button.onClick();
                     }
+
+                    if (mGameManager->getGameEngine().saveExists(1) && mDelete1Button.isMouseOver(mousePos))
+                        mDelete1Button.onClick();
+                    if (mGameManager->getGameEngine().saveExists(2) && mDelete2Button.isMouseOver(mousePos))
+                        mDelete2Button.onClick();
+                    if (mGameManager->getGameEngine().saveExists(3) && mDelete3Button.isMouseOver(mousePos))
+                        mDelete3Button.onClick();
                 }
             }
         }
@@ -207,6 +236,12 @@ void MainMenu::update() {
         for (auto& button: mPlayButtons) {
             button.updateHover(mousePos);
         }
+        if (mGameManager->getGameEngine().saveExists(1))
+            mDelete1Button.updateHover(mousePos);
+        if (mGameManager->getGameEngine().saveExists(2))
+            mDelete2Button.updateHover(mousePos);
+        if (mGameManager->getGameEngine().saveExists(3))
+            mDelete3Button.updateHover(mousePos);
     }
 }
 
@@ -242,6 +277,12 @@ void MainMenu::render() {
         for (auto& button: mPlayButtons) {
             button.render(mWindow);
         }
+        if (mGameManager->getGameEngine().saveExists(1))
+            mDelete1Button.render(mWindow);
+        if (mGameManager->getGameEngine().saveExists(2))
+            mDelete2Button.render(mWindow);
+        if (mGameManager->getGameEngine().saveExists(3))
+            mDelete3Button.render(mWindow);
     }
 
     mWindow.display();
