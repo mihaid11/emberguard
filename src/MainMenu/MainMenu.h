@@ -31,6 +31,9 @@ private:
     Button mGame2Button;
     Button mGame3Button;
     Button mBackPlayButton;
+    Button mDelete1Button;
+    Button mDelete2Button;
+    Button mDelete3Button;
     std::vector<Button> mPlayButtons;
 
     sf::RectangleShape mSave1Rectangle;

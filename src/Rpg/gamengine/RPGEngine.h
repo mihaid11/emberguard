@@ -57,6 +57,7 @@ public:
     void resetSaveGame();
     void resetToDefault();
     bool saveExists(int saveNumber) const;
+    bool deleteSave(int saveNumber);
     void newGame();
     void setSaveNumber(int saveNumber);
     void setFlag(std::string name, bool value);
