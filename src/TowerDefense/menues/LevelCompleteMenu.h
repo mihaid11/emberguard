@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "RewardSystem.h"
+#include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 #include <vector>
 
@@ -9,34 +10,29 @@ class RPGEngine;
 class GameManager;
 
 // Used for both tower defense level completion and main character level progression
-class LevelCompleteMenu {
+class LevelCompleteMenu : public Menu {
 public:
-    LevelCompleteMenu(sf::RenderWindow& window, GameEngine* towerGame, RPGEngine* rpgGame,
+    LevelCompleteMenu(const sf::Vector2f& windowSize, GameEngine* towerGame, RPGEngine* rpgGame,
                       GameManager* gameManager, int level, bool isTowerLevel);
 
-    void render(sf::RenderWindow& window);
-    void handleMouseClick(const sf::Vector2f& mousePos);
-    void updateHover(const sf::Vector2f& mousePos);
-
-    void refresh();
-    bool isActive() const;
-    void setActive(bool state);
+    void render(sf::RenderWindow& window) override;
+    void handleMouseClick(const sf::Vector2f& mousePos) override;
+    void updateHover(const sf::Vector2f& mousePos) override;
+    void update(float dt) override;
 
     int getLevel() const;
     void setLevel(int level);
+    void refresh();
 
 private:
-    sf::RectangleShape mMenuShape;
-    sf::RectangleShape mBackground;
     Button mContinueButton;
-    bool mActive;
 
     Reward mReward;
+    sf::Font mFont;
     sf::Text mRewardText;
     sf::Text mQuantityText;
     sf::Text mLevelCompleteText;
     sf::RectangleShape mItemIcon;
-    sf::Font mFont;
     sf::RectangleShape mRewardShape;
 
     GameEngine* mTowerGame;
@@ -45,4 +41,3 @@ private:
     int mLevel;
     bool mIsTowerLevel;
 };
-

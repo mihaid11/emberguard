@@ -83,4 +83,3 @@ Reward RewardSystem::generateReward(int level) {
 
     return reward;
 }
-

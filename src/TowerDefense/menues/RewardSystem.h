@@ -16,4 +16,3 @@ public:
     static Reward generateTowerLevelReward(int level);
     static Reward generateReward(int level);
 };
-
