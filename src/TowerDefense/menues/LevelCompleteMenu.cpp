@@ -10,22 +10,13 @@
 #include "RewardSystem.h"
 #include <iostream>
 
-LevelCompleteMenu::LevelCompleteMenu(sf::RenderWindow& window, GameEngine* towerGame,
+LevelCompleteMenu::LevelCompleteMenu(const sf::Vector2f& windowSize, GameEngine* towerGame,
     RPGEngine* rpgGame, GameManager* gameManager, int level, bool isTowerLevel)
-    : mTowerGame(towerGame), mRpgGame(rpgGame), mGameManager(gameManager), mLevel(level), mActive(false),
+    : Menu(windowSize, sf::Vector2f(1.f / 5.3f, 1.f / 2.3f)), mTowerGame(towerGame), mRpgGame(rpgGame), mGameManager(gameManager), mLevel(level),
     mIsTowerLevel(isTowerLevel), mContinueButton(sf::Vector2f(0, 0), sf::Vector2f(165, 40), "Continue") {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for AnalyzeMenu!" << std::endl;
-
-    mMenuShape.setSize(sf::Vector2f(window.getSize().x / 5.3f, window.getSize().y / 2.3f));
-    mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
-    mMenuShape.setPosition((window.getSize().x - mMenuShape.getSize().x) / 2,
-                           (window.getSize().y - mMenuShape.getSize().y) / 2);
-
-    mBackground.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
-    mBackground.setFillColor(sf::Color(50, 50, 50, 185));
-    mBackground.setPosition(sf::Vector2f(0, 0));
 
     if (isTowerLevel)
         mLevelCompleteText.setString("Level completed!");
@@ -60,7 +51,7 @@ LevelCompleteMenu::LevelCompleteMenu(sf::RenderWindow& window, GameEngine* tower
 }
 
 void LevelCompleteMenu::render(sf::RenderWindow& window) {
-    if (!mIsTowerLevel && !mActive)
+    if (!mIsActive)
         return;
 
     window.draw(mBackground);
@@ -76,7 +67,7 @@ void LevelCompleteMenu::render(sf::RenderWindow& window) {
 }
 
 void LevelCompleteMenu::handleMouseClick(const sf::Vector2f& mousePos) {
-    if (!mIsTowerLevel && !mActive)
+    if (!mIsActive)
         return;
 
     if (mContinueButton.isMouseOver(mousePos))
@@ -84,10 +75,14 @@ void LevelCompleteMenu::handleMouseClick(const sf::Vector2f& mousePos) {
 }
 
 void LevelCompleteMenu::updateHover(const sf::Vector2f& mousePos) {
-    if (!mIsTowerLevel && !mActive)
+    if (!mIsActive)
         return;
 
     mContinueButton.updateHover(mousePos);
+}
+
+void LevelCompleteMenu::update(float dt) {
+
 }
 
 void LevelCompleteMenu::refresh() {
@@ -113,7 +108,7 @@ void LevelCompleteMenu::refresh() {
         } else {
             if (mReward.itemId == 0)
                 mRpgGame->addCrystals(mReward.quantity);
-            mActive = false;
+            mIsActive = false;
         }
     });
 
@@ -151,14 +146,6 @@ void LevelCompleteMenu::refresh() {
                                        mRewardShape.getPosition().y + mRewardShape.getSize().y * 0.2f));
 }
 
-bool LevelCompleteMenu::isActive() const {
-    return mActive;
-}
-
-void LevelCompleteMenu::setActive(bool state) {
-    mActive = state;
-}
-
 int LevelCompleteMenu::getLevel() const {
     return mLevel;
 }
@@ -166,4 +153,3 @@ int LevelCompleteMenu::getLevel() const {
 void LevelCompleteMenu::setLevel(int level) {
     mLevel = level;
 }
-

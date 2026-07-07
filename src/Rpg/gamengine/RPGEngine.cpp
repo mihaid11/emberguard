@@ -47,7 +47,7 @@ static bool intersects(const sf::FloatRect& rect1, const sf::FloatRect& rect2) {
 RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     : mWindow(window),
     mTimeSystem(0.36f),
-    mLevelCompleteMenu(window, nullptr, this, gameManager, 2, false),
+    mLevelCompleteMenu(sf::Vector2f(window.getSize()), nullptr, this, gameManager, 2, false),
     mCharacter(sf::Vector2f(295.f, 290.f), &mInventory, &mLevelCompleteMenu),
     mView(sf::Vector2f(400.f, 300.f), sf::Vector2f(740.f, 420.f)),
     mFixedCamera(sf::Vector2f(0.f, 0.f), sf::Vector2f(740.f, 420.f)),
