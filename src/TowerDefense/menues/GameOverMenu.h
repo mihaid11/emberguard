@@ -3,6 +3,7 @@
 #include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 #include <vector>
+#include <memory>
 
 class GameEngine;
 class GameManager;
@@ -18,9 +19,7 @@ public:
     void update(float dt) override;
 
 private:
-    std::vector<Button*> mButtons;
-    Button mRestartButton;
-    Button mExitButton;
+    std::vector<std::unique_ptr<Button>> mButtons;
 
     sf::Text mEnemiesKilledText;
     sf::Text mCrystalsEarnedText;

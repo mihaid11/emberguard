@@ -5,10 +5,7 @@
 
 SmallMenu::SmallMenu(const sf::Vector2f& windowSize, GameEngine* game, GameManager* gameManager,
                      int level, std::vector<int>& availableTowers)
-    : Menu(windowSize), mGame(game), mGameManager(gameManager), mLevel(level),
-    mAvailableTowers(availableTowers), mResumeButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Resume"),
-    mRestartButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Restart"),
-    mSurrenderButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Surrender") {
+    : Menu(windowSize), mGame(game), mGameManager(gameManager), mAvailableTowers(availableTowers), mLevel(level) {
 
     initializeLayout();
 }
@@ -79,13 +76,14 @@ void SmallMenu::initializeLayout() {
     mFinalBalanceText.setFillColor(sf::Color::White);
     mFinalBalanceText.setString("Leave balance: 0 crystals");
 
+    sf::Vector2f buttonSize(150.f, 40.f);
     float startX = mMenuShape.getPosition().x + 20.f;
     float height = mEnemiesKilledText.getLocalBounds().height + mCrystalsEarnedText.getLocalBounds().height +
                    mWaveText.getLocalBounds().height + mFinalBalanceText.getLocalBounds().height;
-    float gap = (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mResumeButton.getSize().y * 3.5f -
+    float gap = (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - buttonSize.y * 3.5f -
                  mEnemiesKilledText.getLocalBounds().height - mCrystalsEarnedText.getLocalBounds().height -
                  mWaveText.getLocalBounds().height - mFinalBalanceText.getLocalBounds().height) / 3.f;
-    float startY = mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + mResumeButton.getSize().y - 5.f;
+    float startY = mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + buttonSize.y - 5.f;
 
     mEnemiesKilledText.setPosition(sf::Vector2f(startX, startY));
     mWaveText.setPosition(sf::Vector2f(startX, startY + mEnemiesKilledText.getLocalBounds().height + gap));
@@ -94,33 +92,33 @@ void SmallMenu::initializeLayout() {
     mFinalBalanceText.setPosition(sf::Vector2f(startX, startY + mEnemiesKilledText.getLocalBounds().height + gap * 3 +
                                                        mWaveText.getLocalBounds().height + mCrystalsEarnedText.getLocalBounds().height));
 
-    startY = mMenuShape.getPosition().y + mMenuShape.getSize().y - mResumeButton.getSize().y * 1.5f;
-    gap = (mMenuShape.getSize().x - mResumeButton.getSize().x * 3.f) / 4.f;
+    startY = mMenuShape.getPosition().y + mMenuShape.getSize().y - buttonSize.y * 1.5f;
+    gap = (mMenuShape.getSize().x - buttonSize.x * 3.f) / 4.f;
     startX = mMenuShape.getPosition().x + gap;
 
-    mResumeButton.setPosition(sf::Vector2f(startX, startY));
-    mRestartButton.setPosition(sf::Vector2f(startX + mResumeButton.getSize().x + gap, startY));
-    mSurrenderButton.setPosition(sf::Vector2f(startX + mResumeButton.getSize().x * 2.f + gap * 2.f, startY));
+    auto resumeButton = std::make_unique<Button>(sf::Vector2f(startX, startY), buttonSize, "Resume");
+    auto restartButton = std::make_unique<Button>(sf::Vector2f(startX + buttonSize.x + gap, startY), buttonSize, "Restart");
+    auto surrenderButton = std::make_unique<Button>(sf::Vector2f(startX + buttonSize.x * 2.f + gap * 2.f, startY), buttonSize, "Surrender");
 
-    mResumeButton.setCallback([this]() {
+    resumeButton->setCallback([this]() {
         mIsActive = false;
     });
 
-    mRestartButton.setCallback([this]() {
+    restartButton->setCallback([this]() {
         if (mGame)
             mGame->init(mLevel, mGame->getInitialCrystals(), mAvailableTowers);
         else
             std::cerr << "Error: Game is nullptr in restartButton callback." << std::endl;
     });
 
-    mSurrenderButton.setCallback([this]() {
+    surrenderButton->setCallback([this]() {
         if (mGameManager)
             mGameManager->switchToRPG(mGame->getInitialCrystals() * 6 / 7);
         else
             std::cerr << "Error: GameManager is nullptr in returnButton callback." << std::endl;
     });
 
-    mButtons.push_back(&mResumeButton);
-    mButtons.push_back(&mRestartButton);
-    mButtons.push_back(&mSurrenderButton);
+    mButtons.push_back(std::move(resumeButton));
+    mButtons.push_back(std::move(restartButton));
+    mButtons.push_back(std::move(surrenderButton));
 }

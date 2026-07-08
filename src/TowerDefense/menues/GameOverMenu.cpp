@@ -4,10 +4,8 @@
 #include <iostream>
 
 GameOverMenu::GameOverMenu(const sf::Vector2f& windowSize, GameEngine* game, GameManager* gameManager,
-    int level, int crystals, std::vector<int>& availableTowers)
-    : Menu(windowSize), mGame(game), mLevel(level), mCrystals(crystals), mGameManager(gameManager),
-    mAvailableTowers(availableTowers), mRestartButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Restart"),
-    mExitButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Exit") {
+                           int level, int crystals, std::vector<int>& availableTowers)
+    : Menu(windowSize), mGame(game), mLevel(level), mCrystals(crystals), mGameManager(gameManager), mAvailableTowers(availableTowers) {
 
     initializeLayout();
 }
@@ -78,13 +76,14 @@ void GameOverMenu::initializeLayout() {
     mFinalBalanceText.setFillColor(sf::Color::White);
     mFinalBalanceText.setString("Leave balance: 0 crystals");
 
+    sf::Vector2f buttonSize(150.f, 40.f);
     float startX = mMenuShape.getPosition().x + 20.f;
     float height = mEnemiesKilledText.getLocalBounds().height + mCrystalsEarnedText.getLocalBounds().height +
                    mWaveText.getLocalBounds().height + mFinalBalanceText.getLocalBounds().height;
-    float gap = (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mRestartButton.getSize().y * 3.5f -
+    float gap = (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - buttonSize.y * 3.5f -
                  mEnemiesKilledText.getLocalBounds().height - mCrystalsEarnedText.getLocalBounds().height -
                  mWaveText.getLocalBounds().height - mFinalBalanceText.getLocalBounds().height) / 3.f;
-    float startY = mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + mRestartButton.getSize().y - 5.f;
+    float startY = mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + buttonSize.y - 5.f;
 
     mEnemiesKilledText.setPosition(sf::Vector2f(startX, startY));
     mWaveText.setPosition(sf::Vector2f(startX, startY + mEnemiesKilledText.getLocalBounds().height + gap));
@@ -93,27 +92,27 @@ void GameOverMenu::initializeLayout() {
     mFinalBalanceText.setPosition(sf::Vector2f(startX, startY + mEnemiesKilledText.getLocalBounds().height + gap * 3 +
                                                        mWaveText.getLocalBounds().height + mCrystalsEarnedText.getLocalBounds().height));
 
-    startY = mMenuShape.getPosition().y + mMenuShape.getSize().y - mRestartButton.getSize().y * 1.5f;
-    gap = (mMenuShape.getSize().x - mRestartButton.getSize().x * 2.f) / 3.f;
+    startY = mMenuShape.getPosition().y + mMenuShape.getSize().y - buttonSize.y * 1.5f;
+    gap = (mMenuShape.getSize().x - buttonSize.x * 2.f) / 3.f;
     startX = mMenuShape.getPosition().x + gap;
 
-    mRestartButton.setPosition(sf::Vector2f(startX, startY));
-    mExitButton.setPosition(sf::Vector2f(startX + mRestartButton.getSize().x + gap, startY));
+    auto restartButton = std::make_unique<Button>(sf::Vector2f(startX, startY), buttonSize, "Restart");
+    auto exitButton = std::make_unique<Button>(sf::Vector2f(startX + buttonSize.x + gap, startY), buttonSize, "Exit");
 
-    mRestartButton.setCallback([this]() {
+    restartButton->setCallback([this]() {
         if (mGame)
             mGame->init(mLevel, mGame->getInitialCrystals(), mAvailableTowers);
         else
             std::cerr << "Error: Game is nullptr in restartButton callback." << std::endl;
     });
 
-    mExitButton.setCallback([this]() {
+    exitButton->setCallback([this]() {
         if (mGameManager)
             mGameManager->switchToRPG(mGame->getInitialCrystals() * 6 / 7);
         else
             std::cerr << "Error: GameManager is nullptr in returnButton callback." << std::endl;
     });
 
-    mButtons.push_back(&mRestartButton);
-    mButtons.push_back(&mExitButton);
+    mButtons.push_back(std::move(restartButton));
+    mButtons.push_back(std::move(exitButton));
 }

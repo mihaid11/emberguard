@@ -9,6 +9,8 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(const sf::Vector2f& windowSize, std
     mStartButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(80.0f, 30.0f), "Start"), mWindowSize(windowSize),
     mGameManager(gameManager), mAvailableTowers(availableTowers), mShowText(false) {
 
+    initializeTitle("Tower Defense");
+
     mMinimapBorder.setSize(sf::Vector2f(190.f, 110.f));
     mMinimapBorder.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.58f,
                                             mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.48f));
@@ -22,8 +24,6 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(const sf::Vector2f& windowSize, std
                                              mMinimapBorder.getPosition().y - 5.f));
     mDifficultyText.setFillColor(sf::Color::White);
     mDifficultyText.setString("Difficuly");
-
-    initializeTitle("Tower Defense");
 
     mErrorText.setFillColor(sf::Color::White);
     mErrorText.setFont(mFont);

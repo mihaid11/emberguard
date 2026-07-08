@@ -6,11 +6,9 @@
 
 ShopMenu::ShopMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem,
                    int numItems, int& crystals)
-    : Menu(windowSize), mInventory(inventory), mTimeSystem(timeSystem),
-    mItem1Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "1"),
-    mItem2Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "2"),
-    mItem3Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "3"),
-    mCrystals(crystals), mNumItems(numItems) {
+    : Menu(windowSize), mInventory(inventory), mTimeSystem(timeSystem), mCrystals(crystals), mNumItems(numItems) {
+
+    initializeTitle("Shop");
 
     mTooltipText.setFont(mFont);
     mTooltipText.setCharacterSize(14);
@@ -19,8 +17,6 @@ ShopMenu::ShopMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSys
     mTooltipBackground.setFillColor(sf::Color(50, 50, 50, 200));
     mTooltipBackground.setOutlineColor(sf::Color::White);
     mTooltipBackground.setOutlineThickness(1.0f);
-
-    initializeTitle("Shop");
 
     mCrystalsText.setFont(mFont);
     mCrystalsText.setCharacterSize(18);
@@ -41,24 +37,22 @@ ShopMenu::ShopMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSys
     mTimerDisplay.setFillColor(sf::Color::White);
 
     int gap = 77.5f;
-    mItem1Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - 3 * mItem1Button.getSize().x) / 2.f - gap,
-                                          mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mItem1Button.getSize().y) / 2.4f));
-    mItem2Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mItem2Button.getSize().x) / 2.f,
-                                          mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mItem2Button.getSize().y) / 2.4f));
-    mItem3Button.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x + mItem3Button.getSize().x) / 2.f + gap,
-                                          mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                         (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - mItem3Button.getSize().y) / 2.4f));
+    sf::Vector2f buttonSize(110.f, 150.f);
+    float startY = mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + (mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - buttonSize.y) / 2.4f;
+
+    auto item1Button = std::make_unique<Button>(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - 3 * buttonSize.x) / 2.f - gap, startY), buttonSize, "1");
+    auto item2Button = std::make_unique<Button>(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - buttonSize.x) / 2.f, startY), buttonSize, "2");
+    auto item3Button = std::make_unique<Button>(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x + buttonSize.x) / 2.f + gap, startY), buttonSize, "3");
+
+    item1Button->setCallback([this]() { buyItem(1); });
+    item2Button->setCallback([this]() { buyItem(2); });
+    item3Button->setCallback([this]() { buyItem(3); });
+
+    mButtons.push_back(std::move(item1Button));
+    mButtons.push_back(std::move(item2Button));
+    mButtons.push_back(std::move(item3Button));
 
     regenerateIds();
-    mItem1Button.setCallback([this]() { buyItem(1); });
-    mItem2Button.setCallback([this]() { buyItem(2); });
-    mItem3Button.setCallback([this]() { buyItem(3); });
-
-    mButtons.push_back(&mItem1Button);
-    mButtons.push_back(&mItem2Button);
-    mButtons.push_back(&mItem3Button);
 }
 
 void ShopMenu::render(sf::RenderWindow& window) {
@@ -66,7 +60,6 @@ void ShopMenu::render(sf::RenderWindow& window) {
         return;
 
     Menu::render(window);
-
     window.draw(mCrystalsText);
 
     for (auto& button : mButtons)
@@ -180,22 +173,10 @@ void ShopMenu::buyItem(int buttonNumber) {
         return;
 
     mErrorText.setString("Not enough crystals!");
+    auto& button = mButtons[buttonNumber - 1];
 
-    if (buttonNumber == 1) {
-        mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x - mItem1Button.getSize().x - 77.5f +
-                                            (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f,
-                                            mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                            (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
-    } else if (buttonNumber == 2) {
-        mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f,
-                                            mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                            (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
-    } else if (buttonNumber == 3) {
-        mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mItem1Button.getSize().x + 77.5f +
-                                            (mMenuShape.getSize().x - mErrorText.getLocalBounds().width) / 2.f,
-                                            mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y +
-                                            (mMenuShape.getSize().y - mItem1Button.getSize().y) / 2.4f + mItem1Button.getSize().y * 0.65f));
-    }
+    mErrorText.setPosition(sf::Vector2f(button->getPosition().x + (button->getSize().x - mErrorText.getLocalBounds().width) / 2.f,
+                                        button->getPosition().y + button->getSize().y * 0.75f));
 
     int itemId = mItemsId[buttonNumber - 1];
     std::unique_ptr<Item> item = nullptr;

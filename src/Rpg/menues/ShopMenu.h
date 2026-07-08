@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include <vector>
+#include <memory>
 #include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 #include "../inventory/Inventory.h"
@@ -28,10 +29,7 @@ private:
     TimeSystem& mTimeSystem;
 
     std::vector<int> mItemsId;
-    std::vector<Button*> mButtons;
-    Button mItem1Button;
-    Button mItem2Button;
-    Button mItem3Button;
+    std::vector<std::unique_ptr<Button>> mButtons;
     int mNumItems;
 
     // Rendering of the error message variables

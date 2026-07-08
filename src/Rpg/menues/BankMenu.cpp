@@ -2,22 +2,18 @@
 #include <iostream>
 
 BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCapacity, TimeSystem& timeSystem)
-    : Menu(windowSize, sf::Vector2f(0.75f, 0.75f)), mCrystals(crystals), mBankBalance(0), mHasBorrowActive(false),
-    mWithdrawButton(sf::Vector2f(1000.0f, 575.0f), sf::Vector2f(155.0f, 72.0f), "Withdraw"),
-    mDepositButton(sf::Vector2f(1000.0f, 575.0f), sf::Vector2f(155.f, 72.0f), "Deposit"),
-    mBorrowButton(sf::Vector2f(1000.0f, 575.0f), sf::Vector2f(155.f, 72.0f), "Borrow"),
-    mTimeSystem(timeSystem) {
+    : Menu(windowSize, sf::Vector2f(0.75f, 0.75f)), mCrystals(crystals), mBankBalance(0), mHasBorrowActive(false), mTimeSystem(timeSystem) {
 
     initializeTitle("Crystal Bank");
 
     sf::Vector2f buttonSize(155.0f, 72.0f);
     float gap = 50.0f;
     float startX = mMenuShape.getPosition().x + 50.f;
-    float startY = mMenuShape.getPosition().y + (mMenuShape.getSize().y - 2 * buttonSize.x - gap) / 1.5f;
+    float startY = mMenuShape.getPosition().y + (mMenuShape.getSize().y - 3 * buttonSize.y - 2 * gap) / 2.f;
 
-    mWithdrawButton.setPosition(sf::Vector2f(startX, startY));
-    mDepositButton.setPosition(sf::Vector2f(startX, startY + buttonSize.y + gap));
-    mBorrowButton.setPosition(sf::Vector2f(startX, startY + 2 * buttonSize.y + 2 * gap));
+    auto withdrawButton = std::make_unique<Button>(sf::Vector2f(startX, startY), buttonSize, "Withdraw");
+    auto depositButton = std::make_unique<Button>(sf::Vector2f(startX, startY + buttonSize.y + gap), buttonSize, "Deposit");
+    auto borrowButton = std::make_unique<Button>(sf::Vector2f(startX, startY + 2 * buttonSize.y + 2 * gap), buttonSize, "Borrow");
 
     mWithdrawMenu = std::make_unique<WithdrawMenu>(windowSize, sf::Vector2f(mMenuShape.getPosition().x +
            buttonSize.x + 125.f, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
@@ -31,7 +27,7 @@ BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCa
             buttonSize.x + 125.f, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
             mMenuShape.getSize().y - 150.f), crystals, mHasBorrowActive, timeSystem);
 
-    mWithdrawButton.setCallback([&]() {
+    withdrawButton->setCallback([this]() {
         mWithdrawMenu->setActive(true);
         mDepositMenu->setActive(false);
         mBorrowMenu->setActive(false);
@@ -39,7 +35,7 @@ BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCa
         mWithdrawMenu->updateTexts();
     });
 
-    mDepositButton.setCallback([&]() {
+    depositButton->setCallback([this]() {
         mWithdrawMenu->setActive(false);
         mDepositMenu->setActive(true);
         mBorrowMenu->setActive(false);
@@ -47,7 +43,7 @@ BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCa
         mDepositMenu->updateTexts();
     });
 
-    mBorrowButton.setCallback([&]() {
+    borrowButton->setCallback([this]() {
         mWithdrawMenu->setActive(false);
         mDepositMenu->setActive(false);
         mBorrowMenu->setActive(true);
@@ -55,9 +51,9 @@ BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCa
         mBorrowMenu->updateTexts();
     });
 
-    mButtons.push_back(&mWithdrawButton);
-    mButtons.push_back(&mDepositButton);
-    mButtons.push_back(&mBorrowButton);
+    mButtons.push_back(std::move(withdrawButton));
+    mButtons.push_back(std::move(depositButton));
+    mButtons.push_back(std::move(borrowButton));
 }
 
 void BankMenu::render(sf::RenderWindow& window) {

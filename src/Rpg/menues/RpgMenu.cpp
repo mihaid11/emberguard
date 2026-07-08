@@ -5,10 +5,7 @@
 
 RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory& inventory,
            RPGEngine& rpgEngine, GameManager* gameManager, int& crystals)
-    : Menu(windowSize), mCurrentMenu("Inventory"), mGameManager(gameManager), mGap(0), mCrystals(crystals),
-    mInventoryButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Inventory"),
-    mSkillTreeButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "SkillTree"),
-    mExitButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Exit"), mShowText(false) {
+    : Menu(windowSize), mCurrentMenu("Inventory"), mGameManager(gameManager), mGap(0), mCrystals(crystals), mShowText(false) {
 
     sf::Vector2f subMenuPos(mMenuShape.getPosition().x + 10.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 20.f);
     sf::Vector2f subMenuSize(mMenuShape.getSize().x - 20.f, mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - 40.f);
@@ -26,24 +23,20 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
     mErrorText.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.05f,
                                         mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.2f));
 
-    sf::Vector2f buttonSize(mHoveredZoneShape.getSize().x * 0.12f, mHoveredZoneShape.getSize().y * 0.6f);
-    mInventoryButton.setSize(buttonSize);
-    mSkillTreeButton.setSize(buttonSize);
-    mExitButton.setSize(buttonSize);
-
+    mButtonSize = sf::Vector2f(mHoveredZoneShape.getSize().x * 0.12f, mHoveredZoneShape.getSize().y * 0.6f);
     mGap = mHoveredZoneShape.getSize().x * 0.04f;;
     float startX = mHoveredZoneShape.getPosition().x + mGap;
-    float startY = mHoveredZoneShape.getPosition().y + (mHoveredZoneShape.getSize().y - buttonSize.y) / 2.f;
+    float startY = mHoveredZoneShape.getPosition().y + (mHoveredZoneShape.getSize().y - mButtonSize.y) / 2.f;
 
-    mInventoryButton.setPosition(sf::Vector2f(startX, startY));
-    mSkillTreeButton.setPosition(sf::Vector2f(startX + buttonSize.x + mGap, startY));
-    mExitButton.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x - buttonSize.x - mGap, startY));
+    auto inventoryButton = std::make_unique<Button>(sf::Vector2f(startX, startY), mButtonSize, "Inventory");
+    auto skillTreeButton = std::make_unique<Button>(sf::Vector2f(startX + mButtonSize.x + mGap, startY), mButtonSize, "Skill Tree");
+    auto exitButton = std::make_unique<Button>(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x - mButtonSize.x - mGap, startY), mButtonSize, "Exit");
 
-    mInventoryButton.setCallback([&]() {
+    inventoryButton->setCallback([&]() {
         switchToMenu("Inventory");
     });
 
-    mSkillTreeButton.setCallback([&]() {
+    skillTreeButton->setCallback([&]() {
         // TODO : Implement prototype of skill tree menu
         // For now only an error message is displayed
         //switchToMenu("SkillTree");
@@ -52,7 +45,7 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
         mShowText = true;
     });
 
-    mExitButton.setCallback([&]() {
+    exitButton->setCallback([&]() {
         rpgEngine.saveGame();
         if (mGameManager)
             mGameManager->switchToMainMenu();
@@ -60,14 +53,14 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
             std::cerr << "Error: GameManager is nullptr in exitButton callback." << std::endl;
     });
 
-    mButtons.push_back(&mInventoryButton);
-    mButtons.push_back(&mSkillTreeButton);
-    mButtons.push_back(&mExitButton);
+    mButtons.push_back(std::move(inventoryButton));
+    mButtons.push_back(std::move(skillTreeButton));
+    mButtons.push_back(std::move(exitButton));
 
     mCrystalText.setFont(mFont);
     mCrystalText.setCharacterSize(13);
     mCrystalText.setFillColor(sf::Color::White);
-    mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - mExitButton.getSize().x - mGap * 1.6f,
+    mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - mButtonSize.x - mGap * 1.6f,
                              mMenuShape.getPosition().y + (mHoveredZoneShape.getSize().y - mCrystalText.getGlobalBounds().height) / 2.f);
 }
 
@@ -114,7 +107,7 @@ void RpgMenu::update(float dt) {
         return;
 
     mCrystalText.setString("Crystals " + std::to_string(mCrystals));
-    mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - mExitButton.getSize().x - mGap * 1.6f,
+    mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - mButtonSize.x - mGap * 1.6f,
                              mMenuShape.getPosition().y + (mHoveredZoneShape.getSize().y - mCrystalText.getGlobalBounds().height) / 2.f);
 
     if(mCurrentMenu == "Inventory")
