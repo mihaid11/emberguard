@@ -41,10 +41,7 @@ public:
     void restart();
 
 private:
-    Button mDepositButton;
-    Button mWithdrawButton;
-    Button mBorrowButton;
-    std::vector<Button*> mButtons;
+    std::vector<std::unique_ptr<Button>> mButtons;
 
     std::unique_ptr<WithdrawMenu> mWithdrawMenu;
     std::unique_ptr<DepositMenu> mDepositMenu;

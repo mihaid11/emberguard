@@ -32,10 +32,8 @@ private:
     GameManager* mGameManager;
     int& mCrystals;
 
-    std::vector<Button*> mButtons;
-    Button mSkillTreeButton;
-    Button mInventoryButton;
-    Button mExitButton;
+    std::vector<std::unique_ptr<Button>> mButtons;
+    sf::Vector2f mButtonSize;
     float mGap;
 
     std::string mCurrentMenu;

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <memory>
 #include "../../ui/Button.h"
 #include "../../ui/Menu.h"
 
@@ -18,10 +19,7 @@ public:
     void update(float dt) override;
 
 private:
-    std::vector<Button*> mButtons;
-    Button mResumeButton;
-    Button mRestartButton;
-    Button mSurrenderButton;
+    std::vector<std::unique_ptr<Button>> mButtons;
 
     sf::Text mEnemiesKilledText;
     sf::Text mCrystalsEarnedText;

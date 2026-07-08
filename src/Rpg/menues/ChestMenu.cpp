@@ -3,9 +3,6 @@
 
 ChestMenu::ChestMenu(const sf::Vector2f& windowSize, Inventory& inventory, Inventory& chestInventory, const sf::Vector2f& slotSize)
     : Menu(windowSize), mInventory(inventory), mChestInventory(chestInventory), mHoveredSlot(-1) {
-    
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cout << "Couldn't load font from file" << std::endl;
 
     initializeTitle("Chest");
 
