@@ -16,18 +16,7 @@ AnalyzeMenu::AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, T
     mCompleteButton(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 35.f), "Complete"),
     mTimerActive(false), mStartYear(0), mStartDay(0), mStartHour(0), mStartMinute(0) {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cerr << "Failed to load font for AnalyzeMenu!" << std::endl;
-
-    mTitle.setFont(mFont);
-    mTitle.setCharacterSize(20);
-    mTitle.setFillColor(sf::Color::White);
-    mTitle.setString("Analyzer");
-
-    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
-                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
-    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
-                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
+    initializeTitle("Analyzer");
 
     mStartButton.setCallback([&]() {
         mInSlot = false;
@@ -148,7 +137,6 @@ void AnalyzeMenu::render(sf::RenderWindow& window) {
 
     Menu::render(window);
 
-    window.draw(mTitle);
     window.draw(mSlot);
 
     if (mInSlot)

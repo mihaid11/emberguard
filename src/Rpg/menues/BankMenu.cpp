@@ -8,18 +8,7 @@ BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCa
     mBorrowButton(sf::Vector2f(1000.0f, 575.0f), sf::Vector2f(155.f, 72.0f), "Borrow"),
     mTimeSystem(timeSystem) {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cerr << "Failed to load font for BankMenu!" << std::endl;
-
-    mTitle.setFillColor(sf::Color::White);
-    mTitle.setFont(mFont);
-    mTitle.setCharacterSize(20);
-    mTitle.setString("Crystal Bank");
-
-     mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
-                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
-     mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
-                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
+    initializeTitle("Crystal Bank");
 
     sf::Vector2f buttonSize(155.0f, 72.0f);
     float gap = 50.0f;
@@ -76,7 +65,6 @@ void BankMenu::render(sf::RenderWindow& window) {
         return;
 
     Menu::render(window);
-    window.draw(mTitle);
 
     for (auto& button : mButtons)
         button->render(window);

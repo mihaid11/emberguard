@@ -40,8 +40,6 @@ private:
     sf::Clock mClock;
 
     //Tooltip elements
-    sf::Font mFont;
-    sf::Text mTitle;
     sf::Text mTooltipText;
     sf::Text mTimerDisplay;
     sf::RectangleShape mTooltipBackground;

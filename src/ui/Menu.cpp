@@ -1,6 +1,10 @@
 #include "Menu.h"
+#include <iostream>
 
 Menu::Menu(const sf::Vector2f& windowSize, const sf::Vector2f& menuSizeRatio) {
+    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
+        std::cout << "Failed to load font in base Menu" << std::endl;
+
     mBackground.setSize(windowSize);
     mBackground.setFillColor(sf::Color(50, 50, 50, 185));
     mBackground.setPosition(sf::Vector2f(0, 0));
@@ -17,11 +21,27 @@ Menu::Menu(const sf::Vector2f& windowSize, const sf::Vector2f& menuSizeRatio) {
 }
 
 Menu::Menu(const sf::Vector2f& menuSize, const sf::Vector2f& menuPosition, bool isSubMenu) {
+    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
+        std::cout << "Failed to load font in base Menu" << std::endl;
+
     mBackground.setSize(sf::Vector2f(0.f, 0.f));
 
     mMenuShape.setSize(menuSize);
     mMenuShape.setPosition(menuPosition);
     mMenuShape.setFillColor(sf::Color(50, 50, 50, 255));
+}
+
+void Menu::initializeTitle(const std::string& text, int size) {
+    mTitle.setFont(mFont);
+    mTitle.setCharacterSize(size);
+    mTitle.setFillColor(sf::Color::White);
+    mTitle.setString(text);
+
+    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
+                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
+    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
+                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
+
 }
 
 void Menu::render(sf::RenderWindow& window) {
@@ -31,6 +51,9 @@ void Menu::render(sf::RenderWindow& window) {
     window.draw(mBackground);
     window.draw(mMenuShape);
     window.draw(mHoveredZoneShape);
+
+    if (!mTitle.getString().isEmpty())
+        window.draw(mTitle);
 }
 
 sf::Text Menu::createMessageText(const sf::Font& font, const std::string& string, const sf::Vector2f& position, int size) {

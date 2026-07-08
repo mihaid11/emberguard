@@ -12,11 +12,8 @@
 
 LevelCompleteMenu::LevelCompleteMenu(const sf::Vector2f& windowSize, GameEngine* towerGame,
     RPGEngine* rpgGame, GameManager* gameManager, int level, bool isTowerLevel)
-    : Menu(windowSize, sf::Vector2f(1.f / 5.3f, 1.f / 2.3f)), mTowerGame(towerGame), mRpgGame(rpgGame), mGameManager(gameManager), mLevel(level),
-    mIsTowerLevel(isTowerLevel), mContinueButton(sf::Vector2f(0, 0), sf::Vector2f(165, 40), "Continue") {
-
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cerr << "Failed to load font for AnalyzeMenu!" << std::endl;
+    : Menu(windowSize, sf::Vector2f(1.f / 5.3f, 1.f / 2.3f)), mTowerGame(towerGame), mRpgGame(rpgGame), mGameManager(gameManager),
+    mLevel(level), mIsTowerLevel(isTowerLevel), mContinueButton(sf::Vector2f(0, 0), sf::Vector2f(165, 40), "Continue") {
 
     if (isTowerLevel)
         mLevelCompleteText.setString("Level completed!");

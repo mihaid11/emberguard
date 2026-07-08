@@ -15,9 +15,6 @@ public:
     int getSlotIndexAtPosition(const sf::Vector2f& pos) const;
 
 private:
-    sf::Font mFont;
-    sf::Text mTitle;
-
     Inventory& mInventory;
     Inventory& mChestInventory;
 

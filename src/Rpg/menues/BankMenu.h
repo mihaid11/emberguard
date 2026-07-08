@@ -41,9 +41,6 @@ public:
     void restart();
 
 private:
-    sf::Font mFont;
-    sf::Text mTitle;
-
     Button mDepositButton;
     Button mWithdrawButton;
     Button mBorrowButton;

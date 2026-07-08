@@ -39,7 +39,6 @@ private:
     sf::RectangleShape mTooltipBackground;
     sf::Text mTooltipText;
     bool mShowTooltip;
-    sf::Font mFont;
 
     void initializeLayout();
     void updateSlotColors();

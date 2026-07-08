@@ -9,9 +9,6 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(const sf::Vector2f& windowSize, std
     mStartButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(80.0f, 30.0f), "Start"), mWindowSize(windowSize),
     mGameManager(gameManager), mAvailableTowers(availableTowers), mShowText(false) {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cout << "Couldn't load font from file" << std::endl;
-
     mMinimapBorder.setSize(sf::Vector2f(190.f, 110.f));
     mMinimapBorder.setPosition(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x * 0.58f,
                                             mMenuShape.getPosition().y + mMenuShape.getSize().y * 0.48f));
@@ -26,15 +23,7 @@ StartTowerDefenseMenu::StartTowerDefenseMenu(const sf::Vector2f& windowSize, std
     mDifficultyText.setFillColor(sf::Color::White);
     mDifficultyText.setString("Difficuly");
 
-    mTitle.setFillColor(sf::Color::White);
-    mTitle.setFont(mFont);
-    mTitle.setCharacterSize(20);
-    mTitle.setString("Tower Defense");
-
-    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
-                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
-    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
-                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
+    initializeTitle("Tower Defense");
 
     mErrorText.setFillColor(sf::Color::White);
     mErrorText.setFont(mFont);
@@ -120,7 +109,6 @@ void StartTowerDefenseMenu::render(sf::RenderWindow& window) {
         window.draw(mSelectingTowerSlots[i]);
     }
 
-    window.draw(mTitle);
     mStartButton.render(window);
 
     // If the error text is visible gradually make it dissapear and render it
