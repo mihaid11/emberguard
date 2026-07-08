@@ -12,9 +12,6 @@ ShopMenu::ShopMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSys
     mItem3Button(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 150.f), "3"),
     mCrystals(crystals), mNumItems(numItems) {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cout << "Failed to load font in the shop menu!";
-
     mTooltipText.setFont(mFont);
     mTooltipText.setCharacterSize(14);
     mTooltipText.setFillColor(sf::Color::White);
@@ -23,15 +20,7 @@ ShopMenu::ShopMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSys
     mTooltipBackground.setOutlineColor(sf::Color::White);
     mTooltipBackground.setOutlineThickness(1.0f);
 
-    mTitle.setFont(mFont);
-    mTitle.setCharacterSize(19);
-    mTitle.setFillColor(sf::Color::White);
-    mTitle.setString("Shop");
-
-    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
-                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
-    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
-                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
+    initializeTitle("Shop");
 
     mCrystalsText.setFont(mFont);
     mCrystalsText.setCharacterSize(18);
@@ -78,7 +67,6 @@ void ShopMenu::render(sf::RenderWindow& window) {
 
     Menu::render(window);
 
-    window.draw(mTitle);
     window.draw(mCrystalsText);
 
     for (auto& button : mButtons)

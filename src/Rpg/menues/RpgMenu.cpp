@@ -10,9 +10,6 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
     mSkillTreeButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "SkillTree"),
     mExitButton(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "Exit"), mShowText(false) {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cout << "Couldn't load font" << std::endl;
-
     sf::Vector2f subMenuPos(mMenuShape.getPosition().x + 10.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 20.f);
     sf::Vector2f subMenuSize(mMenuShape.getSize().x - 20.f, mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - 40.f);
 

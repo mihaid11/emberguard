@@ -28,7 +28,6 @@ private:
     Button mContinueButton;
 
     Reward mReward;
-    sf::Font mFont;
     sf::Text mRewardText;
     sf::Text mQuantityText;
     sf::Text mLevelCompleteText;

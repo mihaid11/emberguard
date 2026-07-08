@@ -42,7 +42,6 @@ private:
     std::unique_ptr<SkillTreeMenu> mSkillTreeMenu;
     std::unique_ptr<InventoryMenu> mInventoryMenu;
 
-    sf::Font mFont;
     sf::Text mCrystalText;
 
     bool mShowText;

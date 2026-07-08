@@ -12,9 +12,6 @@ WithdrawMenu::WithdrawMenu(const sf::Vector2f& windowSize, const sf::Vector2f& p
     mConfirmShowing(false), mAmountToWithdraw(0), mCrystals(crystals),
     mBankBalance(bankBalance), mStorageCapacity(storageCapacity) {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cerr << "Failed to load font for BankMenu!" << std::endl;
-
     mCrystalBalance = createMessageText(mFont, "Crystals: " + std::to_string(crystals),
                                         sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 175.f));
     mBalance = createMessageText(mFont, "Bank Balance: "  + std::to_string(bankBalance),

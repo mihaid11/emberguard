@@ -22,9 +22,6 @@ private:
     Button mRestartButton;
     Button mExitButton;
 
-    sf::Font mFont;
-    sf::Text mTitle;
-
     sf::Text mEnemiesKilledText;
     sf::Text mCrystalsEarnedText;
     sf::Text mFinalBalanceText;

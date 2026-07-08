@@ -26,7 +26,6 @@ private:
     Button mConfirmButton;
     Button mBackButton;
 
-    sf::Font mFont;
     sf::Text mBalance;
     sf::Text mCrystalBalance;
     sf::Text mAmount;

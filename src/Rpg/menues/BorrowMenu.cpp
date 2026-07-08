@@ -14,9 +14,6 @@ BorrowMenu::BorrowMenu(const sf::Vector2f& windowSize, const sf::Vector2f& posit
     mInterest(0), mDaysToRepayment(0), mPenalty(0), mHasBorrowActive(hasBorrowActive),
     mRepaymentDay(0), mStartYear(0), mStartDay(0), mStartHour(0), mStartMinute(0), mTimeSystem(timeSystem) {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cerr << "Failed to load font for BankMenu!" << std::endl;
-
     mLoanAmount = createMessageText(mFont, "Loan Amount: ",
                                     sf::Vector2f(mMenuShape.getPosition().x + 60.f, mMenuShape.getPosition().y + 25.f));
     mRepayment = createMessageText(mFont, "Repayment by: ",

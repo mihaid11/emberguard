@@ -7,9 +7,6 @@ InventoryMenu::InventoryMenu(const sf::Vector2f& position, const sf::Vector2f& s
     : Menu(size, position, true), mCharacter(character), mInventory(inventory), mSlotSize(slotSize), mShowTooltip(false),
     mGap(mSlotSize.x * 2.f), mHoveredSlot(-1), mDraggedSlot(-1), mCharacterSprite(mCharacter.getAvatarSprite()) {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cout << "Failed to load font in the inventory menu!";
-
     mLevelText.setFont(mFont);
     mLevelText.setCharacterSize(15);
     mLevelText.setFillColor(sf::Color::White);

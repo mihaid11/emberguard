@@ -24,8 +24,6 @@ public:
     void refresh();
 
 private:
-    sf::Text mTitle;
-    sf::Font mFont;
     sf::Vector2f mWindowSize;
     Button mStartButton;
 

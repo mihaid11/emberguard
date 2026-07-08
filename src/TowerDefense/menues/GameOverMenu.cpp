@@ -9,9 +9,6 @@ GameOverMenu::GameOverMenu(const sf::Vector2f& windowSize, GameEngine* game, Gam
     mAvailableTowers(availableTowers), mRestartButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Restart"),
     mExitButton(sf::Vector2f(0.f, 0.f), sf::Vector2f(150.f, 40.f), "Exit") {
 
-    if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
-        std::cerr << "Failed to load font for SmallMenu!" << std::endl;
-
     initializeLayout();
 }
 
@@ -20,7 +17,6 @@ void GameOverMenu::render(sf::RenderWindow& window) {
         return;
 
     Menu::render(window);
-    window.draw(mTitle);
 
     window.draw(mEnemiesKilledText);
     window.draw(mCrystalsEarnedText);
@@ -60,15 +56,7 @@ void GameOverMenu::update(float dt) {
 }
 
 void GameOverMenu::initializeLayout() {
-    mTitle.setFont(mFont);
-    mTitle.setCharacterSize(19);
-    mTitle.setFillColor(sf::Color::White);
-    mTitle.setString("GameOverMenu");
-
-    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
-                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
-    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
-                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
+    initializeTitle("Game Over");
 
     mEnemiesKilledText.setFont(mFont);
     mEnemiesKilledText.setCharacterSize(17);

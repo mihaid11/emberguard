@@ -7,15 +7,7 @@ ChestMenu::ChestMenu(const sf::Vector2f& windowSize, Inventory& inventory, Inven
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;
 
-    mTitle.setFont(mFont);
-    mTitle.setCharacterSize(19);
-    mTitle.setFillColor(sf::Color::White);
-    mTitle.setString("ChestMenu");
-
-    mTitle.setOrigin(mTitle.getLocalBounds().left + mTitle.getLocalBounds().width / 2.f,
-                     mTitle.getLocalBounds().top + mTitle.getLocalBounds().height / 2.f);
-    mTitle.setPosition(sf::Vector2f(mHoveredZoneShape.getPosition().x + mHoveredZoneShape.getSize().x / 2.f,
-                                    mHoveredZoneShape.getPosition().y + mHoveredZoneShape.getSize().y / 2.f));
+    initializeTitle("Chest");
 
     sf::Vector2f mInventoryPosition(mMenuShape.getPosition().x + 90.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 90.f);
     int totalSlots = mInventory.getSlotCount();
@@ -73,7 +65,6 @@ void ChestMenu::render(sf::RenderWindow& window) {
         return;
 
     Menu::render(window);
-    window.draw(mTitle);
 
     window.draw(mInventoryText);
     window.draw(mChestText);

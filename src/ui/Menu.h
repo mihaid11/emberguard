@@ -23,5 +23,9 @@ protected:
 
     bool mIsActive = false;
 
+    sf::Font mFont;
+    sf::Text mTitle;
+
+    void initializeTitle(const std::string& text, int size = 20);
     sf::Text createMessageText(const sf::Font& font, const std::string& string, const sf::Vector2f& position, int size = 16);
 };

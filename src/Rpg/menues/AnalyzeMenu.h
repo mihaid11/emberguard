@@ -27,9 +27,6 @@ public:
     void reset();
 
 private:
-    sf::Font mFont;
-    sf::Text mTitle;
-
     Inventory& mInventory;
     TimeSystem& mTimeSystem;
 

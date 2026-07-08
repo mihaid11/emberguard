@@ -38,7 +38,6 @@ private:
     Button mConfirmButton;
     Button mBackButton;
 
-    sf::Font mFont;
     sf::Text mLoanAmount;
     sf::Text mRepayment;
     sf::Text mInterestText;

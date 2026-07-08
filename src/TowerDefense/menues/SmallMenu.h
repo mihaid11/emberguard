@@ -23,9 +23,6 @@ private:
     Button mRestartButton;
     Button mSurrenderButton;
 
-    sf::Font mFont;
-    sf::Text mTitle;
-
     sf::Text mEnemiesKilledText;
     sf::Text mCrystalsEarnedText;
     sf::Text mFinalBalanceText;
