@@ -95,13 +95,16 @@ endif()
 
 # Glob source files
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
-add_executable(Emberguard ${SRC_FILES})
+list(REMOVE_ITEM SRC_FILES "${CMAKE_SOURCE_DIR}/src/Source.cpp")
+
+add_library(EmberguardCore STATIC ${SRC_FILES})
+target_link_libraries(EmberguardCore PUBLIC ${SFML_LIBS})
+
+add_executable(Emberguard ${CMAKE_SOURCE_DIR}/src/Source.cpp)
+target_link_libraries(Emberguard PRIVATE EmberguardCore)
 
 # Set working directory for VS Debugger
 set_target_properties(Emberguard PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:Emberguard>")
-
-# Link SFML libraries
-target_link_libraries(Emberguard ${SFML_LIBS})
 
 # Ensure proper C++17 standard
 target_compile_features(Emberguard PRIVATE cxx_std_17)
@@ -169,14 +172,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-file(GLOB_RECURSE GAME_SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
-list(REMOVE_ITEM GAME_SRC_FILES "${CMAKE_SOURCE_DIR}/src/Source.cpp")
-
 add_executable(EmberguardTests
     tests/main.cpp
     tests/test_inventory.cpp
     tests/test_dialogue.cpp
-    ${GAME_SRC_FILES}
 )
 
-target_link_libraries(EmberguardTests PRIVATE Catch2::Catch2WithMain ${SFML_LIBS})
+target_link_libraries(EmberguardTests PRIVATE Catch2::Catch2WithMain EmberguardCore)
