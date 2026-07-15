@@ -38,4 +38,3 @@ private:
 
     int findSlotWithItem(int id) const;
 };
-
