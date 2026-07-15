@@ -169,12 +169,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
+file(GLOB_RECURSE GAME_SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+list(REMOVE_ITEM GAME_SRC_FILES "${CMAKE_SOURCE_DIR}/src/Source.cpp")
+
 add_executable(EmberguardTests
     tests/main.cpp
     tests/test_inventory.cpp
-    src/Rpg/inventory/Inventory.cpp
-    src/Rpg/inventory/items/Wood.cpp
-    src/Rpg/inventory/items/Item.cpp
+    tests/test_dialogue.cpp
+    ${GAME_SRC_FILES}
 )
 
 target_link_libraries(EmberguardTests PRIVATE Catch2::Catch2WithMain ${SFML_LIBS})
