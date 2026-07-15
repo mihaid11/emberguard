@@ -4,6 +4,7 @@
 - **CMake**: >= 3.10
 - **Make**: (Linux/macOS) or **Visual Studio** (Windows)
 - **SFML**: 2.6.2
+- **Catch2**: 3.15.2
 
 ## Build Instructions
 1. **Clone the repository**
@@ -27,9 +28,14 @@
    cmake ..
    ```
 
+   **Optional: If you want to compile the unit tests and benchmarks, enable the `BUILD_TESTS` flag**:
+   ```bash
+   cmake -DBUILD_TESTS=ON ..
+   ```
+
 5. **Build the project**
    ```bash
-   cmake --build .
+   cmake --build . -j4
    ```
 
    **Or alternatively**
@@ -49,3 +55,10 @@
    cd Debug
    Emberguard.exe
    ```
+
+## Running tests and benchmarks
+If you configured the project with `-DBUILD_TESTS=ON` in Step 4, an additional executable named `EmberguardTests` is generated.
+To run all unit tests:
+```bash
+./EmberguardTests
+```

@@ -164,18 +164,26 @@ add_custom_command(TARGET Emberguard POST_BUILD
     ${CMAKE_SOURCE_DIR}/src/Rpg/dialogueSystem/dialogues $<TARGET_FILE_DIR:Emberguard>/dialogues
 )
 
-include (FetchContent)
-FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v3.15.2
-)
-FetchContent_MakeAvailable(Catch2)
+option(BUILD_TESTS "Build Catch2 unit tests and benchmarks" OFF)
 
-add_executable(EmberguardTests
-    tests/main.cpp
-    tests/test_inventory.cpp
-    tests/test_dialogue.cpp
-)
+if(BUILD_TESTS)
+    message(STATUS "Building with tests enabled.")
 
-target_link_libraries(EmberguardTests PRIVATE Catch2::Catch2WithMain EmberguardCore)
+    include (FetchContent)
+    FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.15.2
+    )
+    FetchContent_MakeAvailable(Catch2)
+
+    add_executable(EmberguardTests
+        tests/main.cpp
+        tests/test_inventory.cpp
+        tests/test_dialogue.cpp
+    )
+
+    target_link_libraries(EmberguardTests PRIVATE Catch2::Catch2WithMain EmberguardCore)
+else()
+    message(STATUS "Tests are disabled. Skipping Catch2 setup.")
+endif()
