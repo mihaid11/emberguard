@@ -160,3 +160,21 @@ add_custom_command(TARGET Emberguard POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/src/Rpg/dialogueSystem/dialogues $<TARGET_FILE_DIR:Emberguard>/dialogues
 )
+
+include (FetchContent)
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG v3.15.2
+)
+FetchContent_MakeAvailable(Catch2)
+
+add_executable(EmberguardTests
+    tests/main.cpp
+    tests/test_inventory.cpp
+    src/Rpg/inventory/Inventory.cpp
+    src/Rpg/inventory/items/Wood.cpp
+    src/Rpg/inventory/items/Item.cpp
+)
+
+target_link_libraries(EmberguardTests PRIVATE Catch2::Catch2WithMain ${SFML_LIBS})
