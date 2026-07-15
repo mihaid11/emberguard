@@ -1,0 +1,74 @@
+{
+  "npc_id": "grand_master",
+  "dialogues": [
+    {
+      "conditions": { "chapter": 1 },
+      "lines": [
+        "Halt! Who goes there?",
+        "Identify yourself before I cast a spell."
+      ],
+      "choices": [
+        {
+          "text": "I am a friend.",
+          "next_lines": [
+            "A friend? Prove it.",
+            "What is the secret password?"
+          ],
+          "choices": [
+            {
+              "text": "Emberguard.",
+              "next_lines": [
+                "Correct. The ancient texts spoke of you.",
+                "You may pass, but take this for protection."
+              ],
+              "actions": [
+                { "type": "give_item", "target": "Wood", "value": 50 },
+                { "type": "set_story_flag", "target": "knows_password", "value": 1 }
+              ]
+            },
+            {
+              "text": "I don't know it.",
+              "next_lines": [
+                "Then you are a spy!",
+                "Guards!"
+              ],
+              "actions": [
+                { "type": "set_story_flag", "target": "hostile_guards", "value": 1 }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "None of your business, old man.",
+          "next_lines": [
+            "Insolence!",
+            "I will teach you respect."
+          ],
+          "choices": [
+            {
+              "text": "Apologize.",
+              "next_lines": ["Hmph. See that it doesn't happen again."],
+              "actions": [
+                { "type": "change_crystals", "target": "player", "value": -10 }
+              ]
+            },
+            {
+              "text": "Draw your weapon.",
+              "next_lines": ["So be it. Your funeral."],
+              "actions": [
+                { "type": "set_menu_flag", "target": "start_combat", "value": 1 }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "[Silent] ...",
+          "next_lines": [
+            "Not much of a talker, eh?",
+            "Fine, move along."
+          ]
+        }
+      ]
+    }
+  ]
+}

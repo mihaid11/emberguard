@@ -22,5 +22,5 @@ public:
 private:
     std::unordered_map<std::string, bool> mFlags;
     int mChapter = 1;
-    NPCManager* mNPCManager;
+    NPCManager* mNPCManager = nullptr;
 };
