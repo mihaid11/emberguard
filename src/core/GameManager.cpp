@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "quests/QuestTypes.h"
 #include <iostream>
 
 GameManager::GameManager()
@@ -8,6 +9,8 @@ GameManager::GameManager()
     mMainMenu(mWindow, this), mMaxFps(60) {
 
     mWindow.setFramerateLimit(mMaxFps);
+    if (mQuestManager.loadQuestsFromJson("../src/core/quests/tutorial.json"))
+        mQuestManager.startQuest("quest_1");
 }
 
 void GameManager::run() {
@@ -89,3 +92,17 @@ sf::RenderWindow& GameManager::getWindow() {
     return mWindow;
 }
 
+QuestManager& GameManager::getQuestManager() {
+    return mQuestManager;
+}
+
+void GameManager::dispatchQuestEvent(const GameEvent& event) {
+    std::vector<QuestReward> rewards = mQuestManager.onEvent(event);
+
+    for (const auto& reward: rewards) {
+        if (reward.type == "start_quest")
+            mQuestManager.startQuest(reward.targetId);
+        else if (reward.type == "crystals")
+            mRpgEngine.addCrystals(reward.amount);
+    }
+}

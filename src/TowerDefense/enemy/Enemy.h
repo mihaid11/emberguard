@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <string>
 #include <vector>
 
 class Player;
@@ -23,6 +24,7 @@ public:
     float getFollowRange() const;
     float getAttackSpeed() const;
     sf::Vector2f getSize() const;
+    std::string getId() const;
 
     sf::FloatRect getBounds() const;
     bool containsPoint(const sf::Vector2f& point) const;
@@ -30,11 +32,11 @@ public:
     void applyBurn(float damage, float duration);
 
 protected:
-
     std::vector<sf::Vector2f> mPath;
     std::size_t mCurrentWaypoint;
     sf::CircleShape mShape;
     sf::RectangleShape mHealthBar;
+    std::string mId;
 
     //Atributes
     float mSpeed;
@@ -56,4 +58,3 @@ protected:
     void followPlayer(float dt, Player& player);
     void attackPlayer(float dt, Player& player);
 };
-

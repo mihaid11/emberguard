@@ -215,8 +215,13 @@ void RPGEngine::processEvents() {
             if (event.key.code == sf::Keyboard::E || event.key.code == sf::Keyboard::Return) {
                 if (!mShowDialogue) {
                     mNPCManager.handleInteraction(mCharacter, mShowDialogue, mDialogueText);
+
                     if (mShowDialogue) {
                         mCurrentInteractingNPC = mNPCManager.getCurrentNPC();
+
+                        if (mCurrentInteractingNPC)
+                            mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::talk_to_npc, mCurrentInteractingNPC->getId(), 1});
+
                         mIconSprite = mCurrentInteractingNPC->getAvatarSprite();
                         mIconSprite.setOrigin(mIconSprite.getLocalBounds().left + mIconSprite.getLocalBounds().width / 2.f,
                                               mIconSprite.getLocalBounds().top + mIconSprite.getLocalBounds().height / 2.f);
@@ -566,6 +571,9 @@ void RPGEngine::update() {
         if (it->getPickUpCap()) {
             if (distance < 28.f) {
                 auto itemClone = it->getItem()->clone();
+
+                mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::get_item, std::to_string(itemClone->getId()), it->getQuantity()});
+
                 mInventory.addItem(std::move(itemClone), it->getQuantity());
                 it = mDroppedItems.erase(it);
                 continue;

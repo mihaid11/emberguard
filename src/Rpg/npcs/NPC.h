@@ -52,7 +52,7 @@ public:
     std::vector<DialogueAction> selectChoiceWithActions(int choiceIndex);
     std::vector<DialogueAction> getCurrentDialogueActions() const;
 
-    std::string getID() const { return mId; }
+    std::string getId() const { return mId; }
     sf::Sprite& getSprite();
     sf::Sprite& getAvatarSprite();
 
