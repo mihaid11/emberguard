@@ -8,6 +8,7 @@
 #include "../../Rpg/inventory/items/TowerBlueprintEpic.h"
 #include "../../Rpg/inventory/items/TowerBlueprintMythic.h"
 #include "RewardSystem.h"
+#include "../../core/quests/QuestTypes.h"
 #include <iostream>
 
 LevelCompleteMenu::LevelCompleteMenu(const sf::Vector2f& windowSize, GameEngine* towerGame,
@@ -100,11 +101,15 @@ void LevelCompleteMenu::refresh() {
                 mGameManager->getGameEngine().addXp(xp);
 
                 mGameManager->getGameEngine().advanceTowerDefenseLevel();
+                mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::complete_level_td, "level_" + std::to_string(mLevel), 1});
+
+                mIsActive = false;
             } else
                 std::cerr << "Error: GameManager is nullptr in continueButton callback." << std::endl;
         } else {
             if (mReward.itemId == 0)
                 mRpgGame->addCrystals(mReward.quantity);
+            mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::complete_level, "level_" + std::to_string(mLevel), 1});
             mIsActive = false;
         }
     });

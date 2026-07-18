@@ -4,7 +4,7 @@
 #include <iostream>
 
 Enemy::Enemy(const std::vector<sf::Vector2f>& path)
-    : mPath(path), mCurrentWaypoint(0), mTimeSinceLastAttack(0.0f) {
+    : mPath(path), mCurrentWaypoint(0), mTimeSinceLastAttack(0.0f), mId(0) {
 
     mShape.setRadius(10);
     mShape.setFillColor(sf::Color::Blue);
@@ -115,6 +115,10 @@ float Enemy::getAttackSpeed() const {
 
 sf::Vector2f Enemy::getSize() const {
     return sf::Vector2f(mShape.getRadius(), mShape.getRadius());
+}
+
+std::string Enemy::getId() const {
+    return mId;
 }
 
 bool Enemy::containsPoint(const sf::Vector2f& point) const {

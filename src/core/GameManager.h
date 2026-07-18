@@ -3,6 +3,8 @@
 #include "../TowerDefense/gamengine/GameEngine.h"
 #include "../ui/MainMenu.h"
 #include "../Rpg/dialogueSystem/DialogueManager.h"
+#include "quests/QuestTypes.h"
+#include "quests/QuestManager.h"
 #include "TimeSystem.h"
 
 enum class GameState {
@@ -25,6 +27,9 @@ public:
     RPGEngine& getGameEngine();
     MainMenu& getMainMenu();
     sf::RenderWindow& getWindow();
+    QuestManager& getQuestManager();
+
+    void dispatchQuestEvent(const GameEvent& event);
 
 private:
     void update();
@@ -38,5 +43,5 @@ private:
     MainMenu mMainMenu;
 
     DialogueManager mDialogueManager;
+    QuestManager mQuestManager;
 };
-

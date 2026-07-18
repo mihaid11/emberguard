@@ -1,6 +1,7 @@
 #include "GameEngine.h"
 #include "../../core/GameManager.h"
 #include "../waves/PathsConfig.h"
+#include "../../core/quests/QuestTypes.h"
 #include <iostream>
 #include <string.h>
 #include <math.h>
@@ -436,6 +437,8 @@ void GameEngine::update() {
 
                     mEnemiesKilledInRound++;
                     mCrystalsEarnedInRound += enemy->getReward();
+
+                    mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::kill_enemy, enemy->getId(), 1});
 
                     enemy = mEnemies.erase(enemy);
                 } else {
