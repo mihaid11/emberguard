@@ -3,10 +3,12 @@
 #include <time.h>
 #include <iostream>
 #include <sstream>
+#include "../../core/GameManager.h"
+#include "../../core/quests/QuestTypes.h"
 
 ShopMenu::ShopMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem,
-                   int numItems, int& crystals)
-    : Menu(windowSize), mInventory(inventory), mTimeSystem(timeSystem), mCrystals(crystals), mNumItems(numItems) {
+                   int numItems, int& crystals, GameManager* gameManager)
+    : Menu(windowSize), mInventory(inventory), mTimeSystem(timeSystem), mGameManager(gameManager), mCrystals(crystals), mNumItems(numItems) {
 
     initializeTitle("Shop");
 
@@ -196,6 +198,9 @@ void ShopMenu::buyItem(int buttonNumber) {
         if (item->getPrice() <= mCrystals) {
             mCrystals -= item->getPrice();
             mInventory.addItem(std::move(item), 1);
+
+            if (mGameManager)
+                mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::get_item, "shop_item", 1});
         } else {
             mErrorText.setFillColor(sf::Color::White);
             mClock.restart();

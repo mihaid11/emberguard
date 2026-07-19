@@ -12,10 +12,12 @@
 #include "../inventory/items/TowerBlueprintEpic.h"
 #include "../inventory/items/TowerBlueprintMythic.h"
 
+class GameManager;
+
 class ShopMenu : public Menu {
 public:
     ShopMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem,
-             int numItems, int& crystals);
+             int numItems, int& crystals, GameManager* gameManager);
 
     void update(float dt) override;
     void handleMouseClick(const sf::Vector2f& mousePos) override;
@@ -27,6 +29,7 @@ public:
 private:
     Inventory& mInventory;
     TimeSystem& mTimeSystem;
+    GameManager* mGameManager;
 
     std::vector<int> mItemsId;
     std::vector<std::unique_ptr<Button>> mButtons;

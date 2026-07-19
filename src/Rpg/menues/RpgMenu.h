@@ -4,9 +4,10 @@
 #include "../../ui/Button.h"
 #include <memory>
 #include <vector>
-#include "../menues/SkillTreeMenu.h"
+#include "InventoryMenu.h"
+#include "SkillTreeMenu.h"
 #include "../skillTree/SkillTree.h"
-#include "../menues/InventoryMenu.h"
+#include "QuestMenu.h"
 #include "../inventory/items/DroppedItem.h"
 
 class RPGEngine;
@@ -27,6 +28,7 @@ public:
 
     const std::string& getMenuType() const;
     InventoryMenu& getInventoryMenu();
+    QuestMenu& getQuestMenu();
 
 private:
     GameManager* mGameManager;
@@ -39,6 +41,7 @@ private:
     std::string mCurrentMenu;
     std::unique_ptr<SkillTreeMenu> mSkillTreeMenu;
     std::unique_ptr<InventoryMenu> mInventoryMenu;
+    std::unique_ptr<QuestMenu> mQuestMenu;
 
     sf::Text mCrystalText;
 

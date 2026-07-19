@@ -16,6 +16,8 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
     mInventoryMenu = std::make_unique<InventoryMenu>(subMenuPos, subMenuSize, inventory,
                                                      rpgEngine.getPlayer(), sf::Vector2f(slotSize, slotSize));
 
+    mQuestMenu = std::make_unique<QuestMenu>(subMenuPos, subMenuSize, gameManager->getQuestManager());
+
     mErrorText.setFillColor(sf::Color::White);
     mErrorText.setFont(mFont);
     mErrorText.setCharacterSize(18);
@@ -30,10 +32,15 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
 
     auto inventoryButton = std::make_unique<Button>(sf::Vector2f(startX, startY), mButtonSize, "Inventory");
     auto skillTreeButton = std::make_unique<Button>(sf::Vector2f(startX + mButtonSize.x + mGap, startY), mButtonSize, "Skill Tree");
+    auto questsButton = std::make_unique<Button>(sf::Vector2f(startX + 2 * (mButtonSize.x + mGap), startY), mButtonSize, "Quests");
     auto exitButton = std::make_unique<Button>(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x - mButtonSize.x - mGap, startY), mButtonSize, "Exit");
 
     inventoryButton->setCallback([&]() {
         switchToMenu("Inventory");
+
+        mInventoryMenu->setActive(true);
+        mSkillTreeMenu->setActive(false);
+        mQuestMenu->setActive(false);
     });
 
     skillTreeButton->setCallback([&]() {
@@ -43,6 +50,15 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
         mErrorText.setFillColor(sf::Color::White);
         mClock.restart();
         mShowText = true;
+    });
+
+    questsButton->setCallback([&]() {
+        switchToMenu("Quests");
+        mQuestMenu->refresh();
+
+        mInventoryMenu->setActive(false);
+        mSkillTreeMenu->setActive(false);
+        mQuestMenu->setActive(true);
     });
 
     exitButton->setCallback([&]() {
@@ -55,6 +71,7 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
 
     mButtons.push_back(std::move(inventoryButton));
     mButtons.push_back(std::move(skillTreeButton));
+    mButtons.push_back(std::move(questsButton));
     mButtons.push_back(std::move(exitButton));
 
     mCrystalText.setFont(mFont);
@@ -78,6 +95,9 @@ void RpgMenu::handleMouseClick(const sf::Vector2f& mousePos) {
 
     if (mCurrentMenu == "Inventory")
         mInventoryMenu->handleMouseClick(mousePos);
+
+    if (mCurrentMenu == "Quests")
+        mQuestMenu->handleMouseClick(mousePos);
 }
 
 void RpgMenu::updateHover(const sf::Vector2f& mousePos) {
@@ -92,6 +112,9 @@ void RpgMenu::updateHover(const sf::Vector2f& mousePos) {
 
     if (mCurrentMenu == "Inventory")
         mInventoryMenu->updateHover(mousePos);
+
+    if (mCurrentMenu == "Quests")
+        mQuestMenu->updateHover(mousePos);
 }
 
 void RpgMenu::switchToMenu(const std::string& menuName) {
@@ -100,6 +123,7 @@ void RpgMenu::switchToMenu(const std::string& menuName) {
 
 void RpgMenu::restart() {
     mInventoryMenu->restart();
+    mQuestMenu->refresh();
 }
 
 void RpgMenu::update(float dt) {
@@ -110,10 +134,12 @@ void RpgMenu::update(float dt) {
     mCrystalText.setPosition(mMenuShape.getPosition().x + mMenuShape.getSize().x - mCrystalText.getGlobalBounds().width - mButtonSize.x - mGap * 1.6f,
                              mMenuShape.getPosition().y + (mHoveredZoneShape.getSize().y - mCrystalText.getGlobalBounds().height) / 2.f);
 
-    if(mCurrentMenu == "Inventory")
+    if (mCurrentMenu == "Inventory")
         mInventoryMenu->update(dt);
-    else if(mCurrentMenu == "SkillTree")
+    else if (mCurrentMenu == "SkillTree")
         mSkillTreeMenu->update(dt);
+    else if (mCurrentMenu == "Quests")
+        mQuestMenu->update(dt);
 }
 
 const std::string& RpgMenu::getMenuType() const {
@@ -122,6 +148,10 @@ const std::string& RpgMenu::getMenuType() const {
 
 InventoryMenu& RpgMenu::getInventoryMenu() {
     return *mInventoryMenu;
+}
+
+QuestMenu& RpgMenu::getQuestMenu() {
+    return *mQuestMenu;
 }
 
 void RpgMenu::render(sf::RenderWindow& window) {
@@ -138,6 +168,8 @@ void RpgMenu::render(sf::RenderWindow& window) {
         mSkillTreeMenu->render(window);
     else if (mCurrentMenu == "Inventory")
         mInventoryMenu->render(window);
+    else if (mCurrentMenu == "Quests")
+        mQuestMenu->render(window);
 
     // If the error text is visible gradually make it dissapear and render it
     if (mShowText) {
