@@ -1,0 +1,39 @@
+{
+  "quests": [
+    {
+      "id": "quest_1",
+      "title": "The First Meeting",
+      "description": "Go and talk to Mira Stanton to learn about the village.",
+      "objectives": [
+        { "type": "talk_to_npc", "target_id": "mira_stanton", "amount": 1 }
+      ],
+      "rewards": [
+        { "type": "crystal", "target_id": "", "amount": 50 },
+        { "type": "start_quest", "target_id": "quest_2", "amount": 1 },
+        { "type": "start_quest", "target_id": "quest_3", "amount": 1 }
+      ]
+    },
+    {
+      "id": "quest_2",
+      "title": "Stocking Up",
+      "description": "Buy an item from the shop to prepare for the defense.",
+      "objectives": [
+        { "type": "get_item", "target_id": "shop_item", "amount": 1 }
+      ],
+      "rewards": [
+        { "type": "item", "target_id": "wood", "amount": 5 }
+      ]
+    },
+    {
+      "id": "quest_3",
+      "title": "First Defense",
+      "description": "Complete the first tower defense level.",
+      "objectives": [
+        { "type": "complete_level_td", "target_id": "level_1", "amount": 1 }
+      ],
+      "rewards": [
+        { "type": "crystal", "target_id": "", "amount": 100 }
+      ]
+    }
+  ]
+}

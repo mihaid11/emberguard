@@ -65,7 +65,7 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mZoneManager(mGameContext, 1),
     mStartTowerDefenseMenu(sf::Vector2f(window.getSize()), mAvailableTowers, this, gameManager, mCurrentTowerDefenseLevel, mCrystals),
     mBankMenu(sf::Vector2f(window.getSize()), mCrystals, mStorageCapacity, mTimeSystem),
-    mShopMenu(sf::Vector2f(window.getSize()), mInventory, mTimeSystem, 5, mCrystals),
+    mShopMenu(sf::Vector2f(window.getSize()), mInventory, mTimeSystem, 5, mCrystals, gameManager),
     mAnalyzeMenu(sf::Vector2f(window.getSize()), mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
@@ -240,9 +240,10 @@ void RPGEngine::processEvents() {
                 } else if (mShopMenu.isActive()) {
                     mShopMenu.setActive(false);
                 } else {
-                    mMenu.toggle();
                     if (!mMenu.isActive())
                         mMenu.restart();
+
+                    mMenu.toggle();
                 }
             } else if (event.key.code == sf::Keyboard::L) {
                 mStartTowerDefenseMenu.toggle();
