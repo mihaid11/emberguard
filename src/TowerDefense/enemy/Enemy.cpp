@@ -4,7 +4,7 @@
 #include <iostream>
 
 Enemy::Enemy(const std::vector<sf::Vector2f>& path)
-    : mPath(path), mCurrentWaypoint(0), mTimeSinceLastAttack(0.0f), mId(0) {
+    : mPath(path), mCurrentWaypoint(0), mTimeSinceLastAttack(0.0f), mId("") {
 
     mShape.setRadius(10);
     mShape.setFillColor(sf::Color::Blue);

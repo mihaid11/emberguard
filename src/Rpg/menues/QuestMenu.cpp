@@ -20,19 +20,23 @@ void QuestMenu::render(sf::RenderWindow& window) {
 
     window.draw(mMenuShape);
     
-    if (mQuestBoxes.empty())
+    if (mQuestBoxes.empty()) {
         window.draw(mNoQuestsText);
+        return;
+    }
 
     for (const auto& box: mQuestBoxes) {
         window.draw(box.box);
         window.draw(box.title);
 
-        for (const auto& lineText: box.descriptionLines)
-            window.draw(lineText);
+        for (const auto& obj: box.objectivesUI) {
+            for (const auto& lineText: obj.descriptionLines)
+                window.draw(lineText);
 
-        window.draw(box.progressBar);
-        window.draw(box.completionBar);
-        window.draw(box.progressionText);
+            window.draw(obj.progressBar);
+            window.draw(obj.completionBar);
+            window.draw(obj.progressionText);
+        }
     }
 }
 
@@ -76,39 +80,57 @@ void QuestMenu::refresh() {
         questBox.title.setPosition(questBox.box.getPosition().x + (questBox.box.getSize().x - questBox.title.getLocalBounds().width) / 2.f,
                                    questBox.box.getPosition().y + 15.f);
 
-        auto lines = wrapText(activeQuests[i]->description, mFont, 12, questBox.box.getSize().x - 20.f);
-        float currentY = questBox.box.getPosition().y + 90.f;
+        float currentY = questBox.title.getPosition().y + 45.f;
 
-        for (const auto& line: lines) {
-            sf::Text lineText;
+        for (const auto& obj: activeQuests[i]->objectives) {
+            ObjectiveUI objUI;
 
-            lineText.setFont(mFont);
-            lineText.setString(line);
-            lineText.setCharacterSize(12);
-            lineText.setFillColor(sf::Color::White);
-            lineText.setPosition(questBox.box.getPosition().x + 10.f, currentY);
+            auto lines = wrapText(obj.description, mFont, 11, questBox.box.getSize().x - 20.f);
 
-            questBox.descriptionLines.push_back(lineText);
+            for (const auto& line: lines) {
+                sf::Text lineText;
+
+                lineText.setFont(mFont);
+                lineText.setString(line);
+                lineText.setCharacterSize(11);
+                lineText.setFillColor(sf::Color::White);
+                lineText.setPosition(questBox.box.getPosition().x + 10.f, currentY);
+
+                objUI.descriptionLines.push_back(lineText);
+                currentY += 15.f;
+            }
+            currentY += 15.f;
+
+            float barHeight = 10.f;
+            objUI.progressBar.setSize(sf::Vector2f(boxSize.x - 20.f, barHeight));
+            objUI.progressBar.setOutlineColor(sf::Color::White);
+            objUI.progressBar.setOutlineThickness(1.f);
+            objUI.progressBar.setFillColor(sf::Color(20, 20, 20, 255));
+            objUI.progressBar.setPosition(questBox.box.getPosition().x + 10.f, currentY);
+
+            float percent = 0.f;
+            if (obj.amount > 0) {
+                percent = static_cast<float>(obj.currentAmount) / obj.amount;
+                if (percent > 1.f)
+                    percent = 1.f;
+            }
+
+            objUI.completionBar.setFillColor(sf::Color::Cyan);
+            objUI.completionBar.setSize(sf::Vector2f(objUI.progressBar.getSize().x * percent, barHeight));
+            objUI.completionBar.setPosition(objUI.progressBar.getPosition());
+            currentY += barHeight;
+
+            objUI.progressionText.setFont(mFont);
+            objUI.progressionText.setString(std::to_string(obj.currentAmount) + "/" + std::to_string(obj.amount));
+            objUI.progressionText.setCharacterSize(10);
+            objUI.progressionText.setFillColor(sf::Color::White);
+            objUI.progressionText.setPosition(objUI.progressBar.getPosition().x + (objUI.progressBar.getSize().x - objUI.progressionText.getLocalBounds().width ) / 2.f,
+                                                 objUI.progressBar.getPosition().y + objUI.progressBar.getSize().y + 10.f);
+            currentY += objUI.progressionText.getLocalBounds().height * 2.f;
+
+            questBox.objectivesUI.push_back(objUI);
             currentY += 15.f;
         }
-
-        float barHeight = 10.f;
-        questBox.progressBar.setSize(sf::Vector2f(boxSize.x - 20.f, barHeight));
-        questBox.progressBar.setOutlineColor(sf::Color::White);
-        questBox.progressBar.setOutlineThickness(1.f);
-        questBox.progressBar.setFillColor(sf::Color(20, 20, 20, 255));
-        questBox.progressBar.setPosition(questBox.box.getPosition().x + 10.f, questBox.box.getPosition().y + questBox.box.getSize().y - 60.f);
-
-        questBox.completionBar.setFillColor(sf::Color::Cyan);
-        questBox.completionBar.setSize(sf::Vector2f(0.f, barHeight));
-        questBox.completionBar.setPosition(questBox.progressBar.getPosition());
-        
-        questBox.progressionText.setFont(mFont);
-        questBox.progressionText.setString("0/0");
-        questBox.progressionText.setCharacterSize(11);
-        questBox.progressionText.setFillColor(sf::Color::White);
-        questBox.progressionText.setPosition(questBox.progressBar.getPosition().x + (questBox.progressBar.getSize().x - questBox.progressionText.getLocalBounds().width ) / 2.f,
-                                             questBox.progressBar.getPosition().y + questBox.progressBar.getSize().y + 10.f);
 
         mQuestBoxes.push_back(questBox);
     }
