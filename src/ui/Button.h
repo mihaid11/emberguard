@@ -5,7 +5,7 @@
 
 class Button {
 public:
-    Button(const sf::Vector2f& position, const sf::Vector2f& size, const std::string& text);
+    Button(const sf::Vector2f& position, const sf::Vector2f& size, const std::string& text, const int& characterSize = 15);
 
     void render(sf::RenderWindow& window);
     bool isMouseOver(const sf::Vector2f& mousePos) const;
