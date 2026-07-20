@@ -1,7 +1,7 @@
 #include "Button.h"
 #include <iostream>
 
-Button::Button(const sf::Vector2f& position, const sf::Vector2f& size, const std::string& text)
+Button::Button(const sf::Vector2f& position, const sf::Vector2f& size, const std::string& text, const int& characterSize)
     : mSize(size), mIsHovered(0), mPosition(position) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
@@ -14,7 +14,7 @@ Button::Button(const sf::Vector2f& position, const sf::Vector2f& size, const std
 
     mButtonText.setFont(mFont);
     mButtonText.setString(text);
-    mButtonText.setCharacterSize(15);
+    mButtonText.setCharacterSize(characterSize);
     mButtonText.setFillColor(sf::Color::White);
 
     // Center the text within the button

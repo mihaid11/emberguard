@@ -1,6 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <memory>
+#include "../../ui/Button.h"
 #include "../../ui/Menu.h"
 #include "../../core/quests/QuestManager.h"
 
@@ -33,4 +35,9 @@ private:
         std::vector<ObjectiveUI> objectivesUI;
     };
     std::vector<QuestBox> mQuestBoxes;
+
+    int mCurrentPage;
+    int mMaxPages;
+    sf::Text mPageNumberText;
+    std::vector<std::unique_ptr<Button>> mButtons;
 };

@@ -1,8 +1,9 @@
 #include "QuestMenu.h"
+#include <algorithm>
 #include "../../utils/utils.h"
 
 QuestMenu::QuestMenu(const sf::Vector2f& position, const sf::Vector2f& size, QuestManager& questManager)
-    : Menu(size, position, true) ,mQuestManager(questManager), mPosition(position), mSize(size) {
+    : Menu(size, position, true) ,mQuestManager(questManager), mPosition(position), mSize(size), mCurrentPage(1), mMaxPages(1) {
     mNoQuestsText.setFont(mFont);
     mNoQuestsText.setFillColor(sf::Color::White);
     mNoQuestsText.setCharacterSize(21);
@@ -10,6 +11,31 @@ QuestMenu::QuestMenu(const sf::Vector2f& position, const sf::Vector2f& size, Que
     mNoQuestsText.setOrigin(mNoQuestsText.getLocalBounds().left + mNoQuestsText.getLocalBounds().width / 2.f,
                             mNoQuestsText.getLocalBounds().top + mNoQuestsText.getLocalBounds().height / 2.f);
     mNoQuestsText.setPosition(position + size / 2.f);
+
+    mPageNumberText.setFont(mFont);
+    mPageNumberText.setCharacterSize(12);
+    mPageNumberText.setFillColor(sf::Color::White);
+
+    sf::Vector2f buttonSize(55.f, 20.f);
+    auto prevButton = std::make_unique<Button>(sf::Vector2f(position.x + size.x / 2.f - 80.f, position.y + size.y - buttonSize.y - 15.f), buttonSize, "Prev", 11);
+    auto nextButton = std::make_unique<Button>(sf::Vector2f(position.x + size.x / 2.f + 80.f, position.y + size.y - buttonSize.y - 15.f), buttonSize, "Next", 11);
+
+    prevButton->setCallback([this]() {
+        if (mCurrentPage > 0) {
+            mCurrentPage--;
+            refresh();
+        }
+    });
+
+    nextButton->setCallback([this]() {
+        if (mCurrentPage < mMaxPages) {
+            mCurrentPage++;
+            refresh();
+        }
+    });
+
+    mButtons.push_back(std::move(prevButton));
+    mButtons.push_back(std::move(nextButton));
 
     refresh();
 }
@@ -38,6 +64,13 @@ void QuestMenu::render(sf::RenderWindow& window) {
             window.draw(obj.progressionText);
         }
     }
+
+    if (mMaxPages >= 0) {
+        window.draw(mPageNumberText);
+
+        for (auto& button : mButtons)
+            button->render(window);
+    }
 }
 
 void QuestMenu::update(float dt) {
@@ -47,11 +80,22 @@ void QuestMenu::update(float dt) {
 void QuestMenu::handleMouseClick(const sf::Vector2f& mousePos) {
     if (!mIsActive)
         return;
+
+    if (mMaxPages >= 0) {
+        for (auto& button : mButtons)
+            if (button->isMouseOver(mousePos))
+                button->onClick();
+    }
 }
 
 void QuestMenu::updateHover(const sf::Vector2f& mousePos) {
     if (!mIsActive)
         return;
+
+    if (mMaxPages >= 0) {
+        for (auto& button : mButtons)
+            button->updateHover(mousePos);
+    }
 }
 
 void QuestMenu::refresh() {
@@ -59,19 +103,43 @@ void QuestMenu::refresh() {
 
     std::vector<const Quest*> activeQuests = mQuestManager.getActiveQuests();
 
-    float gap = 45.f;
-    float startX = mMenuShape.getPosition().x + gap;
-    sf::Vector2f boxSize((mSize.x - 4 * gap) / 3.f, mSize.y - gap);
-    float startY = mPosition.y + gap / 2.f;
+    if (activeQuests.empty())
+        mMaxPages = 0;
+    else
+        mMaxPages = (activeQuests.size() - 1) / 3;
 
-    for (int i = 0; i < activeQuests.size(); ++i) {
+    if (mCurrentPage > mMaxPages)
+        mCurrentPage = mMaxPages;
+
+    float gapX = 50.f;
+    float gapY = 85.f;
+    float startX = mMenuShape.getPosition().x + gapX;
+    sf::Vector2f boxSize((mSize.x - 4 * gapX) / 3.f, mSize.y - gapY);
+    float startY = mPosition.y + gapY / 3.f;
+
+    float bottomSpace = mPosition.y + mSize.y - startY - boxSize.y;
+    mPageNumberText.setString(std::to_string(mCurrentPage + 1) + " / " + std::to_string(mMaxPages + 1));
+    mPageNumberText.setPosition(mPosition.x + mSize.x / 2.f - mPageNumberText.getLocalBounds().width / 2.f,
+                                startY + boxSize.y + (bottomSpace - mPageNumberText.getLocalBounds().height) / 2.f);
+
+    float centerGap = 20.f;
+    mButtons[0]->setPosition(sf::Vector2f(mPageNumberText.getPosition().x - centerGap - mButtons[0]->getSize().x,
+                                          startY + boxSize.y + (bottomSpace - mButtons[0]->getSize().y) / 2.f));
+    mButtons[1]->setPosition(sf::Vector2f(mPageNumberText.getPosition().x + mPageNumberText.getLocalBounds().width + centerGap,
+                                          startY + boxSize.y + (bottomSpace - mButtons[1]->getSize().y) / 2.f));
+
+    int startIndex = mCurrentPage * 3;
+    int endIndex = std::min(startIndex + 3, static_cast<int>(activeQuests.size()));
+
+    for (int i = startIndex; i < endIndex; ++i) {
         QuestBox questBox;
+        int localIndex = i - startIndex;
 
         questBox.box.setSize(boxSize);
         questBox.box.setFillColor(sf::Color(30, 30, 30, 255));
-        questBox.box.setOutlineColor(sf::Color::White);
+        questBox.box.setOutlineColor(sf::Color(170, 170, 170, 255));
         questBox.box.setOutlineThickness(2.f);
-        questBox.box.setPosition(startX + (boxSize.x + gap) * i, startY);
+        questBox.box.setPosition(startX + (boxSize.x + gapX) * localIndex, startY);
         
         questBox.title.setFont(mFont);
         questBox.title.setString(activeQuests[i]->title);

@@ -7,8 +7,8 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
            RPGEngine& rpgEngine, GameManager* gameManager, int& crystals)
     : Menu(windowSize), mCurrentMenu("Inventory"), mGameManager(gameManager), mGap(0), mCrystals(crystals), mShowText(false) {
 
-    sf::Vector2f subMenuPos(mMenuShape.getPosition().x + 10.f, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y + 20.f);
-    sf::Vector2f subMenuSize(mMenuShape.getSize().x - 20.f, mMenuShape.getSize().y - mHoveredZoneShape.getSize().y - 40.f);
+    sf::Vector2f subMenuPos(mMenuShape.getPosition().x, mMenuShape.getPosition().y + mHoveredZoneShape.getSize().y);
+    sf::Vector2f subMenuSize(mMenuShape.getSize().x, mMenuShape.getSize().y - mHoveredZoneShape.getSize().y);
 
     mSkillTreeMenu = std::make_unique<SkillTreeMenu>(subMenuPos, subMenuSize, skillTree);
 
@@ -30,9 +30,9 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
     float startX = mHoveredZoneShape.getPosition().x + mGap;
     float startY = mHoveredZoneShape.getPosition().y + (mHoveredZoneShape.getSize().y - mButtonSize.y) / 2.f;
 
-    auto inventoryButton = std::make_unique<Button>(sf::Vector2f(startX, startY), mButtonSize, "Inventory");
-    auto skillTreeButton = std::make_unique<Button>(sf::Vector2f(startX + mButtonSize.x + mGap, startY), mButtonSize, "Skill Tree");
-    auto questsButton = std::make_unique<Button>(sf::Vector2f(startX + 2 * (mButtonSize.x + mGap), startY), mButtonSize, "Quests");
+    auto inventoryButton = std::make_unique<Button>(sf::Vector2f(startX, startY), mButtonSize, "Inventory", 14);
+    auto skillTreeButton = std::make_unique<Button>(sf::Vector2f(startX + mButtonSize.x + mGap, startY), mButtonSize, "Skill Tree", 14);
+    auto questsButton = std::make_unique<Button>(sf::Vector2f(startX + 2 * (mButtonSize.x + mGap), startY), mButtonSize, "Quests", 14);
     auto exitButton = std::make_unique<Button>(sf::Vector2f(mMenuShape.getPosition().x + mMenuShape.getSize().x - mButtonSize.x - mGap, startY), mButtonSize, "Exit");
 
     inventoryButton->setCallback([&]() {
