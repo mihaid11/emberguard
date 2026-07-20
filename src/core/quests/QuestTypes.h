@@ -20,6 +20,8 @@ enum class ObjectiveType {
 struct QuestObjective {
     ObjectiveType type;
     std::string targetId;
+    std::string description;
+
     int amount;
     int currentAmount = 0;
 

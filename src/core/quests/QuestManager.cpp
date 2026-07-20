@@ -33,6 +33,8 @@ bool QuestManager::loadQuestsFromJson(const std::string& filepath) {
             QuestObjective obj;
             obj.type = stringToObjectiveType(objJson.value("type", ""));
             obj.targetId = objJson.value("target_id", "");
+            obj.description = objJson.value("description", "");
+
             obj.amount = objJson.value("amount", 1);
             obj.currentAmount = 0;
             q.objectives.push_back(obj);

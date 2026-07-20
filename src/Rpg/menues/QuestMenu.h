@@ -20,14 +20,17 @@ private:
     sf::Vector2f mPosition;
     sf::Vector2f mSize;
 
-    struct QuestBox {
-        sf::RectangleShape box;
-        sf::Text title;
+    struct ObjectiveUI {
         std::vector<sf::Text> descriptionLines;
-
         sf::RectangleShape progressBar;
         sf::RectangleShape completionBar;
         sf::Text progressionText;
+    };
+
+    struct QuestBox {
+        sf::RectangleShape box;
+        sf::Text title;
+        std::vector<ObjectiveUI> objectivesUI;
     };
     std::vector<QuestBox> mQuestBoxes;
 };
