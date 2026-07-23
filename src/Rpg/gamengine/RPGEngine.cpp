@@ -1250,3 +1250,16 @@ Inventory& RPGEngine::getInventory() {
 MainCharacter& RPGEngine::getPlayer() {
     return mCharacter;
 }
+
+void RPGEngine::rewardItem(const std::string& itemName, int amount) {
+    if (itemName == "wood")
+        mInventory.addItem(std::make_unique<Wood>(), amount);
+    else if (itemName == "tower_blueprint")
+        mInventory.addItem(std::make_unique<TowerBlueprint>(), amount);
+    else if (itemName == "tower_blueprint_rare")
+        mInventory.addItem(std::make_unique<TowerBlueprintRare>(), amount);
+    else if (itemName == "tower_blueprint_epic")
+        mInventory.addItem(std::make_unique<TowerBlueprintEpic>(), amount);
+    else if (itemName == "tower_blueprint_mythic")
+        mInventory.addItem(std::make_unique<TowerBlueprintMythic>(), amount);
+}

@@ -65,6 +65,7 @@ public:
     void setCrystals(int crystals);
     void addXp(int xp);
     void advanceTowerDefenseLevel();
+    void rewardItem(const std::string& itemName, int amount);
 
     void initialize();
     void uninitialize();
