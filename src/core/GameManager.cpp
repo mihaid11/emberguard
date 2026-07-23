@@ -102,7 +102,9 @@ void GameManager::dispatchQuestEvent(const GameEvent& event) {
     for (const auto& reward: rewards) {
         if (reward.type == "start_quest")
             mQuestManager.startQuest(reward.targetId);
-        else if (reward.type == "crystals")
+        else if (reward.type == "crystals" || reward.type == "crystal")
             mRpgEngine.addCrystals(reward.amount);
+        else if (reward.type == "item")
+            mRpgEngine.rewardItem(reward.targetId, reward.amount);
     }
 }
