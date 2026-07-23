@@ -37,10 +37,6 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
 
     inventoryButton->setCallback([&]() {
         switchToMenu("Inventory");
-
-        mInventoryMenu->setActive(true);
-        mSkillTreeMenu->setActive(false);
-        mQuestMenu->setActive(false);
     });
 
     skillTreeButton->setCallback([&]() {
@@ -54,11 +50,6 @@ RpgMenu::RpgMenu(const sf::Vector2f& windowSize, SkillTree& skillTree, Inventory
 
     questsButton->setCallback([&]() {
         switchToMenu("Quests");
-        mQuestMenu->refresh();
-
-        mInventoryMenu->setActive(false);
-        mSkillTreeMenu->setActive(false);
-        mQuestMenu->setActive(true);
     });
 
     exitButton->setCallback([&]() {
@@ -119,6 +110,22 @@ void RpgMenu::updateHover(const sf::Vector2f& mousePos) {
 
 void RpgMenu::switchToMenu(const std::string& menuName) {
     mCurrentMenu = menuName;
+
+    if (menuName == "Inventory") {
+        mInventoryMenu->setActive(true);
+        mSkillTreeMenu->setActive(false);
+        mQuestMenu->setActive(false);
+    } else if (menuName == "SkillTree") {
+        mInventoryMenu->setActive(false);
+        mSkillTreeMenu->setActive(true);
+        mQuestMenu->setActive(false);
+    } else if (menuName == "Quests") {
+        mInventoryMenu->setActive(false);
+        mSkillTreeMenu->setActive(false);
+        mQuestMenu->setActive(true);
+
+        mQuestMenu->refresh();
+    }
 }
 
 void RpgMenu::restart() {

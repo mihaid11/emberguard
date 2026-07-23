@@ -735,6 +735,7 @@ void RPGEngine::resume(int crystals) {
 
 void RPGEngine::enterRPG() {
     closeMenues();
+    mMenu.switchToMenu("Inventory");
     mPaused = false;
 
     mClock.restart();
@@ -834,6 +835,13 @@ void RPGEngine::saveGame() {
         flagValues.push_back(flag.second ? 1 : 0);
     }
 
+    std::vector<std::string> questIds;
+    std::vector<int> questStates;
+    std::vector<std::vector<int>> questObjectives;
+
+    if (mGameManager)
+        mGameManager->getQuestManager().getQuestSaveData(questIds, questStates, questObjectives);
+
     /*for (int i = 0; i < inventoryItemId.size(); ++i)
         std::cout << inventoryItemId[i] << " " << inventoryItemQuantity[i] << std::endl;
 
@@ -849,7 +857,7 @@ void RPGEngine::saveGame() {
                      droppedItemYPos, droppedItemQuantity, extracting, inSlot, completed,
                      timerActive, startYear1, startDay1, startHour1, startMinute1,
                      slotItemId, mIsInsideAStructure, mStructureIndex, mCameraFixedPosition,
-                     chapter, flagKeys, flagValues);
+                     chapter, flagKeys, flagValues, questIds, questStates, questObjectives);
 }
 
 void RPGEngine::loadGame() {
@@ -858,10 +866,12 @@ void RPGEngine::loadGame() {
     int towerDefenseLevel;
     std::vector<sf::Vector2f> npcPositions;
     std::vector<int> npcWaypoints;
+
     int crystals, year, day, hour, minute, bankBalance, penalty, interest,
         amountToRepay, daysToRepayment, startYear, startDay, startHour, startMinute,
         hasBorrowActive, extracting, inSlot, completed, timerActive, startYear1,
         startDay1, startHour1, startMinute1, slotItemId, insideStructure, structureIndex, chapter;
+
     std::vector<int> droppedItemId;
     std::vector<float> droppedItemXPos;
     std::vector<float> droppedItemYPos;
@@ -870,8 +880,13 @@ void RPGEngine::loadGame() {
     std::vector<int> inventoryItemQuantity;
     std::vector<int> chestItemId;
     std::vector<int> chestItemQuantity;
+
     std::vector<std::string> flagKeys;
     std::vector<int> flagValues;
+
+    std::vector<std::string> questIds;
+    std::vector<int> questStates;
+    std::vector<std::vector<int>> questObjectives;
 
     if (mSaveSystem.load(playerPosition, playerAnimation, playerLevel, playerXp,
                          towerDefenseLevel, npcPositions, npcWaypoints, crystals, year,
@@ -882,7 +897,11 @@ void RPGEngine::loadGame() {
                          droppedItemYPos, droppedItemQuantity, extracting, inSlot,
                          completed, timerActive, startYear1, startDay1, startHour1,
                          startMinute1, slotItemId, insideStructure, structureIndex,
-                         mCameraFixedPosition, chapter, flagKeys, flagValues)) {
+                         mCameraFixedPosition, chapter, flagKeys, flagValues,
+                         questIds, questStates, questObjectives)) {
+
+        if (mGameManager)
+            mGameManager->getQuestManager().loadQuestSaveData(questIds, questStates, questObjectives);
 
         mInventory.clear();
         mChestInventory.clear();
@@ -1027,6 +1046,12 @@ void RPGEngine::resetToDefault() {
     mShopMenu.regenerateIds();
     mIsInsideAStructure = false;
     mCameraFixedPosition = sf::Vector2f(0.f, 0.f);
+    mMenu.switchToMenu("Inventory");
+
+    if (mGameManager) {
+        mGameManager->getQuestManager().resetQuests();
+        mGameManager->getQuestManager().startQuest("quest_1");
+    }
 }
 
 bool RPGEngine::saveExists(int saveNumber) const {
