@@ -83,3 +83,39 @@ std::vector<const Quest*> QuestManager::getActiveQuests() const {
 
     return activeQuests;
 }
+
+void QuestManager::getQuestSaveData(std::vector<std::string>& ids, std::vector<int>& states, std::vector<std::vector<int>>& objProgress) const {
+    for (const auto& [id, quest]: mQuests) {
+        if (quest.state != QuestState::inactive) {
+            ids.push_back(id);
+            states.push_back(static_cast<int>(quest.state));
+
+            std::vector<int> prog;
+            for (const auto& obj: quest.objectives)
+                prog.push_back(obj.currentAmount);
+            objProgress.push_back(prog);
+        }
+    }
+}
+
+void QuestManager::loadQuestSaveData(const std::vector<std::string>& ids, const std::vector<int>& states, const std::vector<std::vector<int>>& objProgress) {
+    resetQuests();
+
+    for (int i = 0; i < ids.size(); ++i) {
+        auto it = mQuests.find(ids[i]);
+
+        if (it != mQuests.end()) {
+            it->second.state = static_cast<QuestState>(states[i]);
+            for (int j = 0; j < objProgress[i].size() && j < it->second.objectives.size(); ++j)
+                it->second.objectives[j].currentAmount = objProgress[i][j];
+        }
+    }
+}
+
+void QuestManager::resetQuests() {
+    for (auto& [id, quest]: mQuests) {
+        quest.state = QuestState::inactive;
+        for (auto& obj: quest.objectives)
+            obj.currentAmount = 0;
+    }
+}

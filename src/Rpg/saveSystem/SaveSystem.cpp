@@ -21,7 +21,8 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnima
                       const int& startYear1, const int& startDay1, const int& startHour1, const int& startMinute1,
                       const int& slotItemId, const int& insideStructure, const int& structureIndex,
                       const sf::Vector2f& fixedCameraPos, const int& chapter, const std::vector<std::string>& flagKeys,
-                      const std::vector<int>& flagValues) {
+                      const std::vector<int>& flagValues, const std::vector<std::string>& questIds, const std::vector<int>& questStates,
+                      const std::vector<std::vector<int>>& questObjectives) {
 
     std::ofstream outFile(mSaveFilePath);
     if (!outFile) {
@@ -71,6 +72,15 @@ void SaveSystem::save(const sf::Vector2f& playerPosition, const int& playerAnima
         outFile << flagKeys[i] << " " << flagValues[i] << std::endl;
     }
 
+    outFile << questIds.size() << std::endl;
+    for (int i = 0; i < questIds.size(); ++i) {
+        outFile << questIds[i] << " " << questStates[i] << " " << questObjectives[i].size() << std::endl;
+
+        for (int j = 0; j < questObjectives[i].size(); ++j)
+            outFile << questObjectives[i][j] << " ";
+        outFile << std::endl;
+    }
+
     outFile.close();
 }
 
@@ -86,7 +96,8 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation, int& p
                       int& extracting, int& inSlot, int& completed, int& timerActive, int& startYear1,
                       int& startDay1, int& startHour1, int& startMinute1, int& slotItemId,
                       int& insideStructure, int& structureIndex, sf::Vector2f& fixedCameraPos,
-                      int& chapter, std::vector<std::string>& flagKeys, std::vector<int>& flagValues) {
+                      int& chapter, std::vector<std::string>& flagKeys, std::vector<int>& flagValues,
+                      std::vector<std::string>& questIds, std::vector<int>& questStates, std::vector<std::vector<int>>& questObjectives) {
 
     std::ifstream inFile(mSaveFilePath);
     if (!inFile) {
@@ -296,6 +307,33 @@ bool SaveSystem::load(sf::Vector2f& playerPosition, int& playerAnimation, int& p
         flagValues.push_back(flagValue);
     }
 
+    int questSize = 0;
+    if (!(inFile >> questSize)) {
+        std::cerr << "Failed to read quest size, assuming no quests." << std::endl;
+        questSize = 0;
+    }
+
+    for (int i = 0; i < questSize; ++i) {
+        std::string id;
+        int state, objectiveSize;
+
+        if (!(inFile >> id >> state >> objectiveSize)) {
+            std::cerr << "Error reading quest data." << std::endl;
+            return false;
+        }
+
+        questIds.push_back(id);
+        questStates.push_back(state);
+
+        std::vector<int> objectives;
+        for (int j = 0; j < objectiveSize; ++j) {
+            int prog;
+            inFile >> prog;
+            objectives.push_back(prog);
+        }
+        questObjectives.push_back(objectives);
+    }
+
     inFile.close();
     return true;
 }
@@ -306,10 +344,12 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
     int towerDefenseLevel;
     std::vector<sf::Vector2f> npcPositions;
     std::vector<int> npcWaypoints;
+
     int bankBalance, penalty, interest, amountToRepay, daysToRepayment,
         startYear, startDay, startHour, startMinute, hasBorrowActive, extracting,
         inSlot, completed, timerActive, startYear1, startDay1, startHour1,
         startMinute1, slotItemId, insideStructure, structureIndex, chapter;
+
     std::vector<int> droppedItemId;
     std::vector<float> droppedItemXPos;
     std::vector<float> droppedItemYPos;
@@ -318,9 +358,14 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
     std::vector<int> inventoryItemQuantity;
     std::vector<int> chestItemId;
     std::vector<int> chestItemQuantity;
+
     std::vector<std::string> flagKeys;
     std::vector<int> flagValues;
     sf::Vector2f cameraFixedPosition;
+
+    std::vector<std::string> questIds;
+    std::vector<int> questStates;
+    std::vector<std::vector<int>> questObjectives;
 
     std::string tmp = mSaveFilePath;
     mSaveFilePath = saveFile;
@@ -334,7 +379,7 @@ bool SaveSystem::loadPartial(std::string saveFile, int& crystals, int& year, int
                         droppedItemQuantity, extracting, inSlot, completed, timerActive,
                         startYear1, startDay1, startHour1, startMinute1, slotItemId,
                         insideStructure, structureIndex, cameraFixedPosition, chapter,
-                        flagKeys, flagValues);
+                        flagKeys, flagValues, questIds, questStates, questObjectives);
 
     mSaveFilePath = tmp;
     return success;
@@ -348,4 +393,3 @@ void SaveSystem::setSaveFilePath(int saveNumber) {
     else if (saveNumber == 3)
         mSaveFilePath = "save3.txt";
 }
-
