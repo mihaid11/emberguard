@@ -1,14 +1,16 @@
 #include "AnalyzeMenu.h"
 #include <iostream>
+#include <string>
 #include <cmath>
 #include <sstream>
 #include <stdlib.h>
 #include <time.h>
 #include <algorithm>
+#include "../../core/GameManager.h"
 
-AnalyzeMenu::AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem,
+AnalyzeMenu::AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem, GameManager* gameManager,
                          std::vector<int>& availableTowers, const sf::Vector2f& slotSize, int& crystals)
-    : Menu(windowSize, sf::Vector2f(0.55f, 0.55f)),
+    : Menu(windowSize, sf::Vector2f(0.55f, 0.55f)), mGameManager(gameManager),
     mInventory(inventory), mTimeSystem(timeSystem), mInSlot(false), mExtracting(false),
     mHoveredSlot(-1), mSlotItem(nullptr), mCompleted(false),
     mStartButton(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(110.f, 35.f), "Start"),
@@ -50,8 +52,10 @@ AnalyzeMenu::AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, T
             else if (mSlotItem->getId() == 5)
                 border = 555;
 
+            std::string towerName;
             int itemChance = rand() % 1000;
             if (itemChance <= border) {
+                towerName = "laser_tower";
                 if (std::find(availableTowers.begin(), availableTowers.end(), 1) == availableTowers.end()) {
                     availableTowers.push_back(1);
                 } else {
@@ -59,12 +63,18 @@ AnalyzeMenu::AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, T
                     crystals += 25;
                 }
             } else {
+                towerName = "flame_turret";
                 if (std::find(availableTowers.begin(), availableTowers.end(), 2) == availableTowers.end()) {
                     availableTowers.push_back(2);
                 } else {
                     std::cout << "TowerBlueprint already owned! -> Flame Turret" << std::endl;
                     crystals += 40;
                 }
+            }
+
+            if (mGameManager) {
+                mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::analyze_blueprint, "", 1});
+                mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::get_tower, towerName, 1});
             }
         }
         mSlotItem = nullptr;

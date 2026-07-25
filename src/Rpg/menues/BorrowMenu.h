@@ -4,10 +4,12 @@
 #include "../../ui/Button.h"
 #include "../../core/TimeSystem.h"
 
+class GameManager;
+
 class BorrowMenu : public Menu {
 public:
-    BorrowMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position,
-               const sf::Vector2f& size, int& crystals, bool& hasBorrowActive, TimeSystem& timeSystem);
+    BorrowMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position, const sf::Vector2f& size,
+               int& crystals, bool& hasBorrowActive, TimeSystem& timeSystem, GameManager* gameManager);
 
     void render(sf::RenderWindow& window) override;
     void handleMouseClick(const sf::Vector2f& mousePos) override;
@@ -60,5 +62,7 @@ private:
     int mStartDay;
     int mStartHour;
     int mStartMinute;
+
     TimeSystem& mTimeSystem;
+    GameManager* mGameManager;
 };

@@ -10,9 +10,11 @@
 #include "../inventory/items/TowerBlueprintMythic.h"
 #include "../../core/TimeSystem.h"
 
+class GameManager;
+
 class AnalyzeMenu : public Menu {
 public:
-    AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem,
+    AnalyzeMenu(const sf::Vector2f& windowSize, Inventory& inventory, TimeSystem& timeSystem, GameManager* gameManager,
                 std::vector<int>& availableTowers, const sf::Vector2f& slotSize, int& crystals);
 
     void render(sf::RenderWindow& window) override;
@@ -29,6 +31,7 @@ public:
 private:
     Inventory& mInventory;
     TimeSystem& mTimeSystem;
+    GameManager* mGameManager;
 
     sf::RectangleShape mSlot;
     Item* mSlotItem;

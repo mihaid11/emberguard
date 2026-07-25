@@ -10,9 +10,11 @@
 #include <string>
 #include <memory>
 
+class GameManager;
+
 class BankMenu : public Menu {
 public:
-    BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCapacity, TimeSystem& timeSystem);
+    BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCapacity, TimeSystem& timeSystem, GameManager* gameManager);
 
     void render(sf::RenderWindow& window) override;
     void update(float dt) override;

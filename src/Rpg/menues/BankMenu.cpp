@@ -1,8 +1,10 @@
 #include "BankMenu.h"
 #include <iostream>
+#include "../../core/GameManager.h"
 
-BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCapacity, TimeSystem& timeSystem)
-    : Menu(windowSize, sf::Vector2f(0.75f, 0.75f)), mCrystals(crystals), mBankBalance(0), mHasBorrowActive(false), mTimeSystem(timeSystem) {
+BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCapacity, TimeSystem& timeSystem, GameManager* gameManager)
+    : Menu(windowSize, sf::Vector2f(0.75f, 0.75f)), mCrystals(crystals), mBankBalance(0),
+      mHasBorrowActive(false), mTimeSystem(timeSystem) {
 
     initializeTitle("Crystal Bank");
 
@@ -21,11 +23,11 @@ BankMenu::BankMenu(const sf::Vector2f& windowSize, int& crystals, int& storageCa
 
     mDepositMenu = std::make_unique<DepositMenu>(windowSize, sf::Vector2f(mMenuShape.getPosition().x +
             buttonSize.x + 125.f, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
-            mMenuShape.getSize().y - 150.f), crystals, mBankBalance, storageCapacity);
+            mMenuShape.getSize().y - 150.f), crystals, mBankBalance, storageCapacity, gameManager);
 
     mBorrowMenu = std::make_unique<BorrowMenu>(windowSize, sf::Vector2f(mMenuShape.getPosition().x +
             buttonSize.x + 125.f, mMenuShape.getPosition().y + 87.5f), sf::Vector2f(mMenuShape.getSize().x / 1.5f,
-            mMenuShape.getSize().y - 150.f), crystals, mHasBorrowActive, timeSystem);
+            mMenuShape.getSize().y - 150.f), crystals, mHasBorrowActive, timeSystem, gameManager);
 
     withdrawButton->setCallback([this]() {
         mWithdrawMenu->setActive(true);

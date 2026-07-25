@@ -394,13 +394,15 @@ void GameEngine::update(float mdt) {
 
             bool enemiesLeft = std::any_of(mEnemies.begin(), mEnemies.end(), [](const Enemy& enemy) {
                 return !enemy.isDead(); // Check if there are any living enemies
-                });
+            });
 
             if (mWaveManager->isWaveComplete() && !enemiesLeft) {
                 if (!mWaveManager->isLevelComplete())
                     mWaveManager->startNextWave();
                 else
                     mLevelCompleteMenu.setActive(true);
+
+                mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::complete_waves, "wave", 1});
             }
 
             // Update towers

@@ -1,9 +1,10 @@
 #include "DepositMenu.h"
 #include <iostream>
+#include "../../core/GameManager.h"
 
 DepositMenu::DepositMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position, const sf::Vector2f& size,
-                         int& crystals, int& bankBalance, int& storageCapacity)
-    : Menu(size, position, true),
+                         int& crystals, int& bankBalance, int& storageCapacity, GameManager* gameManager)
+    : Menu(size, position, true), mGameManager(gameManager),
     m100Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "100"),
     m250Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "250"),
     m500Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "500"),
@@ -51,10 +52,13 @@ DepositMenu::DepositMenu(const sf::Vector2f& windowSize, const sf::Vector2f& pos
     });
 
     mConfirmButton.setCallback([this]() {
+        int depositAmount;
         if (mStorageWillBeFull == false) {
+            depositAmount = mAmountToDeposit;
             mBankBalance += mAmountToDeposit;
             mCrystals -= mAmountToDeposit;
         } else {
+            depositAmount = mStorageCapacity - mBankBalance;
             mCrystals -= mStorageCapacity - mBankBalance;
             mBankBalance = mStorageCapacity;
         }
@@ -62,6 +66,9 @@ DepositMenu::DepositMenu(const sf::Vector2f& windowSize, const sf::Vector2f& pos
         mConfirmShowing = false;
 
         updateTexts();
+
+        if (mGameManager)
+            mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::deposit_crystals, "", depositAmount});
     });
 
     mBackButton.setCallback([this]() {

@@ -10,8 +10,13 @@ enum class QuestState {
 enum class ObjectiveType {
     kill_enemy,
     get_item,
+    get_tower,
     craft_item,
+    analyze_blueprint,
     talk_to_npc,
+    deposit_crystals,
+    borrow_crystals,
+    complete_waves,
     complete_level_td,
     complete_level,
     unknown

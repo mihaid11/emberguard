@@ -7,8 +7,13 @@ using json = nlohmann::json;
 ObjectiveType QuestManager::stringToObjectiveType(const std::string& str) const {
     if (str == "kill_enemy") return ObjectiveType::kill_enemy;
     if (str == "get_item") return ObjectiveType::get_item;
+    if (str == "get_tower") return ObjectiveType::get_tower;
     if (str == "craft_item") return ObjectiveType::craft_item;
+    if (str == "analyze_blueprint") return ObjectiveType::analyze_blueprint;
+    if (str == "deposit_crystals") return ObjectiveType::deposit_crystals;
+    if (str == "borrow_crystals") return ObjectiveType::borrow_crystals;
     if (str == "talk_to_npc") return ObjectiveType::talk_to_npc;
+    if (str == "complete_waves") return ObjectiveType::complete_waves;
     if (str == "complete_level_td") return ObjectiveType::complete_level_td;
     if (str == "complete_level") return ObjectiveType::complete_level;
 
