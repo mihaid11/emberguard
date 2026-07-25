@@ -11,9 +11,10 @@ public:
     bool loadQuestsFromJson(const std::string& filePath);
 
     void startQuest(const std::string& questId);
-    std::vector<QuestReward> onEvent(const GameEvent& event);
+    std::vector<QuestReward> onEvent(const GameEvent& event, std::vector<std::string>& completedQuests);
 
     std::vector<const Quest*> getActiveQuests() const;
+    std::string getQuestTitle(const std::string& questId) const;
 
     void getQuestSaveData(std::vector<std::string>& ids, std::vector<int>& states, std::vector<std::vector<int>>& objProgress) const;
     void loadQuestSaveData(const std::vector<std::string>& ids, const std::vector<int>& states, const std::vector<std::vector<int>>& objProgress);

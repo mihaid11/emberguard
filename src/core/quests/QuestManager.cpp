@@ -1,4 +1,5 @@
 #include "QuestManager.h"
+#include "Quest.h"
 #include <fstream>
 #include <memory>
 using json = nlohmann::json;
@@ -60,13 +61,14 @@ void QuestManager::startQuest(const std::string& questId) {
         quest->second.state = QuestState::active;
 }
 
-std::vector<QuestReward> QuestManager::onEvent(const GameEvent& event) {
+std::vector<QuestReward> QuestManager::onEvent(const GameEvent& event, std::vector<std::string>& completedQuests) {
     std::vector<QuestReward> rewards;
 
     for (auto& [id, quest]: mQuests) {
         if (quest.state == QuestState::active) {
             if (quest.onEvent(event) && quest.checkCompletion()) {
                 quest.state = QuestState::completed;
+                completedQuests.push_back(quest.title);
                 rewards.insert(rewards.end(), quest.rewards.begin(), quest.rewards.end());
             }
         }
@@ -82,6 +84,14 @@ std::vector<const Quest*> QuestManager::getActiveQuests() const {
             activeQuests.push_back(&quest.second);
 
     return activeQuests;
+}
+
+std::string QuestManager::getQuestTitle(const std::string& questId) const {
+    auto it = mQuests.find(questId);
+
+    if (it != mQuests.end())
+        return it->second.title;
+    return "";
 }
 
 void QuestManager::getQuestSaveData(std::vector<std::string>& ids, std::vector<int>& states, std::vector<std::vector<int>>& objProgress) const {
