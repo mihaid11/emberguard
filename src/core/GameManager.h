@@ -5,6 +5,7 @@
 #include "../Rpg/dialogueSystem/DialogueManager.h"
 #include "quests/QuestTypes.h"
 #include "quests/QuestManager.h"
+#include "NotificationManager.h"
 #include "TimeSystem.h"
 
 enum class GameState {
@@ -28,6 +29,7 @@ public:
     MainMenu& getMainMenu();
     sf::RenderWindow& getWindow();
     QuestManager& getQuestManager();
+    NotificationManager& getNotificationManager();
 
     void dispatchQuestEvent(const GameEvent& event);
 
@@ -36,6 +38,8 @@ private:
     void render();
 
     sf::RenderWindow mWindow;
+    sf::Clock mClock;
+
     float mMaxFps;
     GameState mCurrentState;
     RPGEngine mRpgEngine;
@@ -44,4 +48,5 @@ private:
 
     DialogueManager mDialogueManager;
     QuestManager mQuestManager;
+    NotificationManager mNotificationManager;
 };

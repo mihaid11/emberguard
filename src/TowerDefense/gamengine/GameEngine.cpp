@@ -373,9 +373,8 @@ void GameEngine::handleKeyPress(sf::Keyboard::Key keyCode) {
     }
 }
 
-void GameEngine::update() {
+void GameEngine::update(float mdt) {
     float dt = mClock.restart().asSeconds();
-
     sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
     mSmallMenu.update(dt);
     mSmallMenu.updateHover(mousePos);
@@ -504,8 +503,6 @@ void GameEngine::update() {
 }
 
 void GameEngine::render() {
-    mWindow.clear();
-
     mMap.render(mWindow);
 
     mPlayer.render(mWindow);
@@ -562,8 +559,6 @@ void GameEngine::render() {
     mLevelCompleteMenu.render(mWindow);
     mGameOverMenu.render(mWindow);
     mSmallMenu.render(mWindow);
-
-    mWindow.display();
 }
 void GameEngine::updateButtonHover(sf::RectangleShape& button, sf::Text& buttonText, const sf::Vector2f& mousePos) {
     if (button.getGlobalBounds().contains(mousePos))

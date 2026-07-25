@@ -246,7 +246,6 @@ void MainMenu::update() {
 }
 
 void MainMenu::render() {
-    mWindow.clear();
     mWindow.draw(mTitleText);
 
     if (mShowGameButtons == false) {
@@ -284,8 +283,6 @@ void MainMenu::render() {
         if (mGameManager->getGameEngine().saveExists(3))
             mDelete3Button.render(mWindow);
     }
-
-    mWindow.display();
 }
 
 void MainMenu::updateSaves() {

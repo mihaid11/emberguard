@@ -45,7 +45,7 @@ public:
     RPGEngine(sf::RenderWindow& window, GameManager* gameManager);
 
     void processEvents();
-    void update();
+    void update(float dt);
     void render();
     void renderDialogueChoices();
 

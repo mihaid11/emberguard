@@ -27,7 +27,7 @@ public:
     ~GameEngine();
 
     void processEvents();
-    void update();
+    void update(float dt);
     void render();
 
     bool isGameOver() const;
@@ -49,8 +49,8 @@ private:
     void updateButtonHover(sf::RectangleShape& button, sf::Text& buttonText, const sf::Vector2f& mousePos);
 
     sf::RenderWindow& mWindow;
-    Map mMap;
     sf::Clock mClock;
+    Map mMap;
     float mSpawnTimer;
 
     std::vector<Enemy> mEnemies;

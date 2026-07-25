@@ -403,11 +403,10 @@ void RPGEngine::processEvents() {
     }
 }
 
-void RPGEngine::update() {
+void RPGEngine::update(float dt) {
     if (mPaused)
         return;
 
-    float dt = mClock.restart().asSeconds();
     sf::Vector2f mousePos = mWindow.mapPixelToCoords(sf::Mouse::getPosition(mWindow));
 
     if (mMenu.isActive()) {
@@ -578,8 +577,6 @@ void RPGEngine::update() {
 }
 
 void RPGEngine::render() {
-    mWindow.clear();
-
     if (!mIsInsideAStructure)
         mWindow.setView(mView);
     else
@@ -666,8 +663,6 @@ void RPGEngine::render() {
     mWindow.draw(mDateTimeBackground);
     mWindow.draw(mDateText);
     mWindow.draw(mTimeText);
-
-    mWindow.display();
 }
 
 void RPGEngine::renderDialogueChoices() {
@@ -1051,6 +1046,7 @@ void RPGEngine::resetToDefault() {
     if (mGameManager) {
         mGameManager->getQuestManager().resetQuests();
         mGameManager->getQuestManager().startQuest("quest_1");
+        mGameManager->getNotificationManager().addNotification(NotificationManager::Type::QuestStarted, "The First Meeting");
     }
 }
 
@@ -1095,16 +1091,16 @@ void RPGEngine::newGame() {
         filename = "save3.txt";
     else
         return;
-    
+
     std::ofstream file(filename);
     file.close();
-    
+
     resetToDefault();
-    
+
     mInventory.addItem(std::make_unique<Wood>(), 1);
     mInventory.addItem(std::make_unique<TowerBlueprint>(), 5);
     mInventory.addItem(std::make_unique<TowerBlueprintEpic>(), 2);
-    
+
     saveGame();
 }
 
