@@ -6,7 +6,7 @@
       "description": "Go and talk to Mira Stanton to learn about the village.",
       "objectives": [
         { "type": "talk_to_npc", "target_id": "mira_stanton", "amount": 1, "description": "Talk to Mira Stanton" },
-        {"type": "get_item", "target_id": "shop_item", "amount": 1, "description": "Purchase any item from the shop"}
+        { "type": "get_item", "target_id": "shop_item", "amount": 1, "description": "Purchase any item from the shop" }
       ],
       "rewards": [
         { "type": "crystals", "target_id": "", "amount": 50 },
@@ -19,7 +19,8 @@
       "title": "Stocking Up",
       "description": "Buy an item from the shop to prepare for the defense.",
       "objectives": [
-        { "type": "get_item", "target_id": "shop_item", "amount": 2, "description": "Purchase 2 items from the shop" }
+        { "type": "get_item", "target_id": "shop_item", "amount": 2, "description": "Purchase 2 items from the shop" },
+        { "type": "borrow_crystals", "target_id": "", "amount": 500, "description": "Borrow crystals" }
       ],
       "rewards": [
         { "type": "item", "target_id": "wood", "amount": 5 }

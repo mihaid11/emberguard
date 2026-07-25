@@ -64,9 +64,9 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
                   }, mWaypointManager},
     mZoneManager(mGameContext, 1),
     mStartTowerDefenseMenu(sf::Vector2f(window.getSize()), mAvailableTowers, this, gameManager, mCurrentTowerDefenseLevel, mCrystals),
-    mBankMenu(sf::Vector2f(window.getSize()), mCrystals, mStorageCapacity, mTimeSystem),
+    mBankMenu(sf::Vector2f(window.getSize()), mCrystals, mStorageCapacity, mTimeSystem, gameManager),
     mShopMenu(sf::Vector2f(window.getSize()), mInventory, mTimeSystem, 5, mCrystals, gameManager),
-    mAnalyzeMenu(sf::Vector2f(window.getSize()), mInventory, mTimeSystem, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals) {
+    mAnalyzeMenu(sf::Vector2f(window.getSize()), mInventory, mTimeSystem, gameManager, mAvailableTowers, sf::Vector2f(70.0f, 70.0f), mCrystals) {
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Couldn't load font from file" << std::endl;

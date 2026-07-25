@@ -3,10 +3,12 @@
 #include "../../ui/Menu.h"
 #include "../../ui/Button.h"
 
+class GameManager;
+
 class DepositMenu : public Menu {
 public:
-    DepositMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position,
-                const sf::Vector2f& size, int& crystals, int& bankBalances, int& storageCapacity);
+    DepositMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position, const sf::Vector2f& size,
+                int& crystals, int& bankBalances, int& storageCapacity, GameManager* gameManager);
 
     void render(sf::RenderWindow& window) override;
     void handleMouseClick(const sf::Vector2f& mousePos) override;
@@ -37,6 +39,7 @@ private:
     int& mCrystals;
     int& mBankBalance;
     int& mStorageCapacity;
+    GameManager* mGameManager;
 
     bool mStorageAlreadyFull;
     sf::Text mStorageFullText;

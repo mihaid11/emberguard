@@ -1,10 +1,11 @@
 #include "BorrowMenu.h"
 #include <iostream>
 #include <sstream>
+#include "../../core/GameManager.h"
 
-BorrowMenu::BorrowMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position,
-                       const sf::Vector2f& size, int& crystals, bool& hasBorrowActive, TimeSystem& timeSystem)
-    : Menu(size, position, true),
+BorrowMenu::BorrowMenu(const sf::Vector2f& windowSize, const sf::Vector2f& position, const sf::Vector2f& size,
+                       int& crystals, bool& hasBorrowActive, TimeSystem& timeSystem, GameManager* gameManager)
+    : Menu(size, position, true), mGameManager(gameManager),
     m500Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "500"),
     m1000Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "1000"),
     m2000Button(sf::Vector2f(0, 0), sf::Vector2f(80.0f, 35.0f), "2000"),
@@ -79,6 +80,10 @@ BorrowMenu::BorrowMenu(const sf::Vector2f& windowSize, const sf::Vector2f& posit
 
     mConfirmButton.setCallback([this]() {
         mCrystals += mAmountToBorrow;
+
+        if (mGameManager)
+            mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::borrow_crystals, "", mAmountToBorrow});
+
         mAmountToBorrow = 0;
         mConfirmShowing = false;
         mHasBorrowActive = true;

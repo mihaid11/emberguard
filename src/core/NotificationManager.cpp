@@ -2,7 +2,7 @@
 #include <cinttypes>
 #include <iostream>
 
-NotificationManager::NotificationManager() {
+NotificationManager::NotificationManager() : mSpawnTimer(0.f) {
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cout << "Failed to load font in NotificationManager" << std::endl;
 }
@@ -30,7 +30,7 @@ void NotificationManager::addNotification(Type type, const std::string& title) {
     notification.title.setCharacterSize(14);
     notification.title.setFillColor(sf::Color::White);
 
-    mNotifications.push_back(notification);
+    mPendingNotifications.push(notification);
 }
 
 void NotificationManager::render(sf::RenderWindow& window) {
@@ -42,6 +42,26 @@ void NotificationManager::render(sf::RenderWindow& window) {
 }
 
 void NotificationManager::update(float dt) {
+    float startX = 20.f;
+    float startY = 20.f;
+    float gap = 15.f;
+
+    if (mSpawnTimer > 0.f)
+        mSpawnTimer -= dt;
+
+    if (mSpawnTimer <= 0.f && !mPendingNotifications.empty()) {
+        Notification notification = mPendingNotifications.front();
+        mPendingNotifications.pop();
+
+        if (!mNotifications.empty())
+            notification.currentY = mNotifications.back().currentY - 10.f;
+        else
+            notification.currentY = startY - 70.f;
+
+        mNotifications.push_back(notification);
+        mSpawnTimer = 0.8f;
+    }
+
     for (auto it = mNotifications.begin(); it != mNotifications.end();) {
         it->lifeTime -= dt;
 
@@ -51,30 +71,21 @@ void NotificationManager::update(float dt) {
             ++it;
     }
 
-    float startX = 20.f;
-    float startY = 20.f;
-    float gap = 15.f;
-
     for (int i = 0; i < mNotifications.size(); ++i) {
         auto& notification = mNotifications[i];
 
         float targetY = startY + i * (notification.box.getSize().y + gap);
-        float currentY = targetY;
-        float timeAlive = notification.maxLifeTime - notification.lifeTime;
-        float slideDuration = 0.75f;
 
-        if (timeAlive < slideDuration) {
-            float progress = timeAlive / slideDuration;
-            float offset = 60.f;
+        if (notification.lifeTime < 1.f)
+            targetY -= (1.f - notification.lifeTime) * notification.box.getSize().y;
 
-            currentY = targetY - offset * (1.f - progress) * (1.f - progress);
-        }
+        notification.currentY += (targetY - notification.currentY) * 3.5f * dt;
 
         float height = notification.title.getLocalBounds().height + notification.header.getLocalBounds().height;
         float textsGap = (notification.box.getSize().y - height) / 3.f;
 
-        notification.box.setPosition(startX, currentY);
-        notification.header.setPosition(startX + 10.f, currentY + textsGap);
+        notification.box.setPosition(startX, notification.currentY);
+        notification.header.setPosition(startX + 10.f, notification.currentY + textsGap);
         notification.title.setPosition(startX + 10.f, notification.header.getPosition().y + notification.header.getLocalBounds().height + textsGap);
 
         if (notification.lifeTime < 1.f) {
