@@ -5,9 +5,8 @@
 Bed::Bed(const sf::Vector2f& position, float sizeIncrement, const std::string filename,
          const sf::Vector2f& collPosition, const sf::Vector2f& collSize,
          const sf::Vector2f& interactPosition, const sf::Vector2f& interactSize,
-         TimeSystem& timeSystem, TransitionSystem& transitionSystem,
-         GameManager* gameManager)
-         : Entity(position, filename, collPosition, collSize, 1, interactPosition, interactSize),
+         TimeSystem& timeSystem, TransitionSystem& transitionSystem, GameManager* gameManager)
+         : Entity(position, sf::Vector2f(0.f, 0.f), filename, collPosition, collSize, 1, interactPosition, interactSize),
         mTimeSystem(timeSystem), mGameManager(gameManager), mInteractSize(interactSize),
         mTransitionSystem(transitionSystem), mInteractPosition(interactPosition) {
     mSprite.setScale(sf::Vector2f(sizeIncrement, sizeIncrement));
@@ -62,4 +61,3 @@ void Bed::render(sf::RenderWindow& window) {
     //window.draw(mCollisionZone);
     //window.draw(mInteractableZone);
 }
-

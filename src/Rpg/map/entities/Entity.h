@@ -5,8 +5,9 @@
 
 class Entity : public DrawableEntity {
 public:
-    Entity(const sf::Vector2f& position, const std::string filename,
-           const sf::Vector2f& collPosition, const sf::Vector2f& collSize, int canInteract,
+    Entity(const sf::Vector2f& position, const sf::Vector2f& size,
+           const std::string filename, const sf::Vector2f& collPosition,
+           const sf::Vector2f& collSize, int canInteract,
            const sf::Vector2f& interactPos, const sf::Vector2f& interactSize);
     virtual ~Entity() = default;
 
@@ -27,4 +28,3 @@ protected:
     sf::RectangleShape mInteractableZone;
     int mCanInteract;
 };
-

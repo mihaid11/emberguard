@@ -116,4 +116,3 @@ std::vector<Entity*> ZoneManager::getEntities() {
     }
     return entities;
 }
-
