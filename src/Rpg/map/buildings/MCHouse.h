@@ -5,11 +5,12 @@
 
 class MCHouse : public Entity {
 public:
-    MCHouse(const sf::Vector2f& position, const std::string filename,
-        const sf::Vector2f& collPosition, const sf::Vector2f& collSize, int canInteract,
-        const sf::Vector2f& interactPos, const sf::Vector2f& interactSize,
-        MainCharacter& mainCharacter, bool& isInsideAStructure, sf::Vector2f& cameraFixedPosition,
-        std::function<void(const std::string&)> changeMap, int& structureIndex);
+    MCHouse(const sf::Vector2f& position, const sf::Vector2f& size,
+            const std::string filename, const sf::Vector2f& collPosition,
+            const sf::Vector2f& collSize, int canInteract,
+            const sf::Vector2f& interactPos, const sf::Vector2f& interactSize,
+            MainCharacter& mainCharacter, bool& isInsideAStructure, sf::Vector2f& cameraFixedPosition,
+            std::function<void(const std::string&)> changeMap, int& structureIndex);
 
     void interact() override;
 private:
@@ -20,4 +21,3 @@ private:
     std::function<void(const std::string&)> mChangeMap;
     int& mStructureIndex;
 };
-

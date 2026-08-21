@@ -32,4 +32,3 @@ private:
     sf::Text mErrorText;
     sf::Clock mClock;
 };
-

@@ -10,4 +10,3 @@ public:
 private:
     sf::RectangleShape mShape;
 };
-

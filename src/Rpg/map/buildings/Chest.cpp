@@ -5,7 +5,7 @@ Chest::Chest(const sf::Vector2f& position, float sizeIncrement, const std::strin
              const sf::Vector2f& collPosition, const sf::Vector2f& collSize,
              const sf::Vector2f& interactPosition, const sf::Vector2f& interactSize,
              std::function<void(bool)> openCallback)
-    : Entity(position, filename, collPosition, collSize, 1, interactPosition, interactSize),
+    : Entity(position, sf::Vector2f(0.f, 0.f), filename, collPosition, collSize, 1, interactPosition, interactSize),
     mOpenCallback(openCallback) {
     mSprite.setScale(sf::Vector2f(sizeIncrement, sizeIncrement));
 }
