@@ -61,76 +61,7 @@
          "draworder":"topdown",
          "id":3,
          "name":"Entities",
-         "objects":[
-                {
-                 "gid":1,
-                 "height":256,
-                 "id":1,
-                 "name":"",
-                 "rotation":0,
-                 "type":"MCHouse",
-                 "visible":true,
-                 "width":160.5,
-                 "x":256,
-                 "y":307
-                }, 
-                {
-                 "height":46.5,
-                 "id":6,
-                 "name":"",
-                 "rotation":0,
-                 "type":"Barrier",
-                 "visible":true,
-                 "width":153.25,
-                 "x":264.25,
-                 "y":247.417
-                }, 
-                {
-                 "height":1024.12,
-                 "id":7,
-                 "name":"",
-                 "rotation":0,
-                 "type":"Barrier",
-                 "visible":true,
-                 "width":6.83333,
-                 "x":0.136364,
-                 "y":0.0909091
-                }, 
-                {
-                 "height":6.08333,
-                 "id":8,
-                 "name":"",
-                 "rotation":0,
-                 "type":"Barrier",
-                 "visible":true,
-                 "width":1016.67,
-                 "x":7.125,
-                 "y":0
-                }, 
-                {
-                 "height":0,
-                 "id":10,
-                 "name":"MCHouse_Exterior",
-                 "point":true,
-                 "rotation":0,
-                 "type":"Waypoint",
-                 "visible":true,
-                 "width":0,
-                 "x":329.75,
-                 "y":327.5
-                }, 
-                {
-                 "height":0,
-                 "id":11,
-                 "name":"SpawnPoint",
-                 "point":true,
-                 "rotation":0,
-                 "type":"Waypoint",
-                 "visible":true,
-                 "width":0,
-                 "x":164.424242424242,
-                 "y":315.151515151515
-                }],
+         "objects":[],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -138,15 +69,19 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":12,
+ "nextobjectid":71,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.11.2",
+ "tiledversion":"1.12.2",
  "tileheight":32,
  "tilesets":[
         {
          "firstgid":1,
          "source":"tilesets\/Buildings.tsx"
+        }, 
+        {
+         "firstgid":3,
+         "source":"tilesets\/Trees.tsx"
         }],
  "tilewidth":32,
  "type":"map",

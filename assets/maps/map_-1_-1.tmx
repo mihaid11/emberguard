@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="1">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="31">
+ <editorsettings>
+  <export target="map_-1_-1.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="tilesets/Buildings.tsx"/>
+ <tileset firstgid="3" source="tilesets/Trees.tsx"/>
  <layer id="1" name="Tile Layer 1" width="32" height="32">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -36,7 +41,17 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <imagelayer id="2" name="Image Layer 1">
+ <imagelayer id="2" name="Image Layer 1" offsetx="8" offsety="0">
   <image source="../sprites/gameMap/map_-1_-1.png" width="1024" height="1024"/>
  </imagelayer>
+ <objectgroup id="3" name="Entities">
+  <object id="7" type="Barrier" x="0.136364" y="0.0909091" width="6.83333" height="1024.12"/>
+  <object id="8" type="Barrier" x="7.125" y="0" width="1016.67" height="6.08333"/>
+  <object id="12" type="Barrier" x="566.403" y="347.428" width="37.4471" height="22.1563"/>
+  <object id="17" type="Tree" gid="3" x="504" y="369.5" width="160.5" height="214"/>
+  <object id="27" type="Barrier" x="706.108" y="297.297" width="36.9528" height="22.1563"/>
+  <object id="28" type="Tree" gid="3" x="643.75" y="319.369" width="160.5" height="214"/>
+  <object id="29" type="Barrier" x="854.691" y="271.297" width="38.5778" height="22.1563"/>
+  <object id="30" type="Tree" gid="3" x="793.083" y="293.369" width="160.5" height="214"/>
+ </objectgroup>
 </map>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="12">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="71">
  <editorsettings>
   <export target="map_0_0.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" source="tilesets/Buildings.tsx"/>
+ <tileset firstgid="3" source="tilesets/Trees.tsx"/>
  <layer id="1" name="Tile Layer 1" width="32" height="32">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -43,16 +44,5 @@
  <imagelayer id="2" name="Image Layer 1">
   <image source="../sprites/gameMap/map_0_0.png" width="1024" height="1024"/>
  </imagelayer>
- <objectgroup id="3" name="Entities">
-  <object id="1" type="MCHouse" gid="1" x="256" y="307" width="160.5" height="256"/>
-  <object id="6" type="Barrier" x="264.25" y="247.417" width="153.25" height="46.5"/>
-  <object id="7" type="Barrier" x="0.136364" y="0.0909091" width="6.83333" height="1024.12"/>
-  <object id="8" type="Barrier" x="7.125" y="0" width="1016.67" height="6.08333"/>
-  <object id="10" name="MCHouse_Exterior" type="Waypoint" x="329.75" y="327.5">
-   <point/>
-  </object>
-  <object id="11" name="SpawnPoint" type="Waypoint" x="164.424" y="315.152">
-   <point/>
-  </object>
- </objectgroup>
+ <objectgroup id="3" name="Entities"/>
 </map>
