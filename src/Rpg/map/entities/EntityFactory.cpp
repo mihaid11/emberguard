@@ -17,9 +17,6 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
             pos,
             size,
             "assets/sprites/buildings/mcHouseExt.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
-            1,
             interactPos,
             interactSize,
             gameContext.mainCharacter,
@@ -36,9 +33,6 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
             pos,
             size,
             "assets/sprites/buildings/mcHouseInt.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
-            1,
             interactPos,
             interactSize,
             gameContext.mainCharacter,
@@ -52,10 +46,7 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
 
         return std::make_unique<Bed> (
             pos,
-            1,
             "assets/sprites/buildings/bed.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
             interactPos,
             interactSize,
             gameContext.timeSystem,
@@ -68,10 +59,7 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
 
         return std::make_unique<Chest> (
             pos,
-            1,
             "assets/sprites/buildings/chest.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
             interactPos,
             interactSize,
             gameContext.setChestMenuState
@@ -80,15 +68,9 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
         return std::make_unique<Entity> (
             pos,
             size,
-            "assets/sprites/buildings/tree.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
-            0,
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f)
+            "assets/sprites/buildings/tree.png"
         );
     }
 
     return nullptr;
 }
-

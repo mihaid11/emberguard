@@ -8,11 +8,11 @@ class GameManager;
 
 class Bed : public Entity {
 public:
-    Bed(const sf::Vector2f& position, float sizeIncrement, const std::string filename,
-        const sf::Vector2f& collPosition, const sf::Vector2f& collSize,
+    Bed(const sf::Vector2f& position, const std::string filename,
         const sf::Vector2f& interactPosition, const sf::Vector2f& interactSize,
         TimeSystem& timeSystem, TransitionSystem& transitionSystem,
-        GameManager* gameManager);
+        GameManager* gameManager, const sf::Vector2f& collPosition = {0.f, 0.f},
+        const sf::Vector2f& collSize = {0.f, 0.f});
 
     void interact() override;
     void render(sf::RenderWindow& window) override;

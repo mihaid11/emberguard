@@ -2,14 +2,13 @@
 #include <iostream>
 #include "../../../core/GameManager.h"
 
-Bed::Bed(const sf::Vector2f& position, float sizeIncrement, const std::string filename,
-         const sf::Vector2f& collPosition, const sf::Vector2f& collSize,
+Bed::Bed(const sf::Vector2f& position, const std::string filename,
          const sf::Vector2f& interactPosition, const sf::Vector2f& interactSize,
-         TimeSystem& timeSystem, TransitionSystem& transitionSystem, GameManager* gameManager)
+         TimeSystem& timeSystem, TransitionSystem& transitionSystem, GameManager* gameManager,
+         const sf::Vector2f& collPosition, const sf::Vector2f& collSize)
          : Entity(position, sf::Vector2f(0.f, 0.f), filename, collPosition, collSize, 1, interactPosition, interactSize),
         mTimeSystem(timeSystem), mGameManager(gameManager), mInteractSize(interactSize),
         mTransitionSystem(transitionSystem), mInteractPosition(interactPosition) {
-    mSprite.setScale(sf::Vector2f(sizeIncrement, sizeIncrement));
 
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for AnalyzeMenu!" << std::endl;
