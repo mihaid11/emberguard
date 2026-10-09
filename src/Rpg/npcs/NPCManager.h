@@ -32,6 +32,7 @@ public:
     void resumeAllNPC();
 
     NPC* getCurrentNPC();
+    NPC* getNPCById(const std::string& id);
     void clearAllNPCs();
 
     bool currentNPCHasChoices() const;

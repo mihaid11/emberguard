@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="67">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="80">
  <editorsettings>
   <export target="map_0_-1.json" format="json"/>
  </editorsettings>
@@ -92,5 +92,77 @@
   <object id="60" type="Barrier" x="659.817" y="89.964" width="37.4471" height="22.1563"/>
   <object id="61" type="Tree" gid="3" x="597.417" y="112.036" width="160.5" height="214"/>
   <object id="62" type="Barrier" x="-29.5" y="271.292" width="1083.67" height="17.4163"/>
+  <object id="67" name="mira_stanton" type="NPCWaypoint" x="800" y="564">
+   <properties>
+    <property name="index" type="int" value="2"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="68" name="mira_stanton" type="NPCWaypoint" x="236" y="579">
+   <properties>
+    <property name="index" type="int" value="0"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="69" name="mira_stanton" type="NPCWaypoint" x="795" y="786">
+   <properties>
+    <property name="index" type="int" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="71" name="elliot_marlowe" type="NPCWaypoint" x="72" y="729">
+   <properties>
+    <property name="index" type="int" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="72" name="elliot_marlowe" type="NPCWaypoint" x="691" y="525">
+   <properties>
+    <property name="index" type="int" value="0"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="73" name="garrick_stone" type="NPCWaypoint" x="235" y="678">
+   <properties>
+    <property name="index" type="int" value="0"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="74" name="garrick_stone" type="NPCWaypoint" x="633" y="644">
+   <properties>
+    <property name="index" type="int" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="75" name="vincent_hale" type="NPCWaypoint" x="313.667" y="838.333">
+   <properties>
+    <property name="index" type="int" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="76" name="vincent_hale" type="NPCWaypoint" x="331" y="413">
+   <properties>
+    <property name="index" type="int" value="0"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="77" name="seraphina_lumeris" type="NPCWaypoint" x="794" y="447">
+   <properties>
+    <property name="index" type="int" value="2"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="78" name="seraphina_lumeris" type="NPCWaypoint" x="425" y="636">
+   <properties>
+    <property name="index" type="int" value="0"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="79" name="seraphina_lumeris" type="NPCWaypoint" x="886" y="641">
+   <properties>
+    <property name="index" type="int" value="1"/>
+   </properties>
+   <point/>
+  </object>
  </objectgroup>
 </map>
