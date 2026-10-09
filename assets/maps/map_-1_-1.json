@@ -162,6 +162,25 @@
                  "width":160.5,
                  "x":793.083,
                  "y":293.369
+                }, 
+                {
+                 "height":0,
+                 "id":31,
+                 "name":"elliot_marlowe",
+                 "opacity":1,
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"index",
+                         "type":"int",
+                         "value":2
+                        }],
+                 "rotation":0,
+                 "type":"NPCWaypoint",
+                 "visible":true,
+                 "width":0,
+                 "x":743.333333333333,
+                 "y":432
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -170,7 +189,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":31,
+ "nextobjectid":32,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",

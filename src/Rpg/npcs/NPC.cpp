@@ -8,6 +8,7 @@ NPC::NPC(const sf::Vector2f& position, const std::string& id)
     mCurrentWaypoint(0), mIsPaused(false), mPauseDuration(3.0f),
     mPauseTimer(0.0f), mPriority(0), mShowInteract(false), mId(id) {
 
+    mSprite.setPosition(position);
     mSprite.setTextureRect({ 0, 0, 64, 64 });
     mAnimations[int(AnimationIndex::IdleUp)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/idleUp.png", 4, 2.5f);
     mAnimations[int(AnimationIndex::IdleDown)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/idleDown.png", 6, 1.8f);
@@ -202,6 +203,18 @@ int NPC::getCurrentWaypoint() const {
 
 void NPC::setCurrentWaypoint(int waypoint) {
     mCurrentWaypoint = waypoint;
+}
+
+void NPC::clearPath() {
+    mPath.clear();
+}
+
+void NPC::addWaypoint(const sf::Vector2f& waypoint) {
+    mPath.push_back(waypoint);
+}
+
+const std::vector<sf::Vector2f>& NPC::getPath() const {
+    return mPath;
 }
 
 void NPC::setInteractPosition(const sf::Vector2f& position) {

@@ -142,6 +142,13 @@ NPC* NPCManager::getCurrentNPC() {
     return mCurrentNPC;
 }
 
+NPC* NPCManager::getNPCById(const std::string& id) {
+    for (auto& npc: mNPCs)
+        if (npc->getId() == id)
+            return npc.get();
+    return nullptr;
+}
+
 void NPCManager::clearAllNPCs() {
     mNPCs.clear();
     mCurrentNPC = nullptr;
