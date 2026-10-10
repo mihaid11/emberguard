@@ -132,6 +132,13 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mInteractText.setOrigin(mInteractText.getLocalBounds().left + mInteractText.getLocalBounds().width / 2.f,
                             mInteractText.getLocalBounds().top + mInteractText.getLocalBounds().height / 2.f);
 
+    mNPCName.setFont(mFont);
+    mNPCName.setCharacterSize(13);
+    mNPCName.setFillColor(sf::Color::White);
+    mNPCName.setString("");
+    mNPCName.setOrigin(mNPCName.getLocalBounds().left + mNPCName.getLocalBounds().width / 2.f,
+                       mNPCName.getLocalBounds().top + mNPCName.getLocalBounds().height / 2.f);
+
     //Add NPCs dialogues
     mDialogueDatabase.loadDialogueFromFile("dialogues/mira_stanton.json");
     mDialogueDatabase.loadDialogueFromFile("dialogues/seraphina_lumeris.json");
@@ -628,6 +635,13 @@ void RPGEngine::render() {
         mWindow.draw(mDialogueInteractCircle);
         mWindow.draw(mDialogueInteractText);
 
+        mNPCName.setString(mNPCManager.getCurrentNPC()->getId());
+        mNPCName.setOrigin(mNPCName.getLocalBounds().left + mNPCName.getLocalBounds().width / 2.f,
+                           mNPCName.getLocalBounds().top + mNPCName.getLocalBounds().height / 2.f);
+        mNPCName.setPosition(mDialogueBox.getPosition().x + (mSeparationLine.getPosition().x - mDialogueBox.getPosition().x) / 2.f,
+                             mDialogueBox.getPosition().y + mDialogueBox.getSize().y - mNPCName.getLocalBounds().height * 4.f);
+        mWindow.draw(mNPCName);
+
         auto lines = wrapText(mDialogueText.getString(), mFont, mDialogueText.getCharacterSize(), mDialogueTextWidth);
         float yOffset = mDialogueBox.getPosition().y + 15.f;
 
@@ -1043,6 +1057,12 @@ void RPGEngine::resetToDefault() {
     mCameraFixedPosition = sf::Vector2f(0.f, 0.f);
     mMenu.switchToMenu("Inventory");
 
+    for (auto& npc: mNPCManager.getNPCs()) {
+        auto path = mWaypointManager.getNPCPath(npc->getId());
+        if (!path.empty())
+            npc->setPosition(path[0]);
+    }
+
     if (mGameManager) {
         mGameManager->getQuestManager().resetQuests();
         mGameManager->getQuestManager().startQuest("quest_1");
@@ -1155,6 +1175,15 @@ void RPGEngine::initialize() {
     mNPCManager.addNPC(std::make_unique<ElliotMarlowe>(sf::Vector2f(100.0f, 0.0f), "elliot_marlowe"));
     mNPCManager.addNPC(std::make_unique<VincentHale>(sf::Vector2f(-100.0f, 0.0f), "vincent_hale"));
     mNPCManager.addNPC(std::make_unique<SeraphinaLumeris>(sf::Vector2f(-20.0f, 980.0f), "seraphina_lumeris"));
+
+    for (auto& npc: mNPCManager.getNPCs()) {
+        auto path = mWaypointManager.getNPCPath(npc->getId());
+        if (!path.empty()) {
+            npc->setPath(path);
+            npc->setPosition(path[0]);
+        }
+    }
+
     mStoryManager.bindNPCManager(&mNPCManager);
 
     mAvailableTowers.clear();

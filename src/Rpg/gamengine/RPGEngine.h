@@ -144,6 +144,7 @@ private:
 
     sf::CircleShape mInteractCircle;
     sf::Text mInteractText;
+    sf::Text mNPCName;
     bool mShowInteract;
     sf::Vector2f mInteractPos;
     bool mPaused;
