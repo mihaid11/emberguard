@@ -456,7 +456,6 @@ void RPGEngine::update(float dt) {
         return;
     }
 
-    sf::Vector2f previousPosition = mCharacter.getPosition();
 
     if (!mShowDialogue)
         mHotbar.update();
@@ -471,11 +470,23 @@ void RPGEngine::update(float dt) {
     if (mTransitionSystem.isTransitioning())
         return;
 
+    sf::Vector2f previousPosition = mCharacter.getPosition();
     mCharacter.update(dt, mShowDialogue);
     mZoneManager.update(mCharacter.getPosition());
 
-    if (mZoneManager.checkCollision(mCharacter.getBounds()))
-        mCharacter.setPosition(previousPosition);
+    if (mZoneManager.checkCollision(mCharacter.getBounds())) {
+        sf::Vector2f delta = mCharacter.getPosition() - previousPosition;
+
+        if (delta.x != 0.f && delta.y != 0.f)
+            delta *= 1.4142f;
+
+        mCharacter.setPosition(sf::Vector2f(previousPosition.x + delta.x, previousPosition.y));
+        if (mZoneManager.checkCollision(mCharacter.getBounds())) {
+            mCharacter.setPosition(sf::Vector2f(previousPosition.x, previousPosition.y + delta.y));
+            if (mZoneManager.checkCollision(mCharacter.getBounds()))
+                mCharacter.setPosition(sf::Vector2f(previousPosition.x, previousPosition.y));
+        }
+    }
 
     for (auto& npc : mNPCManager.getNPCs()) {
         if (npc->getBounds().intersects(mCharacter.getBounds())) {

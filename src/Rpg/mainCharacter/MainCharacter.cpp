@@ -111,8 +111,8 @@ void MainCharacter::render(sf::RenderWindow& window) {
 
 void MainCharacter::setPosition(const sf::Vector2f& position) {
     mSprite.setPosition(position);
-    mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 21.f, mPosition.y + 47.f));
-    mInteractZone.setPosition(sf::Vector2f(mPosition.x + 18.f, mPosition.y + 1.f));
+    mCollisionZone.setPosition(sf::Vector2f(position.x + 21.f, position.y + 47.f));
+    mInteractZone.setPosition(sf::Vector2f(position.x + 18.f, position.y + 1.f));
     mPosition = position;
 }
 
