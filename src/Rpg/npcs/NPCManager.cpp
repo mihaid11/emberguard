@@ -35,55 +35,49 @@ void NPCManager::render(sf::RenderWindow& window) {
         npc->render(window);
 }
 
-void NPCManager::handleInteraction(MainCharacter& player, bool& showDialogue,
-    sf::Text& dialogueText) {
+void NPCManager::startDialogueWith(NPC* targetNPC, MainCharacter& player, bool& showDialogue, sf::Text& dialogueText) {
+    if (!targetNPC)
+        return;
+
+    mCurrentNPC = targetNPC;
     sf::Vector2f playerPosition = player.getPosition();
     int playerAnimation = player.getAnimation();
-    for (auto& npc : mNPCs) {
-        if (npc->isPlayerClose(playerPosition)) {
-            mCurrentNPC = npc.get();
 
-            // handle NPC facing the player correctly
-            if (playerAnimation == 4) {
-                if (playerPosition.y <= mCurrentNPC->getPosition().y) {
-                    npc->setAnimationOpposing(playerAnimation);
-                } else {
-                    player.setAnimation(3);
-                    npc->setAnimationOpposing(3);
-                }
-            } else if (playerAnimation == 3) {
-                if (playerPosition.y <= mCurrentNPC->getPosition().y) {
-                    player.setAnimation(4);
-                    npc->setAnimationOpposing(4);
-                } else {
-                    npc->setAnimationOpposing(playerAnimation);
-                }
-            } else if (playerAnimation == 2) {
-                if (playerPosition.x <= mCurrentNPC->getPosition().x) {
-                    npc->setAnimationOpposing(playerAnimation);
-                } else {
-                    player.setAnimation(1);
-                    npc->setAnimationOpposing(1);
-                }
-            } else if (playerAnimation == 1) {
-                if (playerPosition.x <= mCurrentNPC->getPosition().x) {
-                    player.setAnimation(2);
-                    npc->setAnimationOpposing(2);
-                } else {
-                    npc->setAnimationOpposing(playerAnimation);
-                }
-            }
-
-            showDialogue = true;
-            mShowDialogue = true;
-            dialogueText.setString(mCurrentNPC->getCurrentDialogue());
-            stopCurrentNPC();
-            //std::cout << "Interacting with NPC: " << typeid(*mCurrentNPC).name() << std::endl;
-            //std::cout << "Current Dialogue: " << mCurrentNPC->getCurrentDialogue() << std::endl;
-
-            break;
+    // handle NPC facing the player correctly
+    if (playerAnimation == 4) {
+        if (playerPosition.y <= mCurrentNPC->getPosition().y) {
+            mCurrentNPC->setAnimationOpposing(playerAnimation);
+        } else {
+            player.setAnimation(3);
+            mCurrentNPC->setAnimationOpposing(3);
+        }
+    } else if (playerAnimation == 3) {
+        if (playerPosition.y <= mCurrentNPC->getPosition().y) {
+            player.setAnimation(4);
+            mCurrentNPC->setAnimationOpposing(4);
+        } else {
+            mCurrentNPC->setAnimationOpposing(playerAnimation);
+        }
+    } else if (playerAnimation == 2) {
+        if (playerPosition.x <= mCurrentNPC->getPosition().x) {
+            mCurrentNPC->setAnimationOpposing(playerAnimation);
+        } else {
+            player.setAnimation(1);
+            mCurrentNPC->setAnimationOpposing(1);
+        }
+    } else if (playerAnimation == 1) {
+        if (playerPosition.x <= mCurrentNPC->getPosition().x) {
+            player.setAnimation(2);
+            mCurrentNPC->setAnimationOpposing(2);
+        } else {
+            mCurrentNPC->setAnimationOpposing(playerAnimation);
         }
     }
+
+    showDialogue = true;
+    mShowDialogue = true;
+    dialogueText.setString(mCurrentNPC->getCurrentDialogue());
+    stopCurrentNPC();
 }
 
 void NPCManager::stopCurrentNPC() {

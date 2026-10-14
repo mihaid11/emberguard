@@ -49,9 +49,7 @@ public:
     void setPath(const std::vector<sf::Vector2f>& path) { mPath = path; }
     const std::vector<sf::Vector2f>& getPath() const;
 
-    void setInteractPosition(const sf::Vector2f& position);
     void setAnimationOpposing(int animationIndex);
-    void setInteract(bool showInteract);
 
     std::vector<DialogueAction> selectChoiceWithActions(int choiceIndex);
     std::vector<DialogueAction> getCurrentDialogueActions() const;
@@ -63,9 +61,6 @@ public:
 protected:
     std::string mId;
     float mInteractionRadius;
-    sf::CircleShape mInteractCircle;
-    sf::Text mInteractText;
-    bool mShowInteract;
     sf::Font mFont;
 
     std::unordered_map<std::string, Dialogue> mDialogues;
