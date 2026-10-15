@@ -13,12 +13,17 @@ public:
 
     virtual void render(sf::RenderWindow& window) override;
     virtual void update();
+
     sf::FloatRect getBounds() const;
+    sf::FloatRect getCollisionBounds() const;
     sf::Vector2f getPosition() const override;
     sf::Vector2f getInteractPosition() const;
     float getHeight() const override;
-    int isInteractable() const;
     sf::FloatRect getInteractBounds() const;
+    int isInteractable() const;
+
+    void setAlpha(int alpha);
+
     virtual void interact();
 
 protected:
