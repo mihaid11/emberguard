@@ -488,6 +488,23 @@ void RPGEngine::update(float dt) {
         }
     }
 
+    for (auto* entity: mZoneManager.getEntities()) {
+        entity->setAlpha(255);
+
+        sf::FloatRect transparencyZone = entity->getBounds();
+        float margin = transparencyZone.width * 0.2f;
+        transparencyZone.left += margin;
+        transparencyZone.width -= margin * 2.f;
+
+        transparencyZone.top += transparencyZone.height * 0.1f;
+        transparencyZone.height -= transparencyZone.height * 0.15f;
+
+        if (transparencyZone.contains(mCharacter.getCenterPosition())) {
+            if (mCharacter.getPosition().y + mCharacter.getHeight() < entity->getPosition().y + entity->getHeight())
+                entity->setAlpha(128);
+        }
+    }
+
     for (auto& npc : mNPCManager.getNPCs()) {
         if (npc->getBounds().intersects(mCharacter.getBounds())) {
             sf::Vector2f npcPos = npc->getPosition();
@@ -569,8 +586,8 @@ void RPGEngine::update(float dt) {
             continue;
 
         if (entity->getInteractBounds().intersects(mCharacter.getInteractBounds())) {
-            sf::Vector2f entityCenter(entity->getPosition().x + entity->getBounds().width / 2.f,
-                                      entity->getPosition().y + entity->getBounds().height / 2.f);
+            sf::Vector2f entityCenter(entity->getPosition().x + entity->getCollisionBounds().width / 2.f,
+                                      entity->getPosition().y + entity->getCollisionBounds().height / 2.f);
             float dist = std::hypot(mCharacter.getCenterPosition().x - entityCenter.x, mCharacter.getCenterPosition().y - entityCenter.y);
 
             if (dist < mClosestEntityDist) {

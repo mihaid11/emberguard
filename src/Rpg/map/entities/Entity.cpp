@@ -39,6 +39,10 @@ void Entity::update() {
 }
 
 sf::FloatRect Entity::getBounds() const {
+    return mSprite.getGlobalBounds();
+}
+
+sf::FloatRect Entity::getCollisionBounds() const {
     return mCollisionZone.getGlobalBounds();
 }
 
@@ -60,6 +64,12 @@ int Entity::isInteractable() const {
 
 sf::FloatRect Entity::getInteractBounds() const {
     return mInteractableZone.getGlobalBounds();
+}
+
+void Entity::setAlpha(int alpha) {
+    sf::Color entityColor = mSprite.getColor();
+    entityColor.a = alpha;
+    mSprite.setColor(entityColor);
 }
 
 void Entity::interact() {

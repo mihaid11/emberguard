@@ -65,7 +65,7 @@ void ZoneManager::returnToOpenWorld() {
 bool ZoneManager::checkCollision(const sf::FloatRect& bounds) {
     for (auto& pair: mZones) {
         for (const auto& entity: pair.second->getEntities())
-            if (entity->getBounds().intersects(bounds))
+            if (entity->getCollisionBounds().intersects(bounds))
                 return true;
     }
     return false;
