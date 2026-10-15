@@ -1,14 +1,21 @@
 #include "Entity.h"
 #include <iostream>
 
-Entity::Entity(const sf::Vector2f& position, const std::string filename,
-               const sf::Vector2f& collPosition, const sf::Vector2f& collSize, int canInteract,
+Entity::Entity(const sf::Vector2f& position, const sf::Vector2f& size,
+               const std::string filename, const sf::Vector2f& collPosition,
+               const sf::Vector2f& collSize, int canInteract,
                const sf::Vector2f& interactPos, const sf::Vector2f& interactSize)
     : mCanInteract(canInteract) {
     // If filename is empty than the entity is not drawable => dont load texture from file
     if(filename != "") {
         sf::Texture& texture = ResourceManager::getInstance().getTexture(filename);
         mSprite.setTexture(texture);
+
+        if (size.x > 0.f && size.y > 0.f) {
+            float scaleX = size.x / static_cast<float>(texture.getSize().x);
+            float scaleY = size.y / static_cast<float>(texture.getSize().y);
+            mSprite.setScale(scaleX, scaleY);
+        }
     }
     mSprite.setPosition(position);
 
@@ -32,6 +39,10 @@ void Entity::update() {
 }
 
 sf::FloatRect Entity::getBounds() const {
+    return mSprite.getGlobalBounds();
+}
+
+sf::FloatRect Entity::getCollisionBounds() const {
     return mCollisionZone.getGlobalBounds();
 }
 
@@ -55,7 +66,12 @@ sf::FloatRect Entity::getInteractBounds() const {
     return mInteractableZone.getGlobalBounds();
 }
 
+void Entity::setAlpha(int alpha) {
+    sf::Color entityColor = mSprite.getColor();
+    entityColor.a = alpha;
+    mSprite.setColor(entityColor);
+}
+
 void Entity::interact() {
     std::cout << "Interacting!" << std::endl;
 }
-

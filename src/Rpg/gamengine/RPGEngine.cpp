@@ -132,6 +132,13 @@ RPGEngine::RPGEngine(sf::RenderWindow& window, GameManager* gameManager)
     mInteractText.setOrigin(mInteractText.getLocalBounds().left + mInteractText.getLocalBounds().width / 2.f,
                             mInteractText.getLocalBounds().top + mInteractText.getLocalBounds().height / 2.f);
 
+    mNPCName.setFont(mFont);
+    mNPCName.setCharacterSize(13);
+    mNPCName.setFillColor(sf::Color::White);
+    mNPCName.setString("");
+    mNPCName.setOrigin(mNPCName.getLocalBounds().left + mNPCName.getLocalBounds().width / 2.f,
+                       mNPCName.getLocalBounds().top + mNPCName.getLocalBounds().height / 2.f);
+
     //Add NPCs dialogues
     mDialogueDatabase.loadDialogueFromFile("dialogues/mira_stanton.json");
     mDialogueDatabase.loadDialogueFromFile("dialogues/seraphina_lumeris.json");
@@ -159,6 +166,7 @@ void RPGEngine::processEvents() {
             if (mTransitionSystem.isTransitioning())
                 return;
 
+            // Select dialogue choice
             if (mShowDialogue && mNPCManager.currentNPCHasChoices()) {
                 auto choices = mNPCManager.getCurrentNPCChoices();
 
@@ -177,30 +185,29 @@ void RPGEngine::processEvents() {
                 }
             }
 
+            // Process NPC dialogue
             if (event.key.code == sf::Keyboard::E || event.key.code == sf::Keyboard::Return) {
                 if (!mShowDialogue) {
-                    mNPCManager.handleInteraction(mCharacter, mShowDialogue, mDialogueText);
+                    if (mClosestNPC != nullptr) {
+                        mNPCManager.startDialogueWith(mClosestNPC, mCharacter, mShowDialogue, mDialogueText);
 
-                    if (mShowDialogue) {
-                        mCurrentInteractingNPC = mNPCManager.getCurrentNPC();
-
-                        if (mCurrentInteractingNPC)
+                        if (mShowDialogue) {
+                            mCurrentInteractingNPC = mClosestNPC;
                             mGameManager->dispatchQuestEvent(GameEvent{ObjectiveType::talk_to_npc, mCurrentInteractingNPC->getId(), 1});
 
-                        mIconSprite = mCurrentInteractingNPC->getAvatarSprite();
-                        mIconSprite.setOrigin(mIconSprite.getLocalBounds().left + mIconSprite.getLocalBounds().width / 2.f,
-                                              mIconSprite.getLocalBounds().top + mIconSprite.getLocalBounds().height / 2.f);
-                        mIconSprite.setPosition(sf::Vector2f((mDialogueBox.getPosition().x + mSeparationLine.getPosition().x) / 2.f,
-                                         mDialogueBox.getPosition().y + mDialogueBox.getSize().y / 2.f - 20.f));
+                            mIconSprite = mCurrentInteractingNPC->getAvatarSprite();
+                            mIconSprite.setOrigin(mIconSprite.getLocalBounds().left + mIconSprite.getLocalBounds().width / 2.f,
+                                                  mIconSprite.getLocalBounds().top + mIconSprite.getLocalBounds().height / 2.f);
+                            mIconSprite.setPosition(sf::Vector2f((mDialogueBox.getPosition().x + mSeparationLine.getPosition().x) / 2.f,
+                                             mDialogueBox.getPosition().y + mDialogueBox.getSize().y / 2.f - 20.f));
 
-                        if (mNPCManager.currentNPCHasChoices()) {
-                            mSelectedChoice = 0;
-                            updateDialogueChoices();
+                            if (mNPCManager.currentNPCHasChoices()) {
+                                mSelectedChoice = 0;
+                                updateDialogueChoices();
+                            }
                         }
-                    } else {
-                        Entity* interactable = mZoneManager.checkInteraction(mCharacter.getInteractBounds());
-                        if (interactable)
-                            interactable->interact();
+                    } else if (mClosestEntity != nullptr) {
+                        mClosestEntity->interact();
                     }
                 } else if (mCurrentInteractingNPC && mShowDialogue) {
                     if (!mNPCManager.currentNPCHasChoices()) {
@@ -449,7 +456,6 @@ void RPGEngine::update(float dt) {
         return;
     }
 
-    sf::Vector2f previousPosition = mCharacter.getPosition();
 
     if (!mShowDialogue)
         mHotbar.update();
@@ -464,11 +470,40 @@ void RPGEngine::update(float dt) {
     if (mTransitionSystem.isTransitioning())
         return;
 
+    sf::Vector2f previousPosition = mCharacter.getPosition();
     mCharacter.update(dt, mShowDialogue);
     mZoneManager.update(mCharacter.getPosition());
 
-    if (mZoneManager.checkCollision(mCharacter.getBounds()))
-        mCharacter.setPosition(previousPosition);
+    if (mZoneManager.checkCollision(mCharacter.getBounds())) {
+        sf::Vector2f delta = mCharacter.getPosition() - previousPosition;
+
+        if (delta.x != 0.f && delta.y != 0.f)
+            delta *= 1.4142f;
+
+        mCharacter.setPosition(sf::Vector2f(previousPosition.x + delta.x, previousPosition.y));
+        if (mZoneManager.checkCollision(mCharacter.getBounds())) {
+            mCharacter.setPosition(sf::Vector2f(previousPosition.x, previousPosition.y + delta.y));
+            if (mZoneManager.checkCollision(mCharacter.getBounds()))
+                mCharacter.setPosition(sf::Vector2f(previousPosition.x, previousPosition.y));
+        }
+    }
+
+    for (auto* entity: mZoneManager.getEntities()) {
+        entity->setAlpha(255);
+
+        sf::FloatRect transparencyZone = entity->getBounds();
+        float margin = transparencyZone.width * 0.2f;
+        transparencyZone.left += margin;
+        transparencyZone.width -= margin * 2.f;
+
+        transparencyZone.top += transparencyZone.height * 0.1f;
+        transparencyZone.height -= transparencyZone.height * 0.15f;
+
+        if (transparencyZone.contains(mCharacter.getCenterPosition())) {
+            if (mCharacter.getPosition().y + mCharacter.getHeight() < entity->getPosition().y + entity->getHeight())
+                entity->setAlpha(128);
+        }
+    }
 
     for (auto& npc : mNPCManager.getNPCs()) {
         if (npc->getBounds().intersects(mCharacter.getBounds())) {
@@ -482,15 +517,6 @@ void RPGEngine::update(float dt) {
                 mCharacter.setPosition(previousPosition);
             }
         }
-
-        if (npc->isPlayerClose(mCharacter.getPosition())) {
-            if (mShowDialogue)
-                npc->setInteract(false);
-            else
-                npc->setInteract(true);
-        }
-        else
-            npc->setInteract(false);
     }
 
     mNPCManager.update(dt);
@@ -551,28 +577,55 @@ void RPGEngine::update(float dt) {
     }
 
     mShowInteract = false;
+    mClosestEntity = nullptr;
+    mClosestNPC = nullptr;
+    mClosestEntityDist = 999999.f;
 
     for (auto& entity : mZoneManager.getEntities()) {
         if (!entity->isInteractable())
             continue;
 
         if (entity->getInteractBounds().intersects(mCharacter.getInteractBounds())) {
-            mShowInteract = true;
+            sf::Vector2f entityCenter(entity->getPosition().x + entity->getCollisionBounds().width / 2.f,
+                                      entity->getPosition().y + entity->getCollisionBounds().height / 2.f);
+            float dist = std::hypot(mCharacter.getCenterPosition().x - entityCenter.x, mCharacter.getCenterPosition().y - entityCenter.y);
 
-            mInteractPos = entity->getInteractPosition();
-
-            mInteractCircle.setPosition(sf::Vector2f(mInteractPos.x + entity->getInteractBounds().width + 1.5f, mInteractPos.y - 12.f));
-            mInteractText.setPosition(sf::Vector2f(mInteractCircle.getPosition().x + mInteractCircle.getRadius(),
-                                                   mInteractCircle.getPosition().y + mInteractCircle.getRadius()));
-
-            break;
+            if (dist < mClosestEntityDist) {
+                mClosestEntityDist = dist;
+                mClosestEntity = entity;
+            }
         }
     }
 
-    if (!mShowInteract) {
-        mInteractPos = { 0.f, 0.f };
-        mInteractCircle.setPosition(mInteractPos);
-        mInteractText.setPosition(mInteractPos);
+    for (auto& npc : mNPCManager.getNPCs()) {
+        if (!mShowDialogue && npc->isPlayerClose(mCharacter.getPosition())) {
+            sf::Vector2f npcCenter(npc->getPosition().x + npc->getBounds().width / 2.f,
+                                   npc->getPosition().y + npc->getBounds().height / 2.f);
+            float dist = std::hypot(mCharacter.getCenterPosition().x - npcCenter.x, mCharacter.getCenterPosition().y - npcCenter.y);
+
+            if (dist < mClosestEntityDist) {
+                mClosestEntityDist = dist;
+                mClosestNPC = npc.get();
+                mClosestEntity = nullptr;
+            }
+        }
+    }
+
+    if (mClosestEntity != nullptr) {
+        mShowInteract = true;
+
+        mInteractPos = mClosestEntity->getInteractPosition();
+        mInteractCircle.setPosition(sf::Vector2f(mInteractPos.x + mClosestEntity->getInteractBounds().width + 4.f, mInteractPos.y - 13.f));
+        mInteractText.setPosition(sf::Vector2f(mInteractCircle.getPosition().x + mInteractCircle.getRadius(),
+                                               mInteractCircle.getPosition().y + mInteractCircle.getRadius()));
+
+    } else if (mClosestNPC != nullptr) {
+        mShowInteract = true;
+
+        mInteractPos = mClosestNPC->getPosition();
+        mInteractCircle.setPosition(sf::Vector2f(mInteractPos.x + mClosestNPC->getBounds().width - 18.f, mInteractPos.y - 5.f));
+        mInteractText.setPosition(sf::Vector2f(mInteractCircle.getPosition().x + mInteractCircle.getRadius(),
+                                               mInteractCircle.getPosition().y + mInteractCircle.getRadius()));
     }
 }
 
@@ -586,9 +639,8 @@ void RPGEngine::render() {
 
     mRenderQueue.clear();
 
-    for (auto* entity: mZoneManager.getEntities()) {
+    for (auto* entity: mZoneManager.getEntities())
         mRenderQueue.push_back(entity);
-    }
 
     for (auto& npc : mNPCManager.getNPCs())
         mRenderQueue.push_back(npc.get());
@@ -627,6 +679,13 @@ void RPGEngine::render() {
         mWindow.draw(mIconSprite);
         mWindow.draw(mDialogueInteractCircle);
         mWindow.draw(mDialogueInteractText);
+
+        mNPCName.setString(mNPCManager.getCurrentNPC()->getId());
+        mNPCName.setOrigin(mNPCName.getLocalBounds().left + mNPCName.getLocalBounds().width / 2.f,
+                           mNPCName.getLocalBounds().top + mNPCName.getLocalBounds().height / 2.f);
+        mNPCName.setPosition(mDialogueBox.getPosition().x + (mSeparationLine.getPosition().x - mDialogueBox.getPosition().x) / 2.f,
+                             mDialogueBox.getPosition().y + mDialogueBox.getSize().y - mNPCName.getLocalBounds().height * 4.f);
+        mWindow.draw(mNPCName);
 
         auto lines = wrapText(mDialogueText.getString(), mFont, mDialogueText.getCharacterSize(), mDialogueTextWidth);
         float yOffset = mDialogueBox.getPosition().y + 15.f;
@@ -1043,6 +1102,12 @@ void RPGEngine::resetToDefault() {
     mCameraFixedPosition = sf::Vector2f(0.f, 0.f);
     mMenu.switchToMenu("Inventory");
 
+    for (auto& npc: mNPCManager.getNPCs()) {
+        auto path = mWaypointManager.getNPCPath(npc->getId());
+        if (!path.empty())
+            npc->setPosition(path[0]);
+    }
+
     if (mGameManager) {
         mGameManager->getQuestManager().resetQuests();
         mGameManager->getQuestManager().startQuest("quest_1");
@@ -1155,6 +1220,15 @@ void RPGEngine::initialize() {
     mNPCManager.addNPC(std::make_unique<ElliotMarlowe>(sf::Vector2f(100.0f, 0.0f), "elliot_marlowe"));
     mNPCManager.addNPC(std::make_unique<VincentHale>(sf::Vector2f(-100.0f, 0.0f), "vincent_hale"));
     mNPCManager.addNPC(std::make_unique<SeraphinaLumeris>(sf::Vector2f(-20.0f, 980.0f), "seraphina_lumeris"));
+
+    for (auto& npc: mNPCManager.getNPCs()) {
+        auto path = mWaypointManager.getNPCPath(npc->getId());
+        if (!path.empty()) {
+            npc->setPath(path);
+            npc->setPosition(path[0]);
+        }
+    }
+
     mStoryManager.bindNPCManager(&mNPCManager);
 
     mAvailableTowers.clear();

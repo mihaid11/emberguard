@@ -19,8 +19,9 @@ public:
     void refreshNPCDialogues();
     void update(float dt);
     void render(sf::RenderWindow& window);
-    void handleInteraction(MainCharacter& player, bool& mShowDialogue, sf::Text& dialogueText);
+    void startDialogueWith(NPC* targetNPC, MainCharacter& player, bool& showDialogue, sf::Text& dialogueText);
     void interactWithCurrentNPC(bool& mShowDialogue, sf::Text& dialogueText);
+
     void resumeCurrentNPC();
     void stopCurrentNPC();
     void saveNPCStates(std::vector<sf::Vector2f>& npcPositions, std::vector<int>& npcWaypoints);
@@ -32,6 +33,7 @@ public:
     void resumeAllNPC();
 
     NPC* getCurrentNPC();
+    NPC* getNPCById(const std::string& id);
     void clearAllNPCs();
 
     bool currentNPCHasChoices() const;
