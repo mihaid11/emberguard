@@ -4,7 +4,7 @@
 #include <math.h>
 
 NPC::NPC(const sf::Vector2f& position, const std::string& id)
-    : mInteractionRadius(60.0f), mPaused(false), mSpeed(35.0f),
+    : mInteractionRadius(60.0f), mPaused(false), mSpeed(50.0f),
     mCurrentWaypoint(0), mIsPaused(false), mPauseDuration(3.0f),
     mPauseTimer(0.0f), mPriority(0), mId(id) {
 
