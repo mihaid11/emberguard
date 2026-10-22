@@ -488,20 +488,22 @@ void RPGEngine::update(float dt) {
         }
     }
 
-    for (auto* entity: mZoneManager.getEntities()) {
-        entity->setAlpha(255);
+    if (!mIsInsideAStructure) {
+        for (auto* entity: mZoneManager.getEntities()) {
+            entity->setAlpha(255);
 
-        sf::FloatRect transparencyZone = entity->getBounds();
-        float margin = transparencyZone.width * 0.2f;
-        transparencyZone.left += margin;
-        transparencyZone.width -= margin * 2.f;
+            sf::FloatRect transparencyZone = entity->getBounds();
+            float margin = transparencyZone.width * 0.2f;
+            transparencyZone.left += margin;
+            transparencyZone.width -= margin * 2.f;
 
-        transparencyZone.top += transparencyZone.height * 0.1f;
-        transparencyZone.height -= transparencyZone.height * 0.15f;
+            transparencyZone.top += transparencyZone.height * 0.1f;
+            transparencyZone.height -= transparencyZone.height * 0.15f;
 
-        if (transparencyZone.contains(mCharacter.getCenterPosition())) {
-            if (mCharacter.getPosition().y + mCharacter.getHeight() < entity->getPosition().y + entity->getHeight())
-                entity->setAlpha(128);
+            if (transparencyZone.contains(mCharacter.getCenterPosition())) {
+                if (mCharacter.getPosition().y + mCharacter.getHeight() < entity->getPosition().y + entity->getHeight())
+                    entity->setAlpha(128);
+            }
         }
     }
 

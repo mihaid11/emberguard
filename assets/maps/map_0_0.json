@@ -554,8 +554,8 @@
                  "type":"NPCWaypoint",
                  "visible":true,
                  "width":0,
-                 "x":109.090909090909,
-                 "y":536.363636363636
+                 "x":109.091,
+                 "y":536.364
                 }, 
                 {
                  "height":0,
@@ -613,6 +613,18 @@
                  "width":0,
                  "x":704,
                  "y":277
+                }, 
+                {
+                 "height":15.416,
+                 "id":124,
+                 "name":"",
+                 "opacity":1,
+                 "rotation":0,
+                 "type":"Barrier",
+                 "visible":true,
+                 "width":568.003333333333,
+                 "x":-175.001666666667,
+                 "y":732.958666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -621,7 +633,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":124,
+ "nextobjectid":125,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",

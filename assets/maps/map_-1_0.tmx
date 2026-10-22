@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="74">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="80">
  <editorsettings>
   <export target="map_-1_0.json" format="json"/>
  </editorsettings>
@@ -82,5 +82,6 @@
   <object id="71" type="Tree" gid="3" x="57.75" y="472.703" width="160.5" height="214"/>
   <object id="72" type="Barrier" x="124.16" y="135.964" width="37.4471" height="22.1563"/>
   <object id="73" type="Tree" gid="3" x="61.75" y="158.036" width="160.5" height="214"/>
+  <object id="75" type="Barrier" x="120.128" y="412.542" width="252.707" height="16.166"/>
  </objectgroup>
 </map>
