@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="174">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="180">
  <editorsettings>
   <export target="map_0_-1.json" format="json"/>
  </editorsettings>
@@ -66,9 +66,6 @@
   <object id="106" type="Tree" gid="3" x="-1.58333" y="333.369" width="160.5" height="214"/>
   <object id="107" type="Barrier" x="846.827" y="446.297" width="37.4471" height="22.1563"/>
   <object id="108" type="Tree" gid="3" x="784.417" y="469.369" width="160.5" height="214"/>
-  <object id="109" type="Barrier" x="946.675" y="497.873" width="37.4471" height="22.1563"/>
-  <object id="111" type="Barrier" x="958.16" y="331.964" width="37.4471" height="22.1563"/>
-  <object id="112" type="Tree" gid="3" x="890.417" y="403.369" width="160.5" height="214"/>
   <object id="113" type="Barrier" x="866.827" y="291.297" width="37.4471" height="22.1563"/>
   <object id="114" type="Tree" gid="3" x="804.417" y="313.369" width="160.5" height="214"/>
   <object id="115" type="Barrier" x="845.827" y="149.297" width="37.4471" height="22.1563"/>
@@ -83,8 +80,8 @@
   <object id="128" type="Tree" gid="3" x="363.75" y="111.369" width="160.5" height="214"/>
   <object id="129" type="Barrier" x="642.16" y="91.2973" width="37.4471" height="22.1563"/>
   <object id="130" type="Tree" gid="3" x="579.75" y="113.369" width="160.5" height="214"/>
-  <object id="131" type="Barrier" x="-26.1683" y="219.625" width="1083.67" height="17.4163"/>
-  <object id="132" type="Barrier" x="877.832" y="220.125" width="187.17" height="107.916"/>
+  <object id="131" type="Barrier" x="-555.543" y="219.625" width="1612.92" height="17.4163"/>
+  <object id="132" type="Barrier" x="997.832" y="219.731" width="26.3518" height="57.8251"/>
   <object id="135" name="seraphina_lumeris" type="NPCWaypoint" x="515.515" y="678.334">
    <properties>
     <property name="index" type="int" value="1"/>
@@ -102,8 +99,6 @@
   <object id="149" type="Barrier" x="105.371" y="357.815" width="149.893" height="41.4077" rotation="359.776"/>
   <object id="150" type="Barrier" x="361.16" y="132.964" width="37.4471" height="22.1563"/>
   <object id="151" type="Tree" gid="3" x="298.75" y="155.036" width="160.5" height="214"/>
-  <object id="156" type="Barrier" x="922.16" y="485.964" width="37.4471" height="22.1563"/>
-  <object id="157" type="Tree" gid="3" x="859.75" y="508.036" width="160.5" height="214"/>
   <object id="160" type="Barrier" x="720.827" y="939.297" width="37.4471" height="22.1563"/>
   <object id="161" type="Tree" gid="3" x="658.417" y="961.369" width="160.5" height="214"/>
   <object id="162" type="Barrier" x="912.827" y="1063.3" width="37.4471" height="22.1563"/>
@@ -128,5 +123,7 @@
    </properties>
    <point/>
   </object>
+  <object id="174" type="Barrier" x="963.493" y="441.964" width="37.4471" height="22.1563"/>
+  <object id="175" type="Tree" gid="3" x="901.083" y="464.036" width="160.5" height="214"/>
  </objectgroup>
 </map>

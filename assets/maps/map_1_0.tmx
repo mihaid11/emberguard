@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="56">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="58">
  <tileset firstgid="1" source="tilesets/Trees.tsx"/>
  <tileset firstgid="2" source="tilesets/Buildings.tsx"/>
  <layer id="1" name="Tile Layer 1" width="32" height="32">
@@ -96,5 +96,6 @@
   </object>
   <object id="54" type="Barrier" x="370.16" y="127.965" width="37.4471" height="22.1563"/>
   <object id="55" type="Tree" gid="1" x="307.75" y="150.035" width="160.5" height="214"/>
+  <object id="57" type="Barrier" x="-310.835" y="714.292" width="1373.67" height="17.4163"/>
  </objectgroup>
 </map>
