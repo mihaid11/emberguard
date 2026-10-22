@@ -5,19 +5,25 @@
 
 class Entity : public DrawableEntity {
 public:
-    Entity(const sf::Vector2f& position, const std::string filename,
-           const sf::Vector2f& collPosition, const sf::Vector2f& collSize, int canInteract,
-           const sf::Vector2f& interactPos, const sf::Vector2f& interactSize);
+    Entity(const sf::Vector2f& position, const sf::Vector2f& size,
+           const std::string filename, const sf::Vector2f& collPosition = {0.f, 0.f},
+           const sf::Vector2f& collSize = {0.f, 0.f}, int canInteract = 0,
+           const sf::Vector2f& interactPos = {0.f, 0.f}, const sf::Vector2f& interactSize = {0.f, 0.f});
     virtual ~Entity() = default;
 
     virtual void render(sf::RenderWindow& window) override;
     virtual void update();
+
     sf::FloatRect getBounds() const;
+    sf::FloatRect getCollisionBounds() const;
     sf::Vector2f getPosition() const override;
     sf::Vector2f getInteractPosition() const;
     float getHeight() const override;
-    int isInteractable() const;
     sf::FloatRect getInteractBounds() const;
+    int isInteractable() const;
+
+    void setAlpha(int alpha);
+
     virtual void interact();
 
 protected:
@@ -27,4 +33,3 @@ protected:
     sf::RectangleShape mInteractableZone;
     int mCanInteract;
 };
-

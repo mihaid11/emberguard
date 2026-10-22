@@ -4,7 +4,7 @@
 #include <math.h>
 
 MainCharacter::MainCharacter(const sf::Vector2f& position, Inventory* inventory, LevelCompleteMenu* levelCompleteMenu)
-    : mPosition(position), mSpeed(142.0f), mPriority(0), mLevelSystem(inventory, levelCompleteMenu) {
+    : mPosition(position), mSpeed(120.0f), mPriority(0), mLevelSystem(inventory, levelCompleteMenu) {
     mCollisionZone.setSize(sf::Vector2f(24.f, 16.f));
     mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 21.f, mPosition.y + 47.f));
     mCollisionZone.setFillColor(sf::Color::Red);
@@ -111,8 +111,8 @@ void MainCharacter::render(sf::RenderWindow& window) {
 
 void MainCharacter::setPosition(const sf::Vector2f& position) {
     mSprite.setPosition(position);
-    mCollisionZone.setPosition(sf::Vector2f(mPosition.x + 21.f, mPosition.y + 47.f));
-    mInteractZone.setPosition(sf::Vector2f(mPosition.x + 18.f, mPosition.y + 1.f));
+    mCollisionZone.setPosition(sf::Vector2f(position.x + 21.f, position.y + 47.f));
+    mInteractZone.setPosition(sf::Vector2f(position.x + 18.f, position.y + 1.f));
     mPosition = position;
 }
 

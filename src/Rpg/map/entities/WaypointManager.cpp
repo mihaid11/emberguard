@@ -61,6 +61,23 @@ void WaypointManager::parseMapFile(const std::string& path) {
 
                                 mWaypoints[name] = waypoint;
                             }
+                        } else if (type == "NPCWaypoint") {
+                            std::string npcId = object.value("name", "");
+                            float x = object.value("x", 0.f) + offsetX;
+                            float y = object.value("y", 0.f) + offsetY;
+
+                            int index = 0;
+                            if (object.contains("properties")) {
+                                for (const auto& prop: object["properties"]) {
+                                    if (prop["name"] == "index") {
+                                        index = prop["value"];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (!npcId.empty())
+                                mNPCPaths[npcId][index] = sf::Vector2f(x, y);
                         }
                     }
                 }
@@ -69,4 +86,14 @@ void WaypointManager::parseMapFile(const std::string& path) {
     } catch (...) {
         std::cerr << "Failed to parse waypoints: " << path << std::endl;
     }
+}
+
+std::vector<sf::Vector2f> WaypointManager::getNPCPath(const std::string& npcId) const {
+    std::vector<sf::Vector2f> path;
+    auto it = mNPCPaths.find(npcId);
+
+    if (it != mNPCPaths.end())
+        for (const auto& [index, position] : it->second)
+            path.push_back(position);
+    return path;
 }

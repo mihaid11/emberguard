@@ -144,7 +144,12 @@ private:
 
     sf::CircleShape mInteractCircle;
     sf::Text mInteractText;
+    sf::Text mNPCName;
+
     bool mShowInteract;
+    Entity* mClosestEntity;
+    NPC* mClosestNPC;
+    float mClosestEntityDist;
     sf::Vector2f mInteractPos;
     bool mPaused;
     bool mIsInitialized;

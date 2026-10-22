@@ -32,4 +32,3 @@ private:
     sf::Vector2i mCurrentZoneCoords;
     int mViewRange;
 };
-

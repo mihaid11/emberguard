@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="1">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="180">
+ <editorsettings>
+  <export target="map_0_-1.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="tilesets/Buildings.tsx"/>
+ <tileset firstgid="3" source="tilesets/Trees.tsx"/>
  <layer id="1" name="Tile Layer 1" width="32" height="32">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -39,4 +44,86 @@
  <imagelayer id="2" name="Image Layer 1">
   <image source="../sprites/gameMap/map_0_-1.png" width="1024" height="1024"/>
  </imagelayer>
+ <objectgroup id="3" name="Entities">
+  <object id="82" type="TownHall" gid="1" x="398.417" y="265.333" width="160.5" height="256"/>
+  <object id="83" type="Barrier" x="579.827" y="217.297" width="37.4471" height="22.1563"/>
+  <object id="84" type="Tree" gid="3" x="517.417" y="239.369" width="160.5" height="214"/>
+  <object id="85" type="Barrier" x="349.827" y="251.297" width="37.4471" height="22.1563"/>
+  <object id="86" type="Tree" gid="3" x="287.417" y="273.369" width="160.5" height="214"/>
+  <object id="87" type="Barrier" x="267.827" y="271.297" width="37.4471" height="22.1563"/>
+  <object id="88" type="Tree" gid="3" x="205.417" y="293.369" width="160.5" height="214"/>
+  <object id="89" type="Barrier" x="651.827" y="264.297" width="37.4471" height="22.1563"/>
+  <object id="90" type="Tree" gid="3" x="589.417" y="286.369" width="160.5" height="214"/>
+  <object id="91" type="Barrier" x="730.827" y="198.297" width="37.4471" height="22.1563"/>
+  <object id="92" type="Tree" gid="3" x="668.417" y="220.369" width="160.5" height="214"/>
+  <object id="95" type="Barrier" x="767.827" y="330.297" width="37.4471" height="22.1563"/>
+  <object id="96" type="Tree" gid="3" x="705.417" y="352.369" width="160.5" height="214"/>
+  <object id="97" type="Barrier" x="913.16" y="623.964" width="37.4471" height="22.1563"/>
+  <object id="98" type="Tree" gid="3" x="850.75" y="646.036" width="160.5" height="214"/>
+  <object id="103" type="Barrier" x="182.827" y="287.297" width="37.4471" height="22.1563"/>
+  <object id="104" type="Tree" gid="3" x="120.417" y="309.369" width="160.5" height="214"/>
+  <object id="105" type="Barrier" x="60.8267" y="311.297" width="37.4471" height="22.1563"/>
+  <object id="106" type="Tree" gid="3" x="-1.58333" y="333.369" width="160.5" height="214"/>
+  <object id="107" type="Barrier" x="846.827" y="446.297" width="37.4471" height="22.1563"/>
+  <object id="108" type="Tree" gid="3" x="784.417" y="469.369" width="160.5" height="214"/>
+  <object id="113" type="Barrier" x="866.827" y="291.297" width="37.4471" height="22.1563"/>
+  <object id="114" type="Tree" gid="3" x="804.417" y="313.369" width="160.5" height="214"/>
+  <object id="115" type="Barrier" x="845.827" y="149.297" width="37.4471" height="22.1563"/>
+  <object id="116" type="Tree" gid="3" x="783.417" y="171.369" width="160.5" height="214"/>
+  <object id="119" type="Barrier" x="958.827" y="219.297" width="37.4471" height="22.1563"/>
+  <object id="120" type="Tree" gid="3" x="896.417" y="241.369" width="160.5" height="214"/>
+  <object id="123" type="Barrier" x="294.16" y="124.631" width="37.4471" height="22.1563"/>
+  <object id="124" type="Tree" gid="3" x="231.75" y="146.703" width="160.5" height="214"/>
+  <object id="125" type="Barrier" x="127.493" y="153.964" width="37.4471" height="22.1563"/>
+  <object id="126" type="Tree" gid="3" x="65.0833" y="176.036" width="160.5" height="214"/>
+  <object id="127" type="Barrier" x="426.16" y="89.2973" width="37.4471" height="22.1563"/>
+  <object id="128" type="Tree" gid="3" x="363.75" y="111.369" width="160.5" height="214"/>
+  <object id="129" type="Barrier" x="642.16" y="91.2973" width="37.4471" height="22.1563"/>
+  <object id="130" type="Tree" gid="3" x="579.75" y="113.369" width="160.5" height="214"/>
+  <object id="131" type="Barrier" x="-555.543" y="219.625" width="1612.92" height="17.4163"/>
+  <object id="132" type="Barrier" x="997.832" y="219.731" width="26.3518" height="57.8251"/>
+  <object id="135" name="seraphina_lumeris" type="NPCWaypoint" x="515.515" y="678.334">
+   <properties>
+    <property name="index" type="int" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="139" type="Barrier" x="410.053" y="223.963" width="149.893" height="41.4077" rotation="359.776"/>
+  <object id="140" type="Barrier" x="12.16" y="205.964" width="37.4471" height="22.1563"/>
+  <object id="141" type="Tree" gid="3" x="-50.25" y="228.036" width="160.5" height="214"/>
+  <object id="142" type="Barrier" x="210.16" y="88.964" width="37.4471" height="22.1563"/>
+  <object id="143" type="Tree" gid="3" x="147.75" y="111.036" width="160.5" height="214"/>
+  <object id="146" type="Barrier" x="534.16" y="47.964" width="37.4471" height="22.1563"/>
+  <object id="147" type="Tree" gid="3" x="471.75" y="70.036" width="160.5" height="214"/>
+  <object id="148" type="ShopHouse" gid="1" x="93.7355" y="399.185" width="160.5" height="256"/>
+  <object id="149" type="Barrier" x="105.371" y="357.815" width="149.893" height="41.4077" rotation="359.776"/>
+  <object id="150" type="Barrier" x="361.16" y="132.964" width="37.4471" height="22.1563"/>
+  <object id="151" type="Tree" gid="3" x="298.75" y="155.036" width="160.5" height="214"/>
+  <object id="160" type="Barrier" x="720.827" y="939.297" width="37.4471" height="22.1563"/>
+  <object id="161" type="Tree" gid="3" x="658.417" y="961.369" width="160.5" height="214"/>
+  <object id="162" type="Barrier" x="912.827" y="1063.3" width="37.4471" height="22.1563"/>
+  <object id="163" type="Tree" gid="3" x="850.417" y="1085.37" width="160.5" height="214"/>
+  <object id="167" name="garrick_stone" type="NPCWaypoint" x="518" y="864">
+   <properties>
+    <property name="index" type="int" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="169" type="Barrier" x="808.41" y="994.964" width="37.4471" height="22.1563"/>
+  <object id="170" type="Tree" gid="3" x="746" y="1017.04" width="160.5" height="214"/>
+  <object id="171" name="elliot_marlowe" type="NPCWaypoint" x="234" y="736">
+   <properties>
+    <property name="index" type="int" value="2"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="172" name="mira_stanton" type="NPCWaypoint" x="390.909" y="445.455">
+   <properties>
+    <property name="index" type="int" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="174" type="Barrier" x="963.493" y="441.964" width="37.4471" height="22.1563"/>
+  <object id="175" type="Tree" gid="3" x="901.083" y="464.036" width="160.5" height="214"/>
+ </objectgroup>
 </map>

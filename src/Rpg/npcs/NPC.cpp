@@ -4,10 +4,11 @@
 #include <math.h>
 
 NPC::NPC(const sf::Vector2f& position, const std::string& id)
-    : mInteractionRadius(60.0f), mPaused(false), mSpeed(35.0f),
+    : mInteractionRadius(60.0f), mPaused(false), mSpeed(50.0f),
     mCurrentWaypoint(0), mIsPaused(false), mPauseDuration(3.0f),
-    mPauseTimer(0.0f), mPriority(0), mShowInteract(false), mId(id) {
+    mPauseTimer(0.0f), mPriority(0), mId(id) {
 
+    mSprite.setPosition(position);
     mSprite.setTextureRect({ 0, 0, 64, 64 });
     mAnimations[int(AnimationIndex::IdleUp)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/idleUp.png", 4, 2.5f);
     mAnimations[int(AnimationIndex::IdleDown)] = Animation(0, 0, 64, 64, "assets/sprites/mainCharacter/idleDown.png", 6, 1.8f);
@@ -25,18 +26,8 @@ NPC::NPC(const sf::Vector2f& position, const std::string& id)
         mAvatarSprite.setScale(3.f, 3.f);
     }
 
-    mInteractCircle.setRadius(7.5f);
-    mInteractCircle.setFillColor(sf::Color(30, 30, 30, 200));
-    mInteractCircle.setOutlineColor(sf::Color::White);
-    mInteractCircle.setOutlineThickness(0.7f);
-
     if (!mFont.loadFromFile("assets/fonts/gameFont.ttf"))
         std::cerr << "Failed to load font for NPC!" << std::endl;
-
-    mInteractText.setFont(mFont);
-    mInteractText.setCharacterSize(7);
-    mInteractText.setFillColor(sf::Color::White);
-    mInteractText.setString("E");
 }
 
 void NPC::setDialogue(const std::string& key, const Dialogue& dialogue) {
@@ -87,13 +78,10 @@ void NPC::clearDialogue() {
 
 void NPC::render(sf::RenderWindow& window) {
     window.draw(mSprite);
-    if (mShowInteract) {
-        window.draw(mInteractCircle);
-        window.draw(mInteractText);
-    }
 }
 
 bool NPC::isPlayerClose(const sf::Vector2f& playerPosition) const {
+    // TODO: replace position checks with bound checks for accurate distance calculation
     float distance = std::sqrt(std::pow(playerPosition.x - mSprite.getPosition().x, 2.f) +
         std::pow(playerPosition.y - mSprite.getPosition().y, 2.f));
     return distance <= mInteractionRadius;
@@ -151,10 +139,6 @@ void NPC::update(float dt) {
     mAnimations[int(mCurrentAnimation)].update(dt);
     mAnimations[int(mCurrentAnimation)].applyToSprite(mSprite);
 
-    mInteractCircle.setPosition(mSprite.getPosition());
-    mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
-                                    mInteractCircle.getPosition().y + 2.8f });
-
     if (distance < 5.0f) {
         // Move to the next waypoint
         mCurrentWaypoint = (mCurrentWaypoint + 1) % mPath.size();
@@ -204,10 +188,16 @@ void NPC::setCurrentWaypoint(int waypoint) {
     mCurrentWaypoint = waypoint;
 }
 
-void NPC::setInteractPosition(const sf::Vector2f& position) {
-    mInteractCircle.setPosition(position);
-    mInteractText.setPosition({ mInteractCircle.getPosition().x + 5.9f,
-                                mInteractCircle.getPosition().y + 2.8f });
+void NPC::clearPath() {
+    mPath.clear();
+}
+
+void NPC::addWaypoint(const sf::Vector2f& waypoint) {
+    mPath.push_back(waypoint);
+}
+
+const std::vector<sf::Vector2f>& NPC::getPath() const {
+    return mPath;
 }
 
 void NPC::setAnimationOpposing(int animationIndex) {
@@ -225,10 +215,6 @@ void NPC::setAnimationOpposing(int animationIndex) {
         mCurrentAnimation = AnimationIndex::IdleUp;
     }
     mAnimations[int(mCurrentAnimation)].applyToSprite(mSprite);
-}
-
-void NPC::setInteract(bool showInteract) {
-    mShowInteract = showInteract;
 }
 
 void NPC::startPause(float duration) {

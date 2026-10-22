@@ -9,16 +9,62 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
         const sf::Vector2f& size, GameContext& gameContext) {
     if (type == "Barrier") {
         return std::make_unique<Barrier>(pos, size);
+    } else if (type == "TownHall") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/townHallExt.png"
+        );
+    } else if (type == "ShopHouse") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/shopHouseExt.png"
+        );
+    } else if (type == "AnalyzeHouse") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/analyzeHouseExt.png"
+        );
+    } else if (type == "MiraHouse") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/miraHouseExt.png"
+        );
+    } else if (type == "SeraphinaHouse") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/seraphinaHouseExt.png"
+        );
+    } else if (type == "ElliotHouse") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/elliotHouseExt.png"
+        );
+    } else if (type == "GarrickHouse") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/garrickHouseExt.png"
+        );
+    } else if (type == "VincentHouse") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/vincentHouseExt.png"
+        );
     } else if (type == "MCHouse") {
         sf::Vector2f interactSize = sf::Vector2f(43.f, 10.f);
         sf::Vector2f interactPos = pos + sf::Vector2f(size.x / 2.f - interactSize.x / 2.f - 9.f, size.y - interactSize.y / 2.f - 40.f);
 
         return std::make_unique<MCHouse>(
             pos,
+            size,
             "assets/sprites/buildings/mcHouseExt.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
-            1,
             interactPos,
             interactSize,
             gameContext.mainCharacter,
@@ -33,10 +79,8 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
 
         return std::make_unique<MCHouseInt>(
             pos,
+            size,
             "assets/sprites/buildings/mcHouseInt.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
-            1,
             interactPos,
             interactSize,
             gameContext.mainCharacter,
@@ -50,10 +94,7 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
 
         return std::make_unique<Bed> (
             pos,
-            1,
             "assets/sprites/buildings/bed.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
             interactPos,
             interactSize,
             gameContext.timeSystem,
@@ -66,16 +107,18 @@ std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, con
 
         return std::make_unique<Chest> (
             pos,
-            1,
             "assets/sprites/buildings/chest.png",
-            sf::Vector2f(0.f, 0.f),
-            sf::Vector2f(0.f, 0.f),
             interactPos,
             interactSize,
             gameContext.setChestMenuState
+        );
+    } else if (type == "Tree") {
+        return std::make_unique<Entity> (
+            pos,
+            size,
+            "assets/sprites/buildings/tree.png"
         );
     }
 
     return nullptr;
 }
-
