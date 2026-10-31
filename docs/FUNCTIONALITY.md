@@ -42,6 +42,8 @@ The game consists of two main modules: **RPG** and **Tower Defense**, each with 
 
 ## Screenshots
 ![Game Screenshot](../assets/screenshots/screenshot1.png)
-![Game Screenshot](../assets/screenshots/screenshot2.png)
 ![Game Screenshot](../assets/screenshots/screenshot3.png)
+![Game Screenshot](../assets/screenshots/screenshot5.png)
+![Game Screenshot](../assets/screenshots/screenshot6.png)
+![Game Screenshot](../assets/screenshots/screenshot2.png)
 ![Game Screenshot](../assets/screenshots/screenshot4.png)
