@@ -20,3 +20,7 @@ A 2D RPG x Tower Defense game built in C++ using SFML, developed from scratch as
 ## Documentation
 - [Installation Guide](./docs/INSTALLATION.md)
 - [Functionality Overview](./docs/FUNCTIONALITY.md)
+
+## Screenshots
+![Game Screenshot](assets/screenshots/screenshot1.png)
+![Game Screenshot](assets/screenshots/screenshot5.png)
